@@ -7,17 +7,19 @@
 class Token {
 public:
     Token(short tokenType);
+    Token(short tokenType, double tokenValue);
     Token(short tokenType, short precedence, short assoc, void (*funcptr)(std::stack<Token>));
     short getType();
     short getPrecedence();
     short getAssoc();
+    double getValue();
 
 private:
     short tokenType;
     short precedence;
     short assoc;
     void (*funcptr)(std::stack<Token>);
-    int tokenValue;
+    double tokenValue;
 };
 
 enum {

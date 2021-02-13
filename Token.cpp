@@ -17,6 +17,11 @@ Token::Token(short tokenType, short precedence, short assoc, void (*funcptr)(std
     this->funcptr    = funcptr;
 }
 
+Token::Token(short tokenType, double tokenValue) {
+    this->tokenType  = tokenType;
+    this->tokenValue = tokenValue;
+}
+
 short Token::getType() {
     return tokenType;
 }
@@ -27,6 +32,10 @@ short Token::getPrecedence() {
 
 short Token::getAssoc() {
     return assoc;
+}
+
+double Token::getValue() {
+    return tokenValue;
 }
 
 Parser* Parser::instance = nullptr;
@@ -45,11 +54,11 @@ Token* Parser::getNextToken(unsigned char * input) {
     static int i=0;
     i++;
     switch (i) {
-        case 1: return new Token(TOKEN_TYPE_VALUE);
+        case 1: return new Token(TOKEN_TYPE_VALUE, 10.0);
         case 2 : return operatorToken["+"];
-        case 3 : return new Token(TOKEN_TYPE_VALUE);
+        case 3 : return new Token(TOKEN_TYPE_VALUE, 20.0);
         case 4 : return operatorToken["*"];
-        case 5 : return new Token(TOKEN_TYPE_VALUE);
+        case 5 : return new Token(TOKEN_TYPE_VALUE, 30.0);
         case 6 : return new Token(TOKEN_TYPE_UNKNOWN);
     }
     return operatorToken["+"];
@@ -73,8 +82,8 @@ Parser::Parser() {
     operatorToken["&&"]  = new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::dummy);
     operatorToken["||"]  = new Token(TOKEN_TYPE_OPERATOR, 12, LEFT, Operator::dummy);
 
-    seperatorToken = new Token(TOKEN_TYPE_SEPERATOR);
-    bracketOpenToken = new Token(TOKEN_TYPE_BRACKETOPEN);
+    seperatorToken    = new Token(TOKEN_TYPE_SEPERATOR);
+    bracketOpenToken  = new Token(TOKEN_TYPE_BRACKETOPEN);
     bracketCloseToken = new Token(TOKEN_TYPE_BRACKETCLOSE);
 
     functionToken["SIN"] = new Token(TOKEN_TYPE_FUNCTION);
