@@ -9,5 +9,5 @@ enum {
 class ShuntingYard {
 public:
     ShuntingYard();
-    void run(unsigned char* input, int &error);
+    static void run(unsigned char* input, int &error);
 };

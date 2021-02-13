@@ -17,7 +17,7 @@ void ShuntingYard::run(unsigned char* input, int &error) {
 
     error = ERROR_OK;
 
-    while(1) {
+    while(true) {
         token = Parser::getInstance()->getNextToken(input);
         if (token->getType()==TOKEN_TYPE_UNKNOWN) {
             break;
@@ -30,15 +30,18 @@ void ShuntingYard::run(unsigned char* input, int &error) {
                 tokenStack.push(*token);
                 break;
             case TOKEN_TYPE_SEPERATOR:
-                /*
-                BIS Stack-Spitze IST öffnende-Klammer:
-                Stack-Spitze ZU Ausgabe.
-                FEHLER-BEI Stack IST-LEER:
-                GRUND (1) Ein falsch platziertes Argumenttrennzeichen.
-                GRUND (2) Der schließenden Klammer geht keine öffnende voraus.
-                ENDEFEHLER
-                ENDEBIS
-                */
+                do {
+                    if (tokenStack.empty()) {
+                        error = ERROR_MISSING_BRACKET_OPEN;
+                        return;
+                    }
+                    if (tokenStack.top().getType() != TOKEN_TYPE_BRACKETOPEN) {
+                        outputBuffer.push(tokenStack.top());
+                        tokenStack.pop();
+                    } else {
+                        break;
+                    }
+                } while (true);
                 break;
             case TOKEN_TYPE_OPERATOR:
                 while (!tokenStack.empty() &&
