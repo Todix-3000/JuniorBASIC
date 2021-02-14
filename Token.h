@@ -23,7 +23,9 @@ private:
 };
 
 enum {
-    TOKEN_TYPE_VALUE, TOKEN_TYPE_FUNCTION, TOKEN_TYPE_SEPERATOR, TOKEN_TYPE_OPERATOR, TOKEN_TYPE_BRACKETOPEN, TOKEN_TYPE_BRACKETCLOSE, TOKEN_TYPE_UNKNOWN
+    TOKEN_TYPE_VALUE, TOKEN_TYPE_FUNCTION, TOKEN_TYPE_SEPERATOR, TOKEN_TYPE_OPERATOR,
+    TOKEN_TYPE_BRACKETOPEN, TOKEN_TYPE_BRACKETCLOSE, TOKEN_TYPE_UNKNOWN,
+    TOKEN_TYPE_COMMAND
 };
 
 enum {
@@ -36,6 +38,7 @@ class Parser
 {
 private:
     static Parser* instance;
+    unsigned char* inputPtr;
 
     TokenMap commandToken;
     TokenMap functionToken;
@@ -50,8 +53,10 @@ protected:
 
 public:
     /* Static access method. */
-    static Parser* getInstance();
-    Token* getNextToken(unsigned char * input);
+    static Parser* getInstance(unsigned char * input);
+    void setInputPtr(unsigned char * input);
+    Token* getNextToken();
+    Token* findToken(TokenMap map);
 };
 
 #endif

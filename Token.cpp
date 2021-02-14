@@ -3,6 +3,7 @@
 //
 #include <cstdlib>
 #include <iostream>
+#include <cstring>
 #include "Token.h"
 #include "Operator.h"
 
@@ -40,28 +41,58 @@ double Token::getValue() {
 
 Parser* Parser::instance = nullptr;
 
-Parser* Parser::getInstance()
+Parser* Parser::getInstance(unsigned char * input)
 {
     if (instance == nullptr)
     {
         instance = new Parser();
     }
-
+    instance->setInputPtr(input);
     return instance;
 }
 
-Token* Parser::getNextToken(unsigned char * input) {
-    static int i=0;
-    i++;
-    switch (i) {
-        case 1: return new Token(TOKEN_TYPE_VALUE, 10.0);
-        case 2 : return operatorToken["+"];
-        case 3 : return new Token(TOKEN_TYPE_VALUE, 20.0);
-        case 4 : return operatorToken["*"];
-        case 5 : return new Token(TOKEN_TYPE_VALUE, 30.0);
-        case 6 : return new Token(TOKEN_TYPE_UNKNOWN);
+void Parser::setInputPtr(unsigned char * input) {
+    inputPtr = input;
+}
+
+Token* Parser::getNextToken() {
+    Token *myToken;
+    while (' ' == *inputPtr) {
+        inputPtr++;
     }
-    return operatorToken["+"];
+    if (*inputPtr >= '0' && *inputPtr <= '9') {
+        myToken = new Token(TOKEN_TYPE_VALUE, (double) *inputPtr - '0');
+        inputPtr++;
+        return myToken;
+    }
+    if ((myToken = findToken(commandToken)) != nullptr) {
+        return myToken;
+    }
+    if ((myToken = findToken(operatorToken)) != nullptr) {
+        return myToken;
+    }
+    if ((myToken = findToken(functionToken)) != nullptr) {
+        return myToken;
+    }
+    if (*inputPtr == '(' ) {
+        inputPtr++;
+        return new Token(TOKEN_TYPE_BRACKETOPEN);
+    }
+    if (*inputPtr == ')' ) {
+        return new Token(TOKEN_TYPE_BRACKETCLOSE);
+    }
+    return new Token(TOKEN_TYPE_UNKNOWN);
+}
+
+Token* Parser::findToken(TokenMap map) {
+    for (TokenMap::iterator it=map.begin(); it!=map.end(); ++it) {
+        if ( memcmp (inputPtr, it->first.data(), it->first.length() ) == 0 ) {
+            inputPtr += it->first.length();
+            std::cout << it->first;
+            return it->second;
+        }
+    }
+    return nullptr;
 }
 
 Parser::Parser() {
@@ -88,5 +119,8 @@ Parser::Parser() {
 
     functionToken["SIN"] = new Token(TOKEN_TYPE_FUNCTION);
     functionToken["COS"] = new Token(TOKEN_TYPE_FUNCTION);
+
+    commandToken["PRINT"] = new Token(TOKEN_TYPE_COMMAND);
+
 }
 

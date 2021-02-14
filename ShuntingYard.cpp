@@ -17,8 +17,10 @@ void ShuntingYard::run(unsigned char* input, int &error) {
 
     error = ERROR_OK;
 
+    Parser *parser = Parser::getInstance(input);
+
     while(true) {
-        token = Parser::getInstance()->getNextToken(input);
+        token = parser->getNextToken();
         if (token->getType()==TOKEN_TYPE_UNKNOWN) {
             break;
         }
