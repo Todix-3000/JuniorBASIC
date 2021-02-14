@@ -2,8 +2,21 @@
 // Created by tdix on 07.02.2021.
 //
 #include <stack>
+#include <iostream>
 #include "ShuntingYard.h"
 #include "Token.h"
+
+class OutputBuffer : public std::stack<Token>
+{
+public:
+    void push(Token token) {
+        if (token.getType()==TOKEN_TYPE_OPERATOR) {
+            token.call(this);
+            return;
+        }
+        std::stack<Token>::push(token);
+    }
+};
 
 ShuntingYard::ShuntingYard() {
 }
@@ -11,7 +24,7 @@ ShuntingYard::ShuntingYard() {
 void ShuntingYard::run(unsigned char* input, int &error) {
 
     std::stack<Token> tokenStack;
-    std::stack<Token> outputBuffer;
+    OutputBuffer outputBuffer;
 
     Token *token;
 
@@ -48,12 +61,15 @@ void ShuntingYard::run(unsigned char* input, int &error) {
             case TOKEN_TYPE_OPERATOR:
                 while (!tokenStack.empty() &&
                   tokenStack.top().getType()==TOKEN_TYPE_OPERATOR &&
-                  tokenStack.top().getAssoc()==LEFT &&
+                  token->getAssoc()==LEFT &&
                   token->getPrecedence()<=tokenStack.top().getPrecedence()) {
                     outputBuffer.push(tokenStack.top());
                     tokenStack.pop();
                 }
                 tokenStack.push(*token);
+
+                // std::cout << "#" << outputBuffer.top().getValue() << "#\n";
+
                 break;
             case TOKEN_TYPE_BRACKETOPEN:
                 tokenStack.push(*token);

@@ -8,17 +8,18 @@ class Token {
 public:
     Token(short tokenType);
     Token(short tokenType, double tokenValue);
-    Token(short tokenType, short precedence, short assoc, void (*funcptr)(std::stack<Token>));
+    Token(short tokenType, short precedence, short assoc, void (*funcptr)(std::stack<Token>*));
     short getType();
     short getPrecedence();
     short getAssoc();
     double getValue();
+    void call(std::stack<Token>*);
 
 private:
     short tokenType;
     short precedence;
     short assoc;
-    void (*funcptr)(std::stack<Token>);
+    void (*funcptr)(std::stack<Token>*);
     double tokenValue;
 };
 
