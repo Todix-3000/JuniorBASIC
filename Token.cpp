@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstring>
 #include <utility>
+#include <math.h>
 #include "Token.h"
 #include "Operator.h"
 
@@ -57,19 +58,41 @@ void Parser::setInputPtr(unsigned char * input) {
     inputPtr = input;
 }
 
-Token* Parser::getNextToken() {
+Token* Parser::getNextToken(bool unaryOperator) {
     Token *myToken;
     while (' ' == *inputPtr) {
         inputPtr++;
     }
     if (*inputPtr >= '0' && *inputPtr <= '9') {
-        myToken = new Token(TOKEN_TYPE_VALUE, (double) *inputPtr - '0');
-        inputPtr++;
-        // std::cout << myToken->getValue();
+        int value = 0;
+        while (*inputPtr >= '0' && *inputPtr <= '9') {
+            value *= 10;
+            value += *inputPtr - '0';
+            inputPtr++;
+        }
+        if (*inputPtr == '.') {
+            double dValue = value;
+            int comma = 0;
+            inputPtr++;
+            while (*inputPtr >= '0' && *inputPtr <= '9') {
+                comma++;
+                dValue += (*inputPtr - '0')/pow(10, comma);
+                inputPtr++;
+            }
+            myToken = new Token(TOKEN_TYPE_VALUE, dValue);
+        } else {
+            myToken = new Token(TOKEN_TYPE_VALUE, (double) value);
+        }
+
         return myToken;
     }
     if ((myToken = findToken(commandToken)) != nullptr) {
         return myToken;
+    }
+    if (unaryOperator) {
+        if ((myToken = findToken(unaryOperatorToken)) != nullptr) {
+            return myToken;
+        }
     }
     if ((myToken = findToken(operatorToken)) != nullptr) {
         return myToken;
@@ -120,6 +143,9 @@ Parser::Parser() {
     operatorToken["OR"]  = new Token(TOKEN_TYPE_OPERATOR, 3, LEFT, Operator::dummy);
     operatorToken["&&"]  = new Token(TOKEN_TYPE_OPERATOR, 2, LEFT, Operator::dummy);
     operatorToken["||"]  = new Token(TOKEN_TYPE_OPERATOR, 1, LEFT, Operator::dummy);
+
+    unaryOperatorToken["+"]   = new Token(TOKEN_TYPE_OPERATOR, 13, LEFT, Operator::dummy);
+    unaryOperatorToken["-"]   = new Token(TOKEN_TYPE_OPERATOR, 13, LEFT, Operator::neg);
 
     seperatorToken    = new Token(TOKEN_TYPE_SEPERATOR);
     bracketOpenToken  = new Token(TOKEN_TYPE_BRACKETOPEN);

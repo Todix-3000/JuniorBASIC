@@ -11,5 +11,6 @@ public:
     static void div(std::stack<Token>*);
     static void add(std::stack<Token>*);
     static void sub(std::stack<Token>*);
+    static void neg(std::stack<Token>*);
     static void dummy(std::stack<Token>*);
 };

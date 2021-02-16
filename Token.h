@@ -44,7 +44,7 @@ private:
     TokenMap commandToken;
     TokenMap functionToken;
     TokenMap operatorToken;
-
+    TokenMap unaryOperatorToken;
     Token* seperatorToken;
     Token* bracketOpenToken;
     Token* bracketCloseToken;
@@ -56,7 +56,7 @@ public:
     /* Static access method. */
     static Parser* getInstance(unsigned char * input);
     void setInputPtr(unsigned char * input);
-    Token* getNextToken();
+    Token* getNextToken(bool unaryOperator);
     Token* findToken(TokenMap map);
 };
 

@@ -31,20 +31,24 @@ void ShuntingYard::run(unsigned char* input, int &error) {
     error = ERROR_OK;
 
     Parser *parser = Parser::getInstance(input);
+    bool unary{true};
 
     while(true) {
-        token = parser->getNextToken();
+        token = parser->getNextToken(unary);
         if (token->getType()==TOKEN_TYPE_UNKNOWN) {
             break;
         }
         switch(token->getType()) {
             case TOKEN_TYPE_VALUE:
+                unary=false;
                 outputBuffer.push(*token);
                 break;
             case TOKEN_TYPE_FUNCTION:
+                unary=true;
                 tokenStack.push(*token);
                 break;
             case TOKEN_TYPE_SEPERATOR:
+                unary=true;
                 do {
                     if (tokenStack.empty()) {
                         error = ERROR_MISSING_BRACKET_OPEN;
@@ -59,6 +63,7 @@ void ShuntingYard::run(unsigned char* input, int &error) {
                 } while (true);
                 break;
             case TOKEN_TYPE_OPERATOR:
+                unary=true;
                 while (!tokenStack.empty() &&
                   tokenStack.top().getType()==TOKEN_TYPE_OPERATOR &&
                   token->getAssoc()==LEFT &&
@@ -72,9 +77,11 @@ void ShuntingYard::run(unsigned char* input, int &error) {
 
                 break;
             case TOKEN_TYPE_BRACKETOPEN:
+                unary=true;
                 tokenStack.push(*token);
                 break;
             case TOKEN_TYPE_BRACKETCLOSE:
+                unary=false;
                 do {
                     if (tokenStack.empty()) {
                         error = ERROR_MISSING_BRACKET_OPEN;

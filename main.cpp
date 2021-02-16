@@ -10,7 +10,7 @@ int main() {
     std::cout << "Hello, World!" << std::endl;
     ShuntingYard* algorithm = new ShuntingYard();
 
-    algorithm->run((unsigned char*) "9-5*2+8/2\0", result);
+    algorithm->run((unsigned char*) "-(3*-25/5+6*-1)\0", result);
 
     return 0;
 }
