@@ -11,7 +11,7 @@ void Operator::div(std::stack<Token>* stack) {
     auto v1 = stack->top();
     stack->pop();
     double result = v1.getValue() / v2.getValue();
-    std::cout << result << "=" << v1.getValue() << "/" << v2.getValue() << "\n";
+    std::cout << result << "=" << v1.getValue() << "/" << v2.getValue() << std::endl;
     stack->push(*new Token(TOKEN_TYPE_VALUE, result));
 }
 
@@ -21,7 +21,7 @@ void Operator::mul(std::stack<Token>* stack) {
     auto v1 = stack->top();
     stack->pop();
     double result = v1.getValue() * v2.getValue();
-    std::cout << result << "=" << v1.getValue() << "*" << v2.getValue() << "\n";
+    std::cout << result << "=" << v1.getValue() << "*" << v2.getValue() << std::endl;
     stack->push(*new Token(TOKEN_TYPE_VALUE, result));
 
 }
@@ -32,7 +32,7 @@ void Operator::add(std::stack<Token>* stack) {
     auto v1 = stack->top();
     stack->pop();
     double result = v1.getValue() + v2.getValue();
-    std::cout << result << "=" << v1.getValue() << "+" << v2.getValue() << "\n";
+    std::cout << result << "=" << v1.getValue() << "+" << v2.getValue() << std::endl;
     stack->push(*new Token(TOKEN_TYPE_VALUE, result));
 }
 
@@ -42,7 +42,7 @@ void Operator::sub(std::stack<Token>* stack) {
     auto v1 = stack->top();
     stack->pop();
     double result = v1.getValue() - v2.getValue();
-    std::cout << result << "=" << v1.getValue() << "-" << v2.getValue() << "\n";
+    std::cout << result << "=" << v1.getValue() << "-" << v2.getValue() << std::endl;
     stack->push(*new Token(TOKEN_TYPE_VALUE, result));
 }
 
@@ -50,7 +50,7 @@ void Operator::neg(std::stack<Token>* stack) {
     auto v1 = stack->top();
     stack->pop();
     double result = -v1.getValue();
-    std::cout << result << "=" << "-" << v1.getValue() << "\n";
+    std::cout << result << "=" << "-" << v1.getValue() << std::endl;
     stack->push(*new Token(TOKEN_TYPE_VALUE, result));
 }
 
