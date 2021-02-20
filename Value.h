@@ -14,10 +14,16 @@ public:
     Value(double value);
     Value(std::string value);
     ~Value();
+    int getType();
+    int getInt();
+    double getFloat();
+    std::string getString();
 private:
     int type;
     void* value;
+    std::string sValue;
 };
 
+Value operator+(Value &left, Value &right);
 
 #endif //JUNIORBASIC_VALUE_H

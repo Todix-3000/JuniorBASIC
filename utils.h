@@ -15,7 +15,7 @@ inline bool instanceof(const T*) {
 }
 
 enum {
-    EXCEPTION_NOT_IMPLEMENTED, EXCEPTION_ILLEGAL_EXPRESSION
+    EXCEPTION_NOT_IMPLEMENTED, EXCEPTION_ILLEGAL_EXPRESSION, EXCEPTION_TYPE_MISMATCH
 };
 
 class Exception: public std::exception {
