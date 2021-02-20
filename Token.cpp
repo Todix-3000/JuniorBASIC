@@ -18,11 +18,10 @@ Token::Token(short tokenType, short precedence, short assoc, void (*funcptr)(std
     this->precedence = precedence;
     this->assoc      = assoc;
     this->funcptr    = funcptr;
-    tokenValue = 0;
 }
 
 Token::Token(short tokenType, double tokenValue) {
-    this->tokenType  = tokenType;
+    this->tokenType = tokenType;
     this->tokenValue = tokenValue;
 }
 

@@ -12,10 +12,10 @@ public:
     short getType();
     short getPrecedence();
     short getAssoc();
-    double getValue();
     void call(std::stack<Token>*);
-
-private:
+    double getValue();
+    // ~Token() { std::cout << "Kaputt" << tokenValue << std::endl; }
+protected:
     short tokenType;
     short precedence;
     short assoc;
