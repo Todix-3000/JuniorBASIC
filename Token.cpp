@@ -141,7 +141,7 @@ void Token::call(std::stack<Token>* tokenStack) {
 }
 
 Parser::Parser() {
-    operatorToken["^"]   = new Token(TOKEN_TYPE_OPERATOR, 12, RIGHT, Operator::dummy);
+    operatorToken["^"]   = new Token(TOKEN_TYPE_OPERATOR, 12, RIGHT, Operator::pow);
     operatorToken["*"]   = new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::mul);
     operatorToken["/"]   = new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::div);
     operatorToken["%"]   = new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::dummy);

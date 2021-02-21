@@ -16,8 +16,10 @@ public:
     static void sub(std::stack<Token>*);
     static void neg(std::stack<Token>*);
     static void dummy(std::stack<Token>*);
+    static void pow(std::stack<Token> *stack);
 
 private:
     static Binary getTwoValues(std::stack<Token>*);
     static Unary getOneValue(std::stack<Token>*);
+
 };

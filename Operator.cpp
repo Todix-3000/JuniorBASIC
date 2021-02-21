@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cmath>
 #include "Operator.h"
 #include "utils.h"
 
@@ -90,9 +91,24 @@ void Operator::sub(std::stack<Token>* stack) {
     throw Exception{EXCEPTION_ILLEGAL_EXPRESSION};
 }
 
+static int intPow(int x, int p) {
+    if (p == 0) { return 1; }
+    if (p == 1) { return x; }
+    return x * intPow(x, p-1);
+}
+void Operator::pow(std::stack<Token>* stack) {
+    Binary params = Operator::getTwoValues(stack);
+    if (params.op1.getType()==VALUE_TYPE_INT && params.op2.getType()==VALUE_TYPE_INT && params.op2.getInt()>=0) {
+        stack->push(Value(intPow(params.op1.getInt(), params.op2.getInt())));
+    } else {
+        stack->push(Value(std::pow(params.op1.getFloat(), params.op2.getFloat())));
+    }
+}
+
+
 void Operator::neg(std::stack<Token>* stack) {
     Unary params = Operator::getOneValue(stack);
-    stack->push(params.op1);
+    stack->push(-params.op1);
     return;
     if (!stack->empty()) {
         auto v1 = stack->top();
