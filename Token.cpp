@@ -152,11 +152,11 @@ Parser::Parser() {
     operatorToken["<"]   = new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::dummy);
     operatorToken[">"]   = new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::dummy);
     operatorToken["="]   = new Token(TOKEN_TYPE_OPERATOR, 6, LEFT, Operator::dummy);
-    operatorToken["AND"] = new Token(TOKEN_TYPE_OPERATOR, 5, LEFT, Operator::dummy);
-    operatorToken["XOR"] = new Token(TOKEN_TYPE_OPERATOR, 4, LEFT, Operator::dummy);
-    operatorToken["OR"]  = new Token(TOKEN_TYPE_OPERATOR, 3, LEFT, Operator::dummy);
-    operatorToken["&&"]  = new Token(TOKEN_TYPE_OPERATOR, 2, LEFT, Operator::dummy);
-    operatorToken["||"]  = new Token(TOKEN_TYPE_OPERATOR, 1, LEFT, Operator::dummy);
+    operatorToken["AND"] = new Token(TOKEN_TYPE_OPERATOR, 5, LEFT, Operator::bitAnd);
+    operatorToken["XOR"] = new Token(TOKEN_TYPE_OPERATOR, 4, LEFT, Operator::bitXor);
+    operatorToken["OR"]  = new Token(TOKEN_TYPE_OPERATOR, 3, LEFT, Operator::bitOr);
+    operatorToken["&&"]  = new Token(TOKEN_TYPE_OPERATOR, 2, LEFT, Operator::boolAnd);
+    operatorToken["||"]  = new Token(TOKEN_TYPE_OPERATOR, 1, LEFT, Operator::boolOr);
 
     unaryOperatorToken["+"]   = new Token(TOKEN_TYPE_OPERATOR, 13, LEFT, Operator::dummy);
     unaryOperatorToken["-"]   = new Token(TOKEN_TYPE_OPERATOR, 13, LEFT, Operator::neg);

@@ -17,9 +17,15 @@ public:
     static void neg(std::stack<Token>*);
     static void dummy(std::stack<Token>*);
     static void pow(std::stack<Token> *stack);
+    static void bitAnd(std::stack<Token> *stack);
+    static void bitOr(std::stack<Token> *stack);
+    static void bitXor(std::stack<Token> *stack);
+    static void boolAnd(std::stack<Token> *stack);
+    static void boolOr(std::stack<Token> *stack);
 
 private:
     static Binary getTwoValues(std::stack<Token>*);
     static Unary getOneValue(std::stack<Token>*);
+
 
 };
