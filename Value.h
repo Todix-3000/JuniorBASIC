@@ -10,20 +10,29 @@
 enum {VALUE_TYPE_INT, VALUE_TYPE_FLOAT, VALUE_TYPE_STRING};
 class Value {
 public:
+    Value();
     Value(int value);
     Value(double value);
     Value(std::string value);
     ~Value();
-    int getType();
-    int getInt();
-    double getFloat();
-    std::string getString();
+    int getType() const;
+    int getInt() const;
+    double getFloat() const;
+    std::string getString() const;
 private:
     int type;
-    void* value;
+    int iValue;
+    double fValue;
     std::string sValue;
 };
 
-Value operator+(Value &left, Value &right);
+Value operator+(const Value &left, const Value &right);
+Value operator-(const Value &left, const Value &right);
+Value operator*(const Value &left, const Value &right);
+Value operator/(const Value &left, const Value &right);
+Value operator-(const Value &right);
+Value operator+(const Value &right);
+
+std::ostream& operator<<(std::ostream &out, const Value &value);
 
 #endif //JUNIORBASIC_VALUE_H

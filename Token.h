@@ -1,26 +1,27 @@
 #include <cstdlib>
 #include <map>
 #include <stack>
+#include "Value.h"
 
 #ifndef TOKEN_H
 #define TOKEN_H
 class Token {
 public:
     Token(short tokenType);
-    Token(short tokenType, double tokenValue);
+    Token(Value tokenValue);
     Token(short tokenType, short precedence, short assoc, void (*funcptr)(std::stack<Token>*));
     short getType();
     short getPrecedence();
     short getAssoc();
     void call(std::stack<Token>*);
-    double getValue();
+    Value getValue();
     // ~Token() { std::cout << "Kaputt" << tokenValue << std::endl; }
 protected:
     short tokenType;
     short precedence;
     short assoc;
     void (*funcptr)(std::stack<Token>*);
-    double tokenValue;
+    Value tokenValue;
 };
 
 enum {

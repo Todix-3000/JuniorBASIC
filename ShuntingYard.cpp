@@ -5,6 +5,7 @@
 #include <iostream>
 #include "ShuntingYard.h"
 #include "Token.h"
+#include "utils.h"
 
 class OutputBuffer : public std::stack<Token>
 {
@@ -21,14 +22,12 @@ public:
 ShuntingYard::ShuntingYard() {
 }
 
-void ShuntingYard::run(unsigned char* input, int &error) {
+Value ShuntingYard::run(unsigned char* input) {
 
     std::stack<Token> tokenStack;
     OutputBuffer outputBuffer;
 
     Token *token;
-
-    error = ERROR_OK;
 
     Parser *parser = Parser::getInstance(input);
     bool unary{true};
@@ -51,8 +50,7 @@ void ShuntingYard::run(unsigned char* input, int &error) {
                 unary=true;
                 do {
                     if (tokenStack.empty()) {
-                        error = ERROR_MISSING_BRACKET_OPEN;
-                        return;
+                        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
                     }
                     if (tokenStack.top().getType() != TOKEN_TYPE_BRACKETOPEN) {
                         outputBuffer.push(tokenStack.top());
@@ -84,8 +82,8 @@ void ShuntingYard::run(unsigned char* input, int &error) {
                 unary=false;
                 do {
                     if (tokenStack.empty()) {
-                        error = ERROR_MISSING_BRACKET_OPEN;
-                        return;
+                        // error = ERROR_MISSING_BRACKET_OPEN;
+                        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
                     }
                     if (tokenStack.top().getType() != TOKEN_TYPE_BRACKETOPEN) {
                         outputBuffer.push(tokenStack.top());
@@ -101,12 +99,18 @@ void ShuntingYard::run(unsigned char* input, int &error) {
         }
     }
 
-    do {
+    while (!tokenStack.empty()) {
         if (tokenStack.top().getType()==TOKEN_TYPE_BRACKETOPEN) {
-            error = ERROR_TOO_MANY_BRACKETS_OPEN;
-            return;
+            // error = ERROR_TOO_MANY_BRACKETS_OPEN;
+            throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
         }
         outputBuffer.push(tokenStack.top());
         tokenStack.pop();
-    } while (!tokenStack.empty());
+    };
+    if (!outputBuffer.empty()) {
+        Value v = outputBuffer.top().getValue();
+        outputBuffer.pop();
+        return v;
+    }
+    throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
 }

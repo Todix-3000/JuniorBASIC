@@ -3,18 +3,21 @@
 //
 
 #include "Value.h"
+#include <iostream>
 #include "utils.h"
 
+Value::Value() {
+    type=VALUE_TYPE_INT;
+    iValue = 0;
+}
 Value::Value(int intValue) {
     type=VALUE_TYPE_INT;
-    value = malloc(sizeof(int));
-    *((int*) value) = intValue;
+    iValue = intValue;
 }
 
 Value::Value(double floatValue) {
     type=VALUE_TYPE_FLOAT;
-    value = malloc(sizeof(int));
-    *((double*) value) = floatValue;
+    fValue = floatValue;
 }
 
 Value::Value(std::string stringValue) {
@@ -23,44 +26,40 @@ Value::Value(std::string stringValue) {
 }
 
 Value::~Value() {
-    if (type!=VALUE_TYPE_STRING) {
-        free(value);
-    }
 }
 
-int Value::getType() {
+int Value::getType() const{
     return type;
 }
 
-int Value::getInt() {
+int Value::getInt() const {
     if (type==VALUE_TYPE_INT) {
-        return *((int *) value);
+        return iValue;
     }
     if (type==VALUE_TYPE_FLOAT) {
-        return static_cast<int>(*((double *) value));
+        return static_cast<int>(fValue);
     }
     throw Exception(EXCEPTION_TYPE_MISMATCH);
 }
 
-double Value::getFloat() {
+double Value::getFloat() const {
     if (type==VALUE_TYPE_FLOAT) {
-        return *((double *) value);
+        return fValue;
     }
     if (type==VALUE_TYPE_INT) {
-        return static_cast<double>(*((int *) value));
+        return static_cast<double>(iValue);
     }
     throw Exception(EXCEPTION_TYPE_MISMATCH);
 }
 
-std::string Value::getString() {
+std::string Value::getString() const {
     if (type==VALUE_TYPE_STRING) {
         return sValue;
     }
     throw Exception(EXCEPTION_TYPE_MISMATCH);
 }
 
-
-Value operator+(Value &left, Value &right) {
+Value operator+(const Value &left, const Value &right) {
     if (left.getType()==VALUE_TYPE_STRING && right.getType()==VALUE_TYPE_STRING) {
         return Value(left.getString()+right.getString());
     }
@@ -71,4 +70,67 @@ Value operator+(Value &left, Value &right) {
         return Value(left.getInt() + right.getInt());
     }
     return Value(left.getFloat() + right.getFloat());
+}
+
+Value operator-(const Value &left, const Value &right) {
+    if (left.getType()==VALUE_TYPE_STRING || right.getType()==VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (left.getType()==VALUE_TYPE_INT && right.getType()==VALUE_TYPE_INT) {
+        return Value(left.getInt() - right.getInt());
+    }
+    return Value(left.getFloat() - right.getFloat());
+}
+
+Value operator*(const Value &left, const Value &right) {
+    if (left.getType()==VALUE_TYPE_STRING || right.getType()==VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (left.getType()==VALUE_TYPE_INT && right.getType()==VALUE_TYPE_INT) {
+        return Value(left.getInt() * right.getInt());
+    }
+    return Value(left.getFloat() * right.getFloat());
+}
+
+Value operator/(const Value &left, const Value &right) {
+    if (left.getType()==VALUE_TYPE_STRING || right.getType()==VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (left.getType()==VALUE_TYPE_INT && right.getType()==VALUE_TYPE_INT) {
+        return Value(left.getInt() / right.getInt());
+    }
+    return Value(left.getFloat() / right.getFloat());
+}
+
+Value operator-(const Value &right) {
+    if (right.getType()==VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (right.getType()==VALUE_TYPE_INT) {
+        return Value(-right.getInt());
+    }
+    return Value(-right.getFloat());
+}
+
+Value operator+(const Value &right) {
+    if (right.getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (right.getType() == VALUE_TYPE_INT) {
+        return Value(right.getInt());
+    }
+    return Value(right.getFloat());
+}
+
+std::ostream& operator<< (std::ostream &out, const Value &value) {
+    if (value.getType()==VALUE_TYPE_STRING) {
+        out << "s(" << value.getString() << ")";
+    }
+    if (value.getType()==VALUE_TYPE_INT) {
+        out << "i(" << value.getInt() << ")";
+    }
+    if (value.getType()==VALUE_TYPE_FLOAT) {
+        out << "f(" << value.getFloat() << ")";
+    }
+    return out;
 }

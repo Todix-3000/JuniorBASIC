@@ -18,10 +18,11 @@ Token::Token(short tokenType, short precedence, short assoc, void (*funcptr)(std
     this->precedence = precedence;
     this->assoc      = assoc;
     this->funcptr    = funcptr;
+    tokenValue       = Value();
 }
 
-Token::Token(short tokenType, double tokenValue) {
-    this->tokenType = tokenType;
+Token::Token(Value tokenValue) {
+    this->tokenType = TOKEN_TYPE_VALUE;
     this->tokenValue = tokenValue;
 }
 
@@ -37,7 +38,7 @@ short Token::getAssoc() {
     return assoc;
 }
 
-double Token::getValue() {
+Value Token::getValue() {
     return tokenValue;
 }
 
@@ -78,12 +79,22 @@ Token* Parser::getNextToken(bool unaryOperator) {
                 dValue += (*inputPtr - '0')/pow(10, comma);
                 inputPtr++;
             }
-            myToken = new Token(TOKEN_TYPE_VALUE, dValue);
+            return new Token(Value(dValue));
         } else {
-            myToken = new Token(TOKEN_TYPE_VALUE, (double) value);
+            return new Token(Value(value));
         }
+    }
+    if (*inputPtr == '"') {
+        unsigned char* start = ++inputPtr;
+        while (*inputPtr != '"') {
+            inputPtr++;
+        }
+        char subbuff[inputPtr-start+1];
+        memcpy( subbuff, start, inputPtr-start );
+        subbuff[inputPtr-start] = '\0';
+        inputPtr++;
+        return new Token(std::string(subbuff));
 
-        return myToken;
     }
     if ((myToken = findToken(commandToken)) != nullptr) {
         return myToken;
