@@ -8,6 +8,7 @@
 #include <math.h>
 #include "Token.h"
 #include "Operator.h"
+#include "utils.h"
 
 Token::Token(short tokenType) {
     this->tokenType = tokenType;
@@ -87,6 +88,9 @@ Token* Parser::getNextToken(bool unaryOperator) {
     if (*inputPtr == '"') {
         unsigned char* start = ++inputPtr;
         while (*inputPtr != '"') {
+            if (*inputPtr == '\0') {
+                throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+            }
             inputPtr++;
         }
         char subbuff[inputPtr-start+1];
