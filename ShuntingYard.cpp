@@ -110,7 +110,9 @@ Value ShuntingYard::run(unsigned char* input) {
     if (!outputBuffer.empty()) {
         Value v = outputBuffer.top().getValue();
         outputBuffer.pop();
-        return v;
+        if (outputBuffer.empty()) {
+            return v;
+        }
     }
     throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
 }
