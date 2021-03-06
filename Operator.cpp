@@ -28,6 +28,42 @@ void Operator::sub(std::stack<Token>* stack) {
     stack->push(params.op1 - params.op2);
 }
 
+void Operator::mod(std::stack<Token> *stack) {
+    Binary params = Operator::getTwoValues(stack);
+    stack->push(params.op1 % params.op2);
+}
+
+void Operator::lt(std::stack<Token> *stack) {
+    Binary params = Operator::getTwoValues(stack);
+    stack->push(params.op1 < params.op2);
+}
+
+void Operator::leqt(std::stack<Token> *stack) {
+    Binary params = Operator::getTwoValues(stack);
+    stack->push(params.op1 <= params.op2);
+}
+
+void Operator::gt(std::stack<Token> *stack) {
+    Binary params = Operator::getTwoValues(stack);
+    stack->push(params.op1 > params.op2);
+}
+
+void Operator::geqt(std::stack<Token> *stack) {
+    Binary params = Operator::getTwoValues(stack);
+    stack->push(params.op1 >= params.op2);
+}
+
+void Operator::eq(std::stack<Token> *stack) {
+    Binary params = Operator::getTwoValues(stack);
+    stack->push(params.op1 == params.op2);
+}
+
+void Operator::neq(std::stack<Token> *stack) {
+    Binary params = Operator::getTwoValues(stack);
+    stack->push(params.op1 != params.op2);
+}
+
+
 static int intPow(int x, int p) {
     if (p == 0) { return 1; }
     if (p == 1) { return x; }

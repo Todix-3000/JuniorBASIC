@@ -129,7 +129,7 @@ Token* Parser::findToken(TokenMap map) {
     for (TokenMap::iterator it=map.begin(); it!=map.end(); ++it) {
         if ( memcmp (inputPtr, it->first.data(), it->first.length() ) == 0 ) {
             inputPtr += it->first.length();
-            // std::cout << it->first;
+             std::cout << it->first;
             return it->second;
         }
     }
@@ -144,14 +144,15 @@ Parser::Parser() {
     operatorToken["^"]   = new Token(TOKEN_TYPE_OPERATOR, 12, RIGHT, Operator::pow);
     operatorToken["*"]   = new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::mul);
     operatorToken["/"]   = new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::div);
-    operatorToken["%"]   = new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::dummy);
+    operatorToken["%"]   = new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::mod);
     operatorToken["+"]   = new Token(TOKEN_TYPE_OPERATOR, 10, LEFT, Operator::add);
     operatorToken["-"]   = new Token(TOKEN_TYPE_OPERATOR, 10, LEFT, Operator::sub);
-    operatorToken["<="]  = new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::dummy);
-    operatorToken[">="]  = new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::dummy);
-    operatorToken["<"]   = new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::dummy);
-    operatorToken[">"]   = new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::dummy);
-    operatorToken["="]   = new Token(TOKEN_TYPE_OPERATOR, 6, LEFT, Operator::dummy);
+    operatorToken["<="]  = new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::leqt);
+    operatorToken[">="]  = new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::geqt);
+    operatorToken["<>"]  = new Token(TOKEN_TYPE_OPERATOR, 6, LEFT, Operator::neq);
+    operatorToken["<"]   = new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::lt);
+    operatorToken[">"]   = new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::gt);
+    operatorToken["="]   = new Token(TOKEN_TYPE_OPERATOR, 6, LEFT, Operator::eq);
     operatorToken["AND"] = new Token(TOKEN_TYPE_OPERATOR, 5, LEFT, Operator::bitAnd);
     operatorToken["XOR"] = new Token(TOKEN_TYPE_OPERATOR, 4, LEFT, Operator::bitXor);
     operatorToken["OR"]  = new Token(TOKEN_TYPE_OPERATOR, 3, LEFT, Operator::bitOr);

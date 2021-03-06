@@ -122,6 +122,13 @@ Value operator+(const Value &right) {
     return Value(right.getFloat());
 }
 
+Value operator%(const Value &left, const Value &right) {
+    if (left.getType()==VALUE_TYPE_STRING || right.getType()==VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    return Value(left.getInt() % right.getInt());
+}
+
 std::ostream& operator<< (std::ostream &out, const Value &value) {
     if (value.getType()==VALUE_TYPE_STRING) {
         out << "s(" << value.getString() << ")";
@@ -133,4 +140,82 @@ std::ostream& operator<< (std::ostream &out, const Value &value) {
         out << "f(" << value.getFloat() << ")";
     }
     return out;
+}
+
+Value operator<(const Value &left, const Value &right) {
+    if (left.getType()==VALUE_TYPE_STRING && right.getType()==VALUE_TYPE_STRING) {
+        return left.getString()<right.getString() ? Value(1) : Value(0);
+    }
+    if (left.getType()==VALUE_TYPE_STRING || right.getType()==VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (left.getType()==VALUE_TYPE_INT && right.getType()==VALUE_TYPE_INT) {
+        return left.getInt()<right.getInt() ? Value(1) : Value(0);
+    }
+    return left.getFloat()<right.getFloat() ? Value(1) : Value(0);
+}
+
+Value operator<=(const Value &left, const Value &right) {
+    if (left.getType()==VALUE_TYPE_STRING && right.getType()==VALUE_TYPE_STRING) {
+        return left.getString()<=right.getString() ? Value(1) : Value(0);
+    }
+    if (left.getType()==VALUE_TYPE_STRING || right.getType()==VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (left.getType()==VALUE_TYPE_INT && right.getType()==VALUE_TYPE_INT) {
+        return left.getInt()<=right.getInt() ? Value(1) : Value(0);
+    }
+    return left.getFloat()<=right.getFloat() ? Value(1) : Value(0);
+}
+
+Value operator>(const Value &left, const Value &right) {
+    if (left.getType()==VALUE_TYPE_STRING && right.getType()==VALUE_TYPE_STRING) {
+        return left.getString()>right.getString() ? Value(1) : Value(0);
+    }
+    if (left.getType()==VALUE_TYPE_STRING || right.getType()==VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (left.getType()==VALUE_TYPE_INT && right.getType()==VALUE_TYPE_INT) {
+        return left.getInt()>right.getInt() ? Value(1) : Value(0);
+    }
+    return left.getFloat()>right.getFloat() ? Value(1) : Value(0);
+}
+
+Value operator>=(const Value &left, const Value &right) {
+    if (left.getType()==VALUE_TYPE_STRING && right.getType()==VALUE_TYPE_STRING) {
+        return left.getString()>=right.getString() ? Value(1) : Value(0);
+    }
+    if (left.getType()==VALUE_TYPE_STRING || right.getType()==VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (left.getType()==VALUE_TYPE_INT && right.getType()==VALUE_TYPE_INT) {
+        return left.getInt()>=right.getInt() ? Value(1) : Value(0);
+    }
+    return left.getFloat()>=right.getFloat() ? Value(1) : Value(0);
+}
+
+Value operator==(const Value &left, const Value &right) {
+    if (left.getType()==VALUE_TYPE_STRING && right.getType()==VALUE_TYPE_STRING) {
+        return left.getString()==right.getString() ? Value(1) : Value(0);
+    }
+    if (left.getType()==VALUE_TYPE_STRING || right.getType()==VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (left.getType()==VALUE_TYPE_INT && right.getType()==VALUE_TYPE_INT) {
+        return left.getInt()==right.getInt() ? Value(1) : Value(0);
+    }
+    return left.getFloat()==right.getFloat() ? Value(1) : Value(0);
+}
+
+Value operator!=(const Value &left, const Value &right) {
+    if (left.getType()==VALUE_TYPE_STRING && right.getType()==VALUE_TYPE_STRING) {
+        return left.getString()!=right.getString() ? Value(1) : Value(0);
+    }
+    if (left.getType()==VALUE_TYPE_STRING || right.getType()==VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (left.getType()==VALUE_TYPE_INT && right.getType()==VALUE_TYPE_INT) {
+        return left.getInt()!=right.getInt() ? Value(1) : Value(0);
+    }
+    return left.getFloat()!=right.getFloat() ? Value(1) : Value(0);
 }

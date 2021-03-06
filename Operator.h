@@ -22,6 +22,13 @@ public:
     static void bitXor(std::stack<Token> *stack);
     static void boolAnd(std::stack<Token> *stack);
     static void boolOr(std::stack<Token> *stack);
+    static void mod(std::stack<Token> *stack);
+    static void lt(std::stack<Token> *stack);
+    static void leqt(std::stack<Token> *stack);
+    static void gt(std::stack<Token> *stack);
+    static void geqt(std::stack<Token> *stack);
+    static void eq(std::stack<Token> *stack);
+    static void neq(std::stack<Token> *stack);
 
 private:
     static Binary getTwoValues(std::stack<Token>*);

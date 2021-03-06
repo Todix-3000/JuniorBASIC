@@ -21,8 +21,10 @@ public:
     std::string getString() const;
 private:
     int type;
-    int iValue;
-    double fValue;
+    union {
+        int iValue;
+        double fValue;
+    };
     std::string sValue;
 };
 
@@ -30,6 +32,13 @@ Value operator+(const Value &left, const Value &right);
 Value operator-(const Value &left, const Value &right);
 Value operator*(const Value &left, const Value &right);
 Value operator/(const Value &left, const Value &right);
+Value operator%(const Value &left, const Value &right);
+Value operator<(const Value &left, const Value &right);
+Value operator<=(const Value &left, const Value &right);
+Value operator>(const Value &left, const Value &right);
+Value operator>=(const Value &left, const Value &right);
+Value operator==(const Value &left, const Value &right);
+Value operator!=(const Value &left, const Value &right);
 Value operator-(const Value &right);
 Value operator+(const Value &right);
 
