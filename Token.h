@@ -1,10 +1,12 @@
 #include <cstdlib>
 #include <map>
 #include <stack>
+#include <vector>
 #include "Value.h"
 
 #ifndef TOKEN_H
 #define TOKEN_H
+
 class Token {
 public:
     Token(short tokenType);
@@ -34,7 +36,14 @@ enum {
     LEFT, RIGHT
 };
 
-typedef std::map<std::string, Token*> TokenMap;
+class TokenDefinition {
+public:
+    std::string text;
+    Token *token;
+    TokenDefinition(std::string text, Token *token);
+};
+
+using TokenVector = std::vector<TokenDefinition>;
 
 class Parser
 {
@@ -42,10 +51,10 @@ private:
     static Parser* instance;
     unsigned char* inputPtr;
 
-    TokenMap commandToken;
-    TokenMap functionToken;
-    TokenMap operatorToken;
-    TokenMap unaryOperatorToken;
+    TokenVector commandToken;
+    TokenVector functionToken;
+    TokenVector operatorToken;
+    TokenVector unaryOperatorToken;
     Token* seperatorToken;
     Token* bracketOpenToken;
     Token* bracketCloseToken;
@@ -58,7 +67,7 @@ public:
     static Parser* getInstance(unsigned char * input);
     void setInputPtr(unsigned char * input);
     Token* getNextToken(bool unaryOperator);
-    Token* findToken(TokenMap map);
+    Token* findToken(TokenVector map);
 };
 
 #endif
