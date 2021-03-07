@@ -12,6 +12,7 @@ public:
     Token(short tokenType);
     Token(Value tokenValue);
     Token(short tokenType, short precedence, short assoc, void (*funcptr)(std::stack<Token>*));
+    Token(short tokenType, void (*funcptr)(std::stack<Token>*));
     short getType();
     short getPrecedence();
     short getAssoc();

@@ -9,6 +9,7 @@
 #include "Token.h"
 #include "Operator.h"
 #include "utils.h"
+#include "Function.h"
 
 Token::Token(short tokenType) {
     this->tokenType = tokenType;
@@ -18,6 +19,12 @@ Token::Token(short tokenType, short precedence, short assoc, void (*funcptr)(std
     this->tokenType  = tokenType;
     this->precedence = precedence;
     this->assoc      = assoc;
+    this->funcptr    = funcptr;
+    tokenValue       = Value();
+}
+
+Token::Token(short tokenType, void (*funcptr)(std::stack<Token>*)) {
+    this->tokenType  = tokenType;
     this->funcptr    = funcptr;
     tokenValue       = Value();
 }
@@ -167,8 +174,8 @@ Parser::Parser() {
     bracketOpenToken  = new Token(TOKEN_TYPE_BRACKETOPEN);
     bracketCloseToken = new Token(TOKEN_TYPE_BRACKETCLOSE);
 
-    functionToken.push_back(TokenDefinition("SIN",  new Token(TOKEN_TYPE_FUNCTION)));
-    functionToken.push_back(TokenDefinition("COS",  new Token(TOKEN_TYPE_FUNCTION)));
+    functionToken.push_back(TokenDefinition("SIN",  new Token(TOKEN_TYPE_FUNCTION, Function::sin)));
+    functionToken.push_back(TokenDefinition("COS",  new Token(TOKEN_TYPE_FUNCTION, Function::cos)));
 
     commandToken.push_back(TokenDefinition("PRINT", new Token(TOKEN_TYPE_COMMAND)));
 
