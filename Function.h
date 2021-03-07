@@ -16,6 +16,9 @@ public:
     static void sin(std::stack<Token>*);
     static void cos(std::stack<Token>*);
 
+    static void chr(std::stack<Token>*);
+    static void str(std::stack<Token>*);
+
 private:
     static std::vector<Token> getValuesFromStack(std::stack<Token>*);
 

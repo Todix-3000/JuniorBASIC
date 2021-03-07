@@ -180,6 +180,8 @@ Parser::Parser() {
 
     functionToken.push_back(TokenDefinition("SIN",  new Token(TOKEN_TYPE_FUNCTION, Function::sin)));
     functionToken.push_back(TokenDefinition("COS",  new Token(TOKEN_TYPE_FUNCTION, Function::cos)));
+    functionToken.push_back(TokenDefinition("CHR$",  new Token(TOKEN_TYPE_FUNCTION, Function::chr)));
+    functionToken.push_back(TokenDefinition("STR$",  new Token(TOKEN_TYPE_FUNCTION, Function::str)));
 
     commandToken.push_back(TokenDefinition("PRINT", new Token(TOKEN_TYPE_COMMAND)));
 
