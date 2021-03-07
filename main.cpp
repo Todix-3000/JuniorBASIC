@@ -11,7 +11,7 @@ int main() {
     ShuntingYard *algorithm = new ShuntingYard();
     try {
         //algorithm->run((unsigned char*) "3*25\0", result);
-        std::cout << algorithm->run((unsigned char *) "sin(1)\0") << std::endl;
+        std::cout << algorithm->run((unsigned char *) "SIN(0.5)\0") << std::endl;
         //std::cout << algorithm->run((unsigned char *) "\"Hallo\" = \" \" + \"Hallo\"\0") << std::endl;
        // std::cout << algorithm->run((unsigned char*) "-(3*-26./5+6*-1)\0") << std::endl;
        // std::cout << algorithm->run((unsigned char*) "25*6-100\0") << std::endl;

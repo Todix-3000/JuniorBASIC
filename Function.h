@@ -17,7 +17,7 @@ public:
     static void cos(std::stack<Token>*);
 
 private:
-    static Token getValueFromStack(std::stack<Token>*);
+    static std::vector<Token> getValuesFromStack(std::stack<Token>*);
 
 };
 

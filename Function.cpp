@@ -3,22 +3,41 @@
 //
 #include "Function.h"
 #include "utils.h"
+#include <cmath>
 
-void Function::sin(std::stack<Token>*) {
+void Function::sin(std::stack<Token>* stack) {
 
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    stack->push(Value(std::sin(params[0].getValue().getFloat())));
 }
 
-void Function::cos(std::stack<Token>*) {
-
+void Function::cos(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    stack->push(Value(std::cos(params[0].getValue().getFloat())));
 }
 
-Token Function::getValueFromStack(std::stack<Token>* stack) {
-    if (!stack->empty()) {
-        auto v1 = stack->top();
-        stack->pop();
-        if (v1.getType() == TOKEN_TYPE_VALUE) {
-            return v1.getValue();
+std::vector<Token> Function::getValuesFromStack(std::stack<Token>* stack) {
+    std::vector<Token> result;
+    while(!stack->empty()) {
+        auto value = stack->top();
+        if (value.getType() == TOKEN_TYPE_VALUE) {
+            stack->pop();
+            result.insert(result.begin(), value);
+        } else {
+            return result;
         }
     }
-    throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    return result;
 }

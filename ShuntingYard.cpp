@@ -11,7 +11,7 @@ class OutputBuffer : public std::stack<Token>
 {
 public:
     void push(Token token) {
-        if (token.getType()==TOKEN_TYPE_OPERATOR) {
+        if (token.getType()==TOKEN_TYPE_OPERATOR || token.getType()==TOKEN_TYPE_FUNCTION) {
             token.call(this);
             return;
         }

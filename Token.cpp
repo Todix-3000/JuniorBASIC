@@ -129,6 +129,10 @@ Token* Parser::getNextToken(bool unaryOperator) {
         inputPtr++;
         return new Token(TOKEN_TYPE_BRACKETCLOSE);
     }
+    if (*inputPtr == ',' ) {
+        inputPtr++;
+        return new Token(TOKEN_TYPE_SEPERATOR);
+    }
     return new Token(TOKEN_TYPE_UNKNOWN);
 }
 
@@ -136,7 +140,7 @@ Token* Parser::findToken(TokenVector map) {
     for (auto const& value: map) {
         if ( memcmp (inputPtr, value.text.data(), value.text.length()) == 0 ) {
             inputPtr += value.text.length();
-             std::cout << value.text;
+            // std::cout << value.text;
             return value.token;
         }
     }
