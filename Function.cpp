@@ -5,6 +5,7 @@
 #include "utils.h"
 #include <cmath>
 #include <sstream>
+#include <ctime>
 
 void Function::sin(std::stack<Token>* stack) {
     auto params = getValuesFromStack(stack);
@@ -26,6 +27,53 @@ void Function::cos(std::stack<Token>* stack) {
         throw Exception(EXCEPTION_TYPE_MISMATCH);
     }
     stack->push(Value(std::cos(params[0].getValue().getFloat())));
+}
+
+void Function::tan(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    stack->push(Value(std::tan(params[0].getValue().getFloat())));
+}
+
+void Function::atn(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    stack->push(Value(std::atan(params[0].getValue().getFloat())));
+}
+void Function::sqr(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    stack->push(Value(std::sqrt(params[0].getValue().getFloat())));
+}
+
+void Function::rnd(std::stack<Token>* stack) {
+    static bool init = false;
+    if (!init) {
+        srand(time(NULL));
+        rand();
+        srand(rand());
+        init = true;
+    }
+    auto params = getValuesFromStack(stack);
+    if (params.size() != 0) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    stack->push(Value((double)rand()/(double)RAND_MAX));
 }
 
 void Function::chr(std::stack<Token>* stack) {

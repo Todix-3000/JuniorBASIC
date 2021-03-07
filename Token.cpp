@@ -180,6 +180,10 @@ Parser::Parser() {
 
     functionToken.push_back(TokenDefinition("SIN",  new Token(TOKEN_TYPE_FUNCTION, Function::sin)));
     functionToken.push_back(TokenDefinition("COS",  new Token(TOKEN_TYPE_FUNCTION, Function::cos)));
+    functionToken.push_back(TokenDefinition("TAN",  new Token(TOKEN_TYPE_FUNCTION, Function::tan)));
+    functionToken.push_back(TokenDefinition("ATN",  new Token(TOKEN_TYPE_FUNCTION, Function::atn)));
+    functionToken.push_back(TokenDefinition("SQR",  new Token(TOKEN_TYPE_FUNCTION, Function::sqr)));
+    functionToken.push_back(TokenDefinition("RND",  new Token(TOKEN_TYPE_FUNCTION, Function::rnd)));
     functionToken.push_back(TokenDefinition("CHR$",  new Token(TOKEN_TYPE_FUNCTION, Function::chr)));
     functionToken.push_back(TokenDefinition("STR$",  new Token(TOKEN_TYPE_FUNCTION, Function::str)));
 
