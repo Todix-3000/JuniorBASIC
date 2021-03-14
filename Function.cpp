@@ -6,6 +6,7 @@
 #include <cmath>
 #include <sstream>
 #include <ctime>
+#include <string.h>
 
 void Function::sin(std::stack<Token>* stack) {
     auto params = getValuesFromStack(stack);
@@ -50,6 +51,7 @@ void Function::atn(std::stack<Token>* stack) {
     }
     stack->push(Value(std::atan(params[0].getValue().getFloat())));
 }
+
 void Function::sqr(std::stack<Token>* stack) {
     auto params = getValuesFromStack(stack);
     if (params.size()!=1) {
@@ -59,6 +61,73 @@ void Function::sqr(std::stack<Token>* stack) {
         throw Exception(EXCEPTION_TYPE_MISMATCH);
     }
     stack->push(Value(std::sqrt(params[0].getValue().getFloat())));
+}
+
+void Function::exp(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    stack->push(Value(std::exp(params[0].getValue().getFloat())));
+}
+
+void Function::log(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size() != 1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    stack->push(Value(std::log(params[0].getValue().getFloat())));
+}
+
+void Function::xint(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size() != 1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_INT) {
+        stack->push(Value(params[0].getValue().getInt()));
+    } else {
+        stack->push(Value(std::floor(params[0].getValue().getFloat())));
+    }
+}
+
+void Function::sgn(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_INT) {
+        stack->push(Value(params[0].getValue().getInt()>0 ? 1 : params[0].getValue().getInt()<0 ? -1 : 0));
+    } else {
+        stack->push(Value(params[0].getValue().getFloat() > 0 ? 1 : params[0].getValue().getFloat() < 0 ? -1 : 0));
+    }
+}
+
+void Function::abs(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (params[0].getValue().getType() == VALUE_TYPE_INT) {
+        stack->push(Value(std::abs(params[0].getValue().getInt())));
+    } else {
+        stack->push(Value(std::fabs(params[0].getValue().getFloat())));
+    }
 }
 
 void Function::rnd(std::stack<Token>* stack) {
@@ -90,6 +159,116 @@ void Function::chr(std::stack<Token>* stack) {
     }
 
     stack->push(Value(std::string(1, c)));
+}
+
+void Function::asc(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() != VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    auto value = params[0].getValue().getString();
+    if (value.length()==0) {
+        stack->push(Value(0));
+    } else {
+        stack->push(Value((int) value[0]));
+    }
+}
+
+void Function::len(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() != VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    stack->push(Value((int) params[0].getValue().getString().length()));
+}
+
+void Function::val(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() != VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    auto value = params[0].getValue().getString();
+    try {
+        stack->push(Value(std::stod(value, 0)));
+    } catch (std::invalid_argument e) {
+        stack->push(Value(0.0));
+    }
+}
+
+void Function::left(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size() != 2) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() != VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (params[1].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    stack->push(Value( params[0].getValue().getString().substr(0, params[1].getValue().getInt())));
+}
+
+void Function::right(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size() != 2) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() != VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (params[1].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    std::string value = params[0].getValue().getString();
+    int len = value.length();
+    int start = len-params[1].getValue().getInt();
+    if (start<0) {
+        start = 0;
+    }
+    len = len - start;
+    stack->push(Value( value.substr(start, len)));
+}
+
+void Function::mid(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()<2 || params.size()>3) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+    if (params[0].getValue().getType() != VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (params[1].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (params.size()==3 && params[2].getValue().getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    std::string value = params[0].getValue().getString();
+    int start = params[1].getValue().getInt();
+    if (start<0) {
+        throw Exception(EXCEPTION_RANGE_ERROR);
+    }
+    if (start>value.length()) {
+        start = value.length();
+    }
+    int len = value.length()-start;
+    if (params.size()==3) {
+        len = params[2].getValue().getInt();
+        if (len<0) {
+            throw Exception(EXCEPTION_RANGE_ERROR);
+        }
+    }
+    stack->push(Value( value.substr(start, len)));
 }
 
 void Function::str(std::stack<Token>* stack) {

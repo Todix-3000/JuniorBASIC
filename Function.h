@@ -18,16 +18,22 @@ public:
     static void tan(std::stack<Token>*);
     static void atn(std::stack<Token>*);
     static void sqr(std::stack<Token>*);
-
+    static void abs(std::stack<Token>*);
+    static void sgn(std::stack<Token>*);
+    static void exp(std::stack<Token>*);
+    static void log(std::stack<Token>*);
     static void rnd(std::stack<Token>*);
+    static void xint(std::stack<Token>*);
 
-//  ABS, , , EXP, INT, LOG, SGN, ,  und
-// RND
-// ASC, LEN, VAL
-//  LEFT$, MID$, RIGHT$
+    static void asc(std::stack<Token>*);
+    static void len(std::stack<Token>*);
+    static void val(std::stack<Token>*);
+
     static void chr(std::stack<Token>*);
     static void str(std::stack<Token>*);
-
+    static void left(std::stack<Token>*);
+    static void right(std::stack<Token>*);
+    static void mid(std::stack<Token>*);
 private:
     static std::vector<Token> getValuesFromStack(std::stack<Token>*);
 };
