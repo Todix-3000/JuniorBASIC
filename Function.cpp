@@ -198,9 +198,17 @@ void Function::val(std::stack<Token>* stack) {
     }
     auto value = params[0].getValue().getString();
     try {
-        stack->push(Value(std::stod(value, 0)));
+        size_t intLength;
+        size_t doubleLength;
+        int intValue = std::stoi(value, &intLength);
+        double doubleValue = std::stod(value , &doubleLength);
+        if (doubleLength>intLength) {
+            stack->push(Value(doubleValue));
+            return;
+        }
+        stack->push(Value(intValue));
     } catch (std::invalid_argument e) {
-        stack->push(Value(0.0));
+        stack->push(Value(0));
     }
 }
 

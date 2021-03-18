@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstring>
+#include <string>
 #include <utility>
 #include <math.h>
 #include "Token.h"
@@ -72,25 +73,16 @@ Token* Parser::getNextToken(bool unaryOperator) {
         inputPtr++;
     }
     if (*inputPtr >= '0' && *inputPtr <= '9') {
-        int value = 0;
-        while (*inputPtr >= '0' && *inputPtr <= '9') {
-            value *= 10;
-            value += *inputPtr - '0';
-            inputPtr++;
+        size_t intLength;
+        size_t doubleLength;
+        int intValue = std::stoi((char*)inputPtr, &intLength);
+        double doubleValue = std::stod((char*)inputPtr, &doubleLength);
+        if (doubleLength>intLength) {
+            inputPtr = &inputPtr[doubleLength];
+            return new Token(Value(doubleValue));
         }
-        if (*inputPtr == '.') {
-            double dValue = value;
-            int comma = 0;
-            inputPtr++;
-            while (*inputPtr >= '0' && *inputPtr <= '9') {
-                comma++;
-                dValue += (*inputPtr - '0')/pow(10, comma);
-                inputPtr++;
-            }
-            return new Token(Value(dValue));
-        } else {
-            return new Token(Value(value));
-        }
+        inputPtr = &inputPtr[intLength];
+        return new Token(Value(intValue));
     }
     if (*inputPtr == '"') {
         unsigned char* start = ++inputPtr;
