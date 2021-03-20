@@ -11,6 +11,7 @@
 #include "Operator.h"
 #include "utils.h"
 #include "Function.h"
+#include "Variable.h"
 
 Token::Token(short tokenType) {
     this->tokenType = tokenType;
@@ -28,6 +29,12 @@ Token::Token(short tokenType, void (*funcptr)(std::stack<Token>*)) {
     this->tokenType  = tokenType;
     this->funcptr    = funcptr;
     tokenValue       = Value();
+}
+
+Token::Token(short tokenType, void (*funcptr)(std::stack<Token>*), std::string varName) {
+    this->tokenType  = tokenType;
+    this->funcptr    = funcptr;
+    tokenValue       = Value(varName);
 }
 
 Token::Token(Value tokenValue) {
@@ -113,6 +120,9 @@ Token* Parser::getNextToken(bool unaryOperator) {
     if ((myToken = findToken(functionToken)) != nullptr) {
         return myToken;
     }
+    if ((myToken = findVariable()) != nullptr) {
+        return myToken;
+    }
     if (*inputPtr == '(' ) {
         inputPtr++;
         return new Token(TOKEN_TYPE_BRACKETOPEN);
@@ -135,6 +145,37 @@ Token* Parser::findToken(TokenVector map) {
             // std::cout << value.text;
             return value.token;
         }
+    }
+    return nullptr;
+}
+
+Token* Parser::findVariable() {
+    if (*inputPtr >= 'A' && *inputPtr<='Z') {
+        int type = VALUE_TYPE_FLOAT;
+        std::string varName = "";
+        while ((*inputPtr >= 'A' && *inputPtr <= 'Z') ||
+               (*inputPtr >= '0' && *inputPtr <= '9') ||
+               *inputPtr == '$' || *inputPtr == '%') {
+            varName += *inputPtr;
+            if (*inputPtr == '$') {
+                type = VALUE_TYPE_STRING;
+                inputPtr++;
+                break;
+            }
+            if (*inputPtr == '%') {
+                type = VALUE_TYPE_INT;
+                inputPtr++;
+                break;
+            }
+            inputPtr++;
+        }
+        while (*inputPtr==' ') {
+            *inputPtr++;
+        }
+        if (*inputPtr=='(') {
+            return new Token(TOKEN_TYPE_FUNCTION, Function::getArrayVariableValue, varName);
+        }
+        return new Token(Variable::getContainer()->getValue(varName, type));
     }
     return nullptr;
 }

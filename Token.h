@@ -13,6 +13,7 @@ public:
     Token(Value tokenValue);
     Token(short tokenType, short precedence, short assoc, void (*funcptr)(std::stack<Token>*));
     Token(short tokenType, void (*funcptr)(std::stack<Token>*));
+    Token(short tokenType, void (*funcptr)(std::stack<Token>*), std::string varName);
     short getType();
     short getPrecedence();
     short getAssoc();
@@ -69,6 +70,7 @@ public:
     void setInputPtr(unsigned char * input);
     Token* getNextToken(bool unaryOperator);
     Token* findToken(TokenVector map);
+    Token* findVariable();
 };
 
 #endif

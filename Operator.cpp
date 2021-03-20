@@ -126,9 +126,23 @@ Binary Operator::getTwoValues(std::stack<Token> * stack) {
     Binary result;
     if (!stack->empty()) {
         auto v2 = stack->top();
+        while (v2.getType()==TOKEN_TYPE_BRACKETOPEN) {
+            stack->pop();
+            if (stack->empty()) {
+                throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+            }
+            v2 = stack->top();
+        }
         stack->pop();
         if (!stack->empty()) {
             auto v1 = stack->top();
+            while (v1.getType()==TOKEN_TYPE_BRACKETOPEN) {
+                stack->pop();
+                if (stack->empty()) {
+                    throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+                }
+                v1 = stack->top();
+            }
             stack->pop();
             if (v1.getType() == TOKEN_TYPE_VALUE && v2.getType() == TOKEN_TYPE_VALUE) {
                 result.op1 = v1.getValue();
@@ -144,7 +158,13 @@ Unary Operator::getOneValue(std::stack<Token> * stack) {
     Unary result;
     if (!stack->empty()) {
         auto v1 = stack->top();
-        stack->pop();
+        while (v1.getType()==TOKEN_TYPE_BRACKETOPEN) {
+            stack->pop();
+            if (stack->empty()) {
+                throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+            }
+            v1 = stack->top();
+        }
         if (v1.getType() == TOKEN_TYPE_VALUE) {
             result.op1 = v1.getValue();
             return result;

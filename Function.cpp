@@ -190,6 +190,7 @@ void Function::len(std::stack<Token>* stack) {
 
 void Function::val(std::stack<Token>* stack) {
     auto params = getValuesFromStack(stack);
+    int size = params.size();
     if (params.size()!=1) {
         throw Exception(EXCEPTION_PARAMETER_COUNT);
     }
@@ -297,6 +298,10 @@ void Function::str(std::stack<Token>* stack) {
     throw Exception(EXCEPTION_TYPE_MISMATCH);
 }
 
+void Function::getArrayVariableValue(std::stack<Token>* stack) {
+    auto params = getValuesFromStack(stack);
+    stack->push(Value(42));
+}
 std::vector<Token> Function::getValuesFromStack(std::stack<Token>* stack) {
     std::vector<Token> result;
     while(!stack->empty()) {
@@ -305,6 +310,9 @@ std::vector<Token> Function::getValuesFromStack(std::stack<Token>* stack) {
             stack->pop();
             result.insert(result.begin(), value);
         } else {
+            if (value.getType() == TOKEN_TYPE_BRACKETOPEN) {
+                stack->pop();
+            }
             return result;
         }
     }

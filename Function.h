@@ -34,6 +34,8 @@ public:
     static void left(std::stack<Token>*);
     static void right(std::stack<Token>*);
     static void mid(std::stack<Token>*);
+
+    static void getArrayVariableValue(std::stack<Token>*);
 private:
     static std::vector<Token> getValuesFromStack(std::stack<Token>*);
 };

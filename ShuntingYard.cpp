@@ -77,6 +77,7 @@ Value ShuntingYard::run(unsigned char* input) {
             case TOKEN_TYPE_BRACKETOPEN:
                 unary=true;
                 tokenStack.push(*token);
+                outputBuffer.push(*token);
                 break;
             case TOKEN_TYPE_BRACKETCLOSE:
                 unary=false;
@@ -90,6 +91,7 @@ Value ShuntingYard::run(unsigned char* input) {
                         tokenStack.pop();
                     }
                 } while (tokenStack.top().getType() != TOKEN_TYPE_BRACKETOPEN);
+                // Token rememberBracket = tokenStack.top();
                 tokenStack.pop();
                 if (tokenStack.top().getType() == TOKEN_TYPE_FUNCTION) {
                     outputBuffer.push(tokenStack.top());
@@ -108,10 +110,18 @@ Value ShuntingYard::run(unsigned char* input) {
         tokenStack.pop();
     };
     if (!outputBuffer.empty()) {
-        Value v = outputBuffer.top().getValue();
-        outputBuffer.pop();
-        if (outputBuffer.empty()) {
-            return v;
+        while (!outputBuffer.empty()) {
+            Token t = outputBuffer.top();
+            if (t.getType()==TOKEN_TYPE_BRACKETOPEN) {
+                outputBuffer.pop();
+            }
+            if (t.getType()==TOKEN_TYPE_VALUE) {
+                Value v = outputBuffer.top().getValue();
+                outputBuffer.pop();
+                if (outputBuffer.empty()) {
+                    return v;
+                }
+            }
         }
     }
     throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);

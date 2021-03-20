@@ -10,8 +10,8 @@ int main() {
 
     ShuntingYard *algorithm = new ShuntingYard();
     try {
-        std::cout << algorithm->run((unsigned char*) "3*25E-1\0") << std::endl;
-        std::cout << algorithm->run((unsigned char *) "VAL(\"45K\")\0") << std::endl;
+        std::cout << algorithm->run((unsigned char*) "1+(2*3)-8+TEST%\0") << std::endl;
+        std::cout << algorithm->run((unsigned char *) "3+VAL(\"45K\")\0") << std::endl;
         std::cout << algorithm->run((unsigned char *) "MID$(\"Hallo Welt\", 2,5)\0") << std::endl;
 
         //std::cout << algorithm->run((unsigned char *) "\"Hallo\" = \" \" + \"Hallo\"\0") << std::endl;
