@@ -20,7 +20,7 @@ int main() {
         v->setValue("TEST%", {2,3}, Value(23));
 
         std::cout << algorithm->run((unsigned char*) "1+(2*3)-8+TEST%(2,5-2)\0") << std::endl;
-        std::cout << algorithm->run((unsigned char *) "3+VAL(\"45K\")\0") << std::endl;
+        std::cout << algorithm->run((unsigned char *) "3/0\0") << std::endl;
         std::cout << algorithm->run((unsigned char *) "MID$(TEST$, 3,7)\0") << std::endl;
 
         //std::cout << algorithm->run((unsigned char *) "\"Hallo\" = \" \" + \"Hallo\"\0") << std::endl;

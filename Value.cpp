@@ -97,7 +97,13 @@ Value operator/(const Value &left, const Value &right) {
         throw Exception(EXCEPTION_TYPE_MISMATCH);
     }
     if (left.getType()==VALUE_TYPE_INT && right.getType()==VALUE_TYPE_INT) {
+        if (right.getInt() == 0) {
+            throw Exception(EXCEPTION_DIVISION_BY_ZERO);
+        }
         return Value(left.getInt() / right.getInt());
+    }
+    if (right.getFloat() == 0.0) {
+        throw Exception(EXCEPTION_DIVISION_BY_ZERO);
     }
     return Value(left.getFloat() / right.getFloat());
 }
@@ -125,6 +131,9 @@ Value operator+(const Value &right) {
 Value operator%(const Value &left, const Value &right) {
     if (left.getType()==VALUE_TYPE_STRING || right.getType()==VALUE_TYPE_STRING) {
         throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
+    if (right.getInt() == 0) {
+        throw Exception(EXCEPTION_DIVISION_BY_ZERO);
     }
     return Value(left.getInt() % right.getInt());
 }
