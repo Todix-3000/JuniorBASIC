@@ -31,10 +31,10 @@ Token::Token(short tokenType, void (*funcptr)(std::stack<Token>*)) {
     tokenValue       = Value();
 }
 
-Token::Token(short tokenType, void (*funcptr)(std::stack<Token>*), std::string varName) {
+Token::Token(short tokenType, std::string varName, short varType) {
     this->tokenType  = tokenType;
-    this->funcptr    = funcptr;
     tokenValue       = Value(varName);
+    assoc            = varType;
 }
 
 Token::Token(Value tokenValue) {
@@ -173,7 +173,7 @@ Token* Parser::findVariable() {
             *inputPtr++;
         }
         if (*inputPtr=='(') {
-            return new Token(TOKEN_TYPE_FUNCTION, Function::getArrayVariableValue, varName);
+            return new Token(TOKEN_TYPE_ARRAY, varName, type);
         }
         return new Token(Variable::getContainer()->getValue(varName, type));
     }
@@ -184,8 +184,11 @@ void Token::call(std::stack<Token>* tokenStack) {
     funcptr(tokenStack);
 }
 
-Parser::Parser() {
+void Token::fetchArrayValue(std::stack<Token>* tokenStack) {
+    Function::getArrayVariableValue(tokenStack, tokenValue.getString(), assoc);
+}
 
+Parser::Parser() {
     operatorToken.push_back(TokenDefinition("^",  new Token(TOKEN_TYPE_OPERATOR, 12, RIGHT, Operator::pow)));
     operatorToken.push_back(TokenDefinition("*",  new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::mul)));
     operatorToken.push_back(TokenDefinition("/",  new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::div)));

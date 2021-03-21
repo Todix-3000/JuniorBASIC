@@ -5,6 +5,7 @@
 #ifndef JUNIORBASIC_VARIABLE_H
 #define JUNIORBASIC_VARIABLE_H
 #include <map>
+#include <vector>
 #include "Value.h"
 
 class Variable {
@@ -14,8 +15,12 @@ private:
     std::map<std::string,int>         intVars;
     std::map<std::string,double>      floatVars;
     std::map<std::string,std::string> stringVars;
+    std::map<std::string, std::vector<int>> dimensions;
+
 public:
     static Variable* getContainer();
     Value getValue(std::string varName, int varType);
+    Value getValue(std::string varName, short varType, std::vector<int> indexes);
+    void dim(std::string varName, short varType, std::vector<int> indexes);
 };
 #endif //JUNIORBASIC_VARIABLE_H

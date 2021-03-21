@@ -3,6 +3,7 @@
 //
 #include "Function.h"
 #include "utils.h"
+#include "Variable.h"
 #include <cmath>
 #include <sstream>
 #include <ctime>
@@ -298,10 +299,16 @@ void Function::str(std::stack<Token>* stack) {
     throw Exception(EXCEPTION_TYPE_MISMATCH);
 }
 
-void Function::getArrayVariableValue(std::stack<Token>* stack) {
+void Function::getArrayVariableValue(std::stack<Token>* stack, std::string varName, short varType) {
     auto params = getValuesFromStack(stack);
-    stack->push(Value(42));
+    std::vector<int> indexes;
+    for (auto &param :params) {
+        indexes.push_back(param.getValue().getInt());
+    }
+    auto x = Variable::getContainer()->getValue(varName, varType, indexes);
+    stack->push(x);
 }
+
 std::vector<Token> Function::getValuesFromStack(std::stack<Token>* stack) {
     std::vector<Token> result;
     while(!stack->empty()) {

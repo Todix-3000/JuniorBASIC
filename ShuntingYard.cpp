@@ -11,9 +11,14 @@ class OutputBuffer : public std::stack<Token>
 {
 public:
     void push(Token token) {
-        if (token.getType()==TOKEN_TYPE_OPERATOR || token.getType()==TOKEN_TYPE_FUNCTION) {
-            token.call(this);
-            return;
+        switch (token.getType()) {
+            case TOKEN_TYPE_OPERATOR:
+            case TOKEN_TYPE_FUNCTION:
+                token.call(this);
+                return;
+            case TOKEN_TYPE_ARRAY:
+                token.fetchArrayValue(this);
+                return;
         }
         std::stack<Token>::push(token);
     }
@@ -43,6 +48,7 @@ Value ShuntingYard::run(unsigned char* input) {
                 outputBuffer.push(*token);
                 break;
             case TOKEN_TYPE_FUNCTION:
+            case TOKEN_TYPE_ARRAY:
                 unary=true;
                 tokenStack.push(*token);
                 break;
@@ -93,7 +99,7 @@ Value ShuntingYard::run(unsigned char* input) {
                 } while (tokenStack.top().getType() != TOKEN_TYPE_BRACKETOPEN);
                 // Token rememberBracket = tokenStack.top();
                 tokenStack.pop();
-                if (tokenStack.top().getType() == TOKEN_TYPE_FUNCTION) {
+                if (tokenStack.top().getType() == TOKEN_TYPE_FUNCTION || tokenStack.top().getType() == TOKEN_TYPE_ARRAY) {
                     outputBuffer.push(tokenStack.top());
                     tokenStack.pop();
                 }

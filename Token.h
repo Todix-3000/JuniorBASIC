@@ -13,11 +13,12 @@ public:
     Token(Value tokenValue);
     Token(short tokenType, short precedence, short assoc, void (*funcptr)(std::stack<Token>*));
     Token(short tokenType, void (*funcptr)(std::stack<Token>*));
-    Token(short tokenType, void (*funcptr)(std::stack<Token>*), std::string varName);
+    Token(short tokenType, std::string varName, short varType);
     short getType();
     short getPrecedence();
     short getAssoc();
     void call(std::stack<Token>*);
+    void fetchArrayValue(std::stack<Token>*);
     Value getValue();
     // ~Token() { std::cout << "Kaputt" << tokenValue << std::endl; }
 protected:
@@ -31,7 +32,7 @@ protected:
 enum {
     TOKEN_TYPE_VALUE, TOKEN_TYPE_FUNCTION, TOKEN_TYPE_SEPERATOR, TOKEN_TYPE_OPERATOR,
     TOKEN_TYPE_BRACKETOPEN, TOKEN_TYPE_BRACKETCLOSE, TOKEN_TYPE_UNKNOWN,
-    TOKEN_TYPE_COMMAND
+    TOKEN_TYPE_COMMAND, TOKEN_TYPE_ARRAY
 };
 
 enum {
