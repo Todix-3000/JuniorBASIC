@@ -15,9 +15,54 @@ Value Variable::getValue(std::string varName, int varType) {
         case VALUE_TYPE_FLOAT:
             return Value(floatVars[varName]);
     }
+    throw Exception(EXCEPTION_TYPE_MISMATCH);
 }
 
 Value Variable::getValue(std::string varName, short varType, std::vector<int> indexes) {
+    int linearIndex = getLinearIndex(varName, varType, indexes);
+
+    switch (varType) {
+        case VALUE_TYPE_INT:
+            return Value(intArrays[varName][linearIndex]);
+        case VALUE_TYPE_STRING:
+            return Value(stringArrays[varName][linearIndex]);
+        case VALUE_TYPE_FLOAT:
+            return Value(floatArrays[varName][linearIndex]);
+    }
+    throw Exception(EXCEPTION_TYPE_MISMATCH);
+}
+
+void Variable::setValue(std::string varName, Value value) {
+    switch (value.getType()) {
+        case VALUE_TYPE_INT:
+            intVars[varName] = value.getInt();
+            break;
+        case VALUE_TYPE_STRING:
+            stringVars[varName] = value.getString();
+            break;
+        case VALUE_TYPE_FLOAT:
+            floatVars[varName] = value.getFloat();
+            break;
+    }
+}
+
+void Variable::setValue(std::string varName, std::vector<int> indexes, Value value) {
+    int linearIndex = getLinearIndex(varName, value.getType(), indexes);
+
+    switch (value.getType()) {
+        case VALUE_TYPE_INT:
+            intArrays[varName][linearIndex] = value.getInt();
+            break;
+        case VALUE_TYPE_STRING:
+            stringArrays[varName][linearIndex] = value.getString();
+            break;
+        case VALUE_TYPE_FLOAT:
+            floatArrays[varName][linearIndex] = value.getFloat();
+            break;
+    }
+}
+
+int Variable::getLinearIndex(std::string varName, short varType, std::vector<int> indexes) {
     int dims = indexes.size();
     if (dimensions.find(varName) == dimensions.end()) {
         std::vector<int> createDimensions;
@@ -39,14 +84,7 @@ Value Variable::getValue(std::string varName, short varType, std::vector<int> in
         linearIndex += multiplyer * indexes[i];
         multiplyer *= givenIndexes[i]+1;
     }
-    switch (varType) {
-        case VALUE_TYPE_INT:
-            return Value(intVars[varName]);
-        case VALUE_TYPE_STRING:
-            return Value(stringVars[varName]);
-        case VALUE_TYPE_FLOAT:
-            return Value(floatVars[varName]);
-    }
+    return linearIndex;
 }
 
 void Variable::dim(std::string varName, short varType, std::vector<int> indexes) {
@@ -57,11 +95,6 @@ void Variable::dim(std::string varName, short varType, std::vector<int> indexes)
 }
 
 Variable::Variable() {
-    intVars["TEST%"] = 42;
-    floatVars["TEST"] = 42.5;
-    stringVars["TEST$"] = "Mein Text";
-    std::vector<int> v = {5,5};
-    dim("TEST%", VALUE_TYPE_INT, v);
 }
 
 Variable* Variable::instance = nullptr;
