@@ -77,4 +77,29 @@ public:
     VarDefinition getVariableDefinition();
 };
 
+enum {
+    CMD_PRINT = 128,
+    CMD_RUN,
+    CMD_GOTO,
+    CMD_IF,
+    FUN_SIN,
+    FUN_COS,
+    FUN_TAN,
+    FUN_ATN,
+    FUN_SQR,
+    FUN_RND,
+    FUN_ASC,
+    FUN_LEN,
+    FUN_VAL,
+    FUN_CHR,
+    FUN_STR,
+    FUN_LEFT,
+    FUN_RIGHT,
+    FUN_MID,
+    FUN_ABS,
+    FUN_SGN,
+    FUN_EXP,
+    FUN_LOG,
+    FUN_INT
+};
 #endif

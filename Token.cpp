@@ -229,27 +229,27 @@ Parser::Parser() {
     bracketOpenToken  = new Token(TOKEN_TYPE_BRACKETOPEN);
     bracketCloseToken = new Token(TOKEN_TYPE_BRACKETCLOSE);
 
-    functionToken.push_back(TokenDefinition("SIN",    new Token(TOKEN_TYPE_FUNCTION, Function::sin)));
-    functionToken.push_back(TokenDefinition("COS",    new Token(TOKEN_TYPE_FUNCTION, Function::cos)));
-    functionToken.push_back(TokenDefinition("TAN",    new Token(TOKEN_TYPE_FUNCTION, Function::tan)));
-    functionToken.push_back(TokenDefinition("ATN",    new Token(TOKEN_TYPE_FUNCTION, Function::atn)));
-    functionToken.push_back(TokenDefinition("SQR",    new Token(TOKEN_TYPE_FUNCTION, Function::sqr)));
-    functionToken.push_back(TokenDefinition("RND",    new Token(TOKEN_TYPE_FUNCTION, Function::rnd)));
-    functionToken.push_back(TokenDefinition("ASC",    new Token(TOKEN_TYPE_FUNCTION, Function::asc)));
-    functionToken.push_back(TokenDefinition("LEN",    new Token(TOKEN_TYPE_FUNCTION, Function::len)));
-    functionToken.push_back(TokenDefinition("VAL",    new Token(TOKEN_TYPE_FUNCTION, Function::val)));
-    functionToken.push_back(TokenDefinition("CHR$",   new Token(TOKEN_TYPE_FUNCTION, Function::chr)));
-    functionToken.push_back(TokenDefinition("STR$",   new Token(TOKEN_TYPE_FUNCTION, Function::str)));
-    functionToken.push_back(TokenDefinition("LEFT$",  new Token(TOKEN_TYPE_FUNCTION, Function::left)));
-    functionToken.push_back(TokenDefinition("RIGHT$", new Token(TOKEN_TYPE_FUNCTION, Function::right)));
-    functionToken.push_back(TokenDefinition("MID$",   new Token(TOKEN_TYPE_FUNCTION, Function::mid)));
-    functionToken.push_back(TokenDefinition("ABS",    new Token(TOKEN_TYPE_FUNCTION, Function::abs)));
-    functionToken.push_back(TokenDefinition("SGN",    new Token(TOKEN_TYPE_FUNCTION, Function::sgn)));
-    functionToken.push_back(TokenDefinition("EXP",    new Token(TOKEN_TYPE_FUNCTION, Function::exp)));
-    functionToken.push_back(TokenDefinition("LOG",    new Token(TOKEN_TYPE_FUNCTION, Function::log)));
-    functionToken.push_back(TokenDefinition("INT",    new Token(TOKEN_TYPE_FUNCTION, Function::xint)));
+    functionToken.assign(FUN_SIN, TokenDefinition("SIN",    new Token(TOKEN_TYPE_FUNCTION, Function::sin)));
+    functionToken.assign(FUN_COS, TokenDefinition("COS",    new Token(TOKEN_TYPE_FUNCTION, Function::cos)));
+    functionToken.assign(FUN_TAN, TokenDefinition("TAN",    new Token(TOKEN_TYPE_FUNCTION, Function::tan)));
+    functionToken.assign(FUN_ATN, TokenDefinition("ATN",    new Token(TOKEN_TYPE_FUNCTION, Function::atn)));
+    functionToken.assign(FUN_SQR, TokenDefinition("SQR",    new Token(TOKEN_TYPE_FUNCTION, Function::sqr)));
+    functionToken.assign(FUN_RND, TokenDefinition("RND",    new Token(TOKEN_TYPE_FUNCTION, Function::rnd)));
+    functionToken.assign(FUN_ASC, TokenDefinition("ASC",    new Token(TOKEN_TYPE_FUNCTION, Function::asc)));
+    functionToken.assign(FUN_LEN, TokenDefinition("LEN",    new Token(TOKEN_TYPE_FUNCTION, Function::len)));
+    functionToken.assign(FUN_VAL, TokenDefinition("VAL",    new Token(TOKEN_TYPE_FUNCTION, Function::val)));
+    functionToken.assign(FUN_CHR, TokenDefinition("CHR$",   new Token(TOKEN_TYPE_FUNCTION, Function::chr)));
+    functionToken.assign(FUN_STR, TokenDefinition("STR$",   new Token(TOKEN_TYPE_FUNCTION, Function::str)));
+    functionToken.assign(FUN_LEFT, TokenDefinition("LEFT$",  new Token(TOKEN_TYPE_FUNCTION, Function::left)));
+    functionToken.assign(FUN_RIGHT, TokenDefinition("RIGHT$", new Token(TOKEN_TYPE_FUNCTION, Function::right)));
+    functionToken.assign(FUN_MID, TokenDefinition("MID$",   new Token(TOKEN_TYPE_FUNCTION, Function::mid)));
+    functionToken.assign(FUN_ABS, TokenDefinition("ABS",    new Token(TOKEN_TYPE_FUNCTION, Function::abs)));
+    functionToken.assign(FUN_SGN, TokenDefinition("SGN",    new Token(TOKEN_TYPE_FUNCTION, Function::sgn)));
+    functionToken.assign(FUN_EXP, TokenDefinition("EXP",    new Token(TOKEN_TYPE_FUNCTION, Function::exp)));
+    functionToken.assign(FUN_LOG, TokenDefinition("LOG",    new Token(TOKEN_TYPE_FUNCTION, Function::log)));
+    functionToken.assign(FUN_INT, TokenDefinition("INT",    new Token(TOKEN_TYPE_FUNCTION, Function::xint)));
 
-    commandToken.push_back(TokenDefinition("PRINT", new Token(TOKEN_TYPE_COMMAND)));
+    commandToken.assign(CMD_PRINT, TokenDefinition("PRINT", new Token(TOKEN_TYPE_COMMAND)));
 
 }
 

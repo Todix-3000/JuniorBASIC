@@ -6,9 +6,12 @@
 #include "utils.h"
 #include "Variable.h"
 #include "Program.h"
+#include "Tokenizer.h"
 
 
 int main() {
+/*
+    std::cout <<test.size();
     Program *code = Program::getInstance();
     code->setLine(10, "A%=10");
     code->setLine(20, "PRINT A%");
@@ -24,10 +27,15 @@ int main() {
             std::cout << lineNumber << ' ' << line << std::endl;
         }
     } while (line != "");
+*/
 
-    /*
     ShuntingYard *algorithm = new ShuntingYard();
     try {
+        Tokenizer tokenizer = Tokenizer("10000 PRINT 50");
+
+        std::cout << std::boolalpha << tokenizer.isCodeline();
+        std::cout << tokenizer.getLineNumber();
+
         auto v = Variable::getContainer();
         v->setValue("TEST%", Value(42));
         v->setValue("TEST%", Value(42.5));
@@ -48,6 +56,6 @@ int main() {
     } catch (Exception exception) {
         std::cout << "EXCEPTION: " << exception.getCode();
     }
-     */
+
     return 0;
 }
