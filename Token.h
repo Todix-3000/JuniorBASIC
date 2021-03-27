@@ -47,12 +47,14 @@ public:
 };
 
 using TokenVector = std::vector<TokenDefinition>;
+using VarDefinition = struct {std::string varName; short varType;};
 
 class Parser
 {
 private:
     static Parser* instance;
     unsigned char* inputPtr;
+    int bracketLevel;
 
     TokenVector commandToken;
     TokenVector functionToken;
@@ -72,6 +74,7 @@ public:
     Token* getNextToken(bool unaryOperator);
     Token* findToken(TokenVector map);
     Token* findVariable();
+    VarDefinition getVariableDefinition();
 };
 
 #endif

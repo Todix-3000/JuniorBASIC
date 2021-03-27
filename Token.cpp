@@ -13,6 +13,7 @@
 #include "Function.h"
 #include "Variable.h"
 
+
 Token::Token(short tokenType) {
     this->tokenType = tokenType;
 }
@@ -67,11 +68,42 @@ Parser* Parser::getInstance(unsigned char * input)
         instance = new Parser();
     }
     instance->setInputPtr(input);
+    instance->bracketLevel = 0;
     return instance;
 }
 
 void Parser::setInputPtr(unsigned char * input) {
     inputPtr = input;
+}
+
+VarDefinition Parser::getVariableDefinition() {
+    VarDefinition definition;
+    definition.varName = "";
+    definition.varType = VALUE_TYPE_FLOAT;
+
+    if (*inputPtr >= 'A' && *inputPtr<='Z') {
+        while ((*inputPtr >= 'A' && *inputPtr <= 'Z') ||
+               (*inputPtr >= '0' && *inputPtr <= '9') ||
+               *inputPtr == '$' || *inputPtr == '%') {
+            definition.varName += *inputPtr;
+            if (*inputPtr == '$') {
+                definition.varType = VALUE_TYPE_STRING;
+                inputPtr++;
+                break;
+            }
+            if (*inputPtr == '%') {
+                definition.varType = VALUE_TYPE_INT;
+                inputPtr++;
+                break;
+            }
+            inputPtr++;
+        }
+        while (*inputPtr == ' ') {
+            *inputPtr++;
+        }
+        return definition;
+    }
+    throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
 }
 
 Token* Parser::getNextToken(bool unaryOperator) {
@@ -125,13 +157,15 @@ Token* Parser::getNextToken(bool unaryOperator) {
     }
     if (*inputPtr == '(' ) {
         inputPtr++;
+        bracketLevel++;
         return new Token(TOKEN_TYPE_BRACKETOPEN);
     }
-    if (*inputPtr == ')' ) {
+    if (*inputPtr == ')' && bracketLevel>0) {
         inputPtr++;
+        bracketLevel--;
         return new Token(TOKEN_TYPE_BRACKETCLOSE);
     }
-    if (*inputPtr == ',' ) {
+    if (*inputPtr == ','  && bracketLevel>0) {
         inputPtr++;
         return new Token(TOKEN_TYPE_SEPERATOR);
     }
@@ -150,33 +184,14 @@ Token* Parser::findToken(TokenVector map) {
 }
 
 Token* Parser::findVariable() {
-    if (*inputPtr >= 'A' && *inputPtr<='Z') {
-        int type = VALUE_TYPE_FLOAT;
-        std::string varName = "";
-        while ((*inputPtr >= 'A' && *inputPtr <= 'Z') ||
-               (*inputPtr >= '0' && *inputPtr <= '9') ||
-               *inputPtr == '$' || *inputPtr == '%') {
-            varName += *inputPtr;
-            if (*inputPtr == '$') {
-                type = VALUE_TYPE_STRING;
-                inputPtr++;
-                break;
-            }
-            if (*inputPtr == '%') {
-                type = VALUE_TYPE_INT;
-                inputPtr++;
-                break;
-            }
-            inputPtr++;
-        }
-        while (*inputPtr==' ') {
-            *inputPtr++;
-        }
+    try {
+        VarDefinition definition = getVariableDefinition();
         if (*inputPtr=='(') {
-            return new Token(TOKEN_TYPE_ARRAY, varName, type);
+            return new Token(TOKEN_TYPE_ARRAY, definition.varName, definition.varType);
         }
-        return new Token(Variable::getContainer()->getValue(varName, type));
+        return new Token(Variable::getContainer()->getValue(definition.varName, definition.varType));
     }
+    catch (Exception e) {}
     return nullptr;
 }
 

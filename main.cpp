@@ -5,10 +5,27 @@
 #include "ShuntingYard.h"
 #include "utils.h"
 #include "Variable.h"
+#include "Program.h"
 
 
 int main() {
+    Program *code = Program::getInstance();
+    code->setLine(10, "A%=10");
+    code->setLine(20, "PRINT A%");
+    code->setLine(30, "A% = A% +1");
+    code->setLine(40, "IF A%<10 GOTO 20");
 
+    code->resetLinePointer();
+    unsigned short lineNumber;
+    std::string line;
+    do {
+        line = code->getNextLine(lineNumber);
+        if (line != "") {
+            std::cout << lineNumber << ' ' << line << std::endl;
+        }
+    } while (line != "");
+
+    /*
     ShuntingYard *algorithm = new ShuntingYard();
     try {
         auto v = Variable::getContainer();
@@ -19,8 +36,8 @@ int main() {
         v->dim("TEST%", VALUE_TYPE_INT, {5,5});
         v->setValue("TEST%", {2,3}, Value(23));
 
-        std::cout << algorithm->run((unsigned char*) "1+(2*3)-8+TEST%(2,5-2)\0") << std::endl;
-        std::cout << algorithm->run((unsigned char *) "3/0\0") << std::endl;
+        std::cout << algorithm->run((unsigned char*) "1+(2*3)-8+TEST%(2,5-2),\0") << std::endl;
+        std::cout << algorithm->run((unsigned char *) "3/0.1\0") << std::endl;
         std::cout << algorithm->run((unsigned char *) "MID$(TEST$, 3,7)\0") << std::endl;
 
         //std::cout << algorithm->run((unsigned char *) "\"Hallo\" = \" \" + \"Hallo\"\0") << std::endl;
@@ -31,5 +48,6 @@ int main() {
     } catch (Exception exception) {
         std::cout << "EXCEPTION: " << exception.getCode();
     }
+     */
     return 0;
 }
