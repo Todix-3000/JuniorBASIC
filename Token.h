@@ -56,9 +56,7 @@ private:
     unsigned char* inputPtr;
     int bracketLevel;
 
-    TokenVector commandToken;
-    TokenVector functionToken;
-    TokenVector operatorToken;
+    TokenVector tokenList;
     TokenVector unaryOperatorToken;
     Token* seperatorToken;
     Token* bracketOpenToken;
@@ -74,11 +72,30 @@ public:
     Token* getNextToken(bool unaryOperator);
     Token* findToken(TokenVector map);
     Token* findVariable();
+    unsigned char getTokenId(size_t &tokenLength);
     VarDefinition getVariableDefinition();
 };
 
 enum {
-    CMD_PRINT = 128,
+    OP_POW = '^',
+    OP_MUL = '*',
+    OP_DIV = '/',
+    OP_MOD = '%',
+    OP_ADD = '+',
+    OP_SUB = '-',
+    OP_LT  = '<',
+    OP_GT  = '>',
+    OP_EQ  = '=',
+    OP_BITAND = 128,
+    OP_BITXOR,
+    OP_BITOR,
+    OP_BOOLAND,
+    OP_BOOLOR,
+    OP_LEQT,
+    OP_GEQT,
+    OP_NEQ,
+    CMD_PRINT,
+    CMD_REM,
     CMD_RUN,
     CMD_GOTO,
     CMD_IF,

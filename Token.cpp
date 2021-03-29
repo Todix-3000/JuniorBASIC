@@ -138,18 +138,12 @@ Token* Parser::getNextToken(bool unaryOperator) {
         return new Token(std::string(subbuff));
 
     }
-    if ((myToken = findToken(commandToken)) != nullptr) {
-        return myToken;
-    }
     if (unaryOperator) {
         if ((myToken = findToken(unaryOperatorToken)) != nullptr) {
             return myToken;
         }
     }
-    if ((myToken = findToken(operatorToken)) != nullptr) {
-        return myToken;
-    }
-    if ((myToken = findToken(functionToken)) != nullptr) {
+    if ((myToken = findToken(tokenList)) != nullptr) {
         return myToken;
     }
     if ((myToken = findVariable()) != nullptr) {
@@ -173,14 +167,32 @@ Token* Parser::getNextToken(bool unaryOperator) {
 }
 
 Token* Parser::findToken(TokenVector map) {
-    for (auto const& value: map) {
-        if ( memcmp (inputPtr, value.text.data(), value.text.length()) == 0 ) {
-            inputPtr += value.text.length();
-            // std::cout << value.text;
-            return value.token;
+    auto value = inputPtr[0];
+    if (value<map.size()) {
+        if (map[value].text!="") {
+            inputPtr++;
+            return map[value].token;
         }
     }
+
     return nullptr;
+}
+
+unsigned char Parser::getTokenId(size_t &tokenLength) {
+    TokenVector maps[] = {tokenList};
+    tokenLength = 0;
+    for (auto const& map : maps ) {
+        for (int i=0; i<map.size(); i++) {
+            auto tok = map.at(i);
+            if (tok.token != nullptr) {
+                if ( memcmp (inputPtr, tok.text.data(), tok.text.length()) == 0 ) {
+                    tokenLength = tok.text.length();
+                    return i;
+                }
+            }
+        }
+    }
+    return 0;
 }
 
 Token* Parser::findVariable() {
@@ -204,52 +216,57 @@ void Token::fetchArrayValue(std::stack<Token>* tokenStack) {
 }
 
 Parser::Parser() {
-    operatorToken.push_back(TokenDefinition("^",  new Token(TOKEN_TYPE_OPERATOR, 12, RIGHT, Operator::pow)));
-    operatorToken.push_back(TokenDefinition("*",  new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::mul)));
-    operatorToken.push_back(TokenDefinition("/",  new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::div)));
-    operatorToken.push_back(TokenDefinition("%",  new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::mod)));
-    operatorToken.push_back(TokenDefinition("+",  new Token(TOKEN_TYPE_OPERATOR, 10, LEFT, Operator::add)));
-    operatorToken.push_back(TokenDefinition("-",  new Token(TOKEN_TYPE_OPERATOR, 10, LEFT, Operator::sub)));
-    operatorToken.push_back(TokenDefinition("<=", new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::leqt)));
-    operatorToken.push_back(TokenDefinition(">=", new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::geqt)));
-    operatorToken.push_back(TokenDefinition("<>", new Token(TOKEN_TYPE_OPERATOR, 6, LEFT, Operator::neq)));
-    operatorToken.push_back(TokenDefinition("<",  new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::lt)));
-    operatorToken.push_back(TokenDefinition(">",  new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::gt)));
-    operatorToken.push_back(TokenDefinition("=",  new Token(TOKEN_TYPE_OPERATOR, 6, LEFT, Operator::eq)));
-    operatorToken.push_back(TokenDefinition("AND",new Token(TOKEN_TYPE_OPERATOR, 5, LEFT, Operator::bitAnd)));
-    operatorToken.push_back(TokenDefinition("XOR",new Token(TOKEN_TYPE_OPERATOR, 4, LEFT, Operator::bitXor)));
-    operatorToken.push_back(TokenDefinition("OR", new Token(TOKEN_TYPE_OPERATOR, 3, LEFT, Operator::bitOr)));
-    operatorToken.push_back(TokenDefinition("&&", new Token(TOKEN_TYPE_OPERATOR, 2, LEFT, Operator::boolAnd)));
-    operatorToken.push_back(TokenDefinition("||", new Token(TOKEN_TYPE_OPERATOR, 1, LEFT, Operator::boolOr)));
+    unaryOperatorToken.assign(127, TokenDefinition("", nullptr));
 
-    unaryOperatorToken.push_back(TokenDefinition("+", new Token(TOKEN_TYPE_OPERATOR, 13, LEFT, Operator::dummy)));
-    unaryOperatorToken.push_back(TokenDefinition("-", new Token(TOKEN_TYPE_OPERATOR, 13, LEFT, Operator::neg)));
+    unaryOperatorToken[OP_ADD] = TokenDefinition("+", new Token(TOKEN_TYPE_OPERATOR, 13, LEFT, Operator::dummy));
+    unaryOperatorToken[OP_SUB] = TokenDefinition("-", new Token(TOKEN_TYPE_OPERATOR, 13, LEFT, Operator::neg));
 
     seperatorToken    = new Token(TOKEN_TYPE_SEPERATOR);
     bracketOpenToken  = new Token(TOKEN_TYPE_BRACKETOPEN);
     bracketCloseToken = new Token(TOKEN_TYPE_BRACKETCLOSE);
 
-    functionToken.assign(FUN_SIN, TokenDefinition("SIN",    new Token(TOKEN_TYPE_FUNCTION, Function::sin)));
-    functionToken.assign(FUN_COS, TokenDefinition("COS",    new Token(TOKEN_TYPE_FUNCTION, Function::cos)));
-    functionToken.assign(FUN_TAN, TokenDefinition("TAN",    new Token(TOKEN_TYPE_FUNCTION, Function::tan)));
-    functionToken.assign(FUN_ATN, TokenDefinition("ATN",    new Token(TOKEN_TYPE_FUNCTION, Function::atn)));
-    functionToken.assign(FUN_SQR, TokenDefinition("SQR",    new Token(TOKEN_TYPE_FUNCTION, Function::sqr)));
-    functionToken.assign(FUN_RND, TokenDefinition("RND",    new Token(TOKEN_TYPE_FUNCTION, Function::rnd)));
-    functionToken.assign(FUN_ASC, TokenDefinition("ASC",    new Token(TOKEN_TYPE_FUNCTION, Function::asc)));
-    functionToken.assign(FUN_LEN, TokenDefinition("LEN",    new Token(TOKEN_TYPE_FUNCTION, Function::len)));
-    functionToken.assign(FUN_VAL, TokenDefinition("VAL",    new Token(TOKEN_TYPE_FUNCTION, Function::val)));
-    functionToken.assign(FUN_CHR, TokenDefinition("CHR$",   new Token(TOKEN_TYPE_FUNCTION, Function::chr)));
-    functionToken.assign(FUN_STR, TokenDefinition("STR$",   new Token(TOKEN_TYPE_FUNCTION, Function::str)));
-    functionToken.assign(FUN_LEFT, TokenDefinition("LEFT$",  new Token(TOKEN_TYPE_FUNCTION, Function::left)));
-    functionToken.assign(FUN_RIGHT, TokenDefinition("RIGHT$", new Token(TOKEN_TYPE_FUNCTION, Function::right)));
-    functionToken.assign(FUN_MID, TokenDefinition("MID$",   new Token(TOKEN_TYPE_FUNCTION, Function::mid)));
-    functionToken.assign(FUN_ABS, TokenDefinition("ABS",    new Token(TOKEN_TYPE_FUNCTION, Function::abs)));
-    functionToken.assign(FUN_SGN, TokenDefinition("SGN",    new Token(TOKEN_TYPE_FUNCTION, Function::sgn)));
-    functionToken.assign(FUN_EXP, TokenDefinition("EXP",    new Token(TOKEN_TYPE_FUNCTION, Function::exp)));
-    functionToken.assign(FUN_LOG, TokenDefinition("LOG",    new Token(TOKEN_TYPE_FUNCTION, Function::log)));
-    functionToken.assign(FUN_INT, TokenDefinition("INT",    new Token(TOKEN_TYPE_FUNCTION, Function::xint)));
+    tokenList.assign(255, TokenDefinition("", nullptr));
 
-    commandToken.assign(CMD_PRINT, TokenDefinition("PRINT", new Token(TOKEN_TYPE_COMMAND)));
+    tokenList[OP_POW]     = TokenDefinition("^",  new Token(TOKEN_TYPE_OPERATOR, 12, RIGHT, Operator::pow));
+    tokenList[OP_MUL]     = TokenDefinition("*",  new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::mul));
+    tokenList[OP_DIV]     = TokenDefinition("/",  new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::div));
+    tokenList[OP_MOD]     = TokenDefinition("%",  new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::mod));
+    tokenList[OP_ADD]     = TokenDefinition("+",  new Token(TOKEN_TYPE_OPERATOR, 10, LEFT, Operator::add));
+    tokenList[OP_SUB]     = TokenDefinition("-",  new Token(TOKEN_TYPE_OPERATOR, 10, LEFT, Operator::sub));
+    tokenList[OP_LEQT]    = TokenDefinition("<=", new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::leqt));
+    tokenList[OP_GEQT]    = TokenDefinition(">=", new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::geqt));
+    tokenList[OP_NEQ]     = TokenDefinition("<>", new Token(TOKEN_TYPE_OPERATOR, 6, LEFT, Operator::neq));
+    tokenList[OP_LT]      = TokenDefinition("<",  new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::lt));
+    tokenList[OP_GT]      = TokenDefinition(">",  new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::gt));
+    tokenList[OP_EQ]      = TokenDefinition("=",  new Token(TOKEN_TYPE_OPERATOR, 6, LEFT, Operator::eq));
+    tokenList[OP_BITAND]  = TokenDefinition("AND",new Token(TOKEN_TYPE_OPERATOR, 5, LEFT, Operator::bitAnd));
+    tokenList[OP_BITXOR]  = TokenDefinition("XOR",new Token(TOKEN_TYPE_OPERATOR, 4, LEFT, Operator::bitXor));
+    tokenList[OP_BITOR]   = TokenDefinition("OR", new Token(TOKEN_TYPE_OPERATOR, 3, LEFT, Operator::bitOr));
+    tokenList[OP_BOOLAND] = TokenDefinition("&&", new Token(TOKEN_TYPE_OPERATOR, 2, LEFT, Operator::boolAnd));
+    tokenList[OP_BOOLOR]  = TokenDefinition("||", new Token(TOKEN_TYPE_OPERATOR, 1, LEFT, Operator::boolOr));
+
+    tokenList[FUN_SIN]   = TokenDefinition("SIN",    new Token(TOKEN_TYPE_FUNCTION, Function::sin));
+    tokenList[FUN_COS]   = TokenDefinition("COS",    new Token(TOKEN_TYPE_FUNCTION, Function::cos));
+    tokenList[FUN_TAN]   = TokenDefinition("TAN",    new Token(TOKEN_TYPE_FUNCTION, Function::tan));
+    tokenList[FUN_ATN]   = TokenDefinition("ATN",    new Token(TOKEN_TYPE_FUNCTION, Function::atn));
+    tokenList[FUN_SQR]   = TokenDefinition("SQR",    new Token(TOKEN_TYPE_FUNCTION, Function::sqr));
+    tokenList[FUN_RND]   = TokenDefinition("RND",    new Token(TOKEN_TYPE_FUNCTION, Function::rnd));
+    tokenList[FUN_ASC]   = TokenDefinition("ASC",    new Token(TOKEN_TYPE_FUNCTION, Function::asc));
+    tokenList[FUN_LEN]   = TokenDefinition("LEN",    new Token(TOKEN_TYPE_FUNCTION, Function::len));
+    tokenList[FUN_VAL]   = TokenDefinition("VAL",    new Token(TOKEN_TYPE_FUNCTION, Function::val));
+    tokenList[FUN_CHR]   = TokenDefinition("CHR$",   new Token(TOKEN_TYPE_FUNCTION, Function::chr));
+    tokenList[FUN_STR]   = TokenDefinition("STR$",   new Token(TOKEN_TYPE_FUNCTION, Function::str));
+    tokenList[FUN_LEFT]  = TokenDefinition("LEFT$",  new Token(TOKEN_TYPE_FUNCTION, Function::left));
+    tokenList[FUN_RIGHT] = TokenDefinition("RIGHT$", new Token(TOKEN_TYPE_FUNCTION, Function::right));
+    tokenList[FUN_MID]   = TokenDefinition("MID$",   new Token(TOKEN_TYPE_FUNCTION, Function::mid));
+    tokenList[FUN_ABS]   = TokenDefinition("ABS",    new Token(TOKEN_TYPE_FUNCTION, Function::abs));
+    tokenList[FUN_SGN]   = TokenDefinition("SGN",    new Token(TOKEN_TYPE_FUNCTION, Function::sgn));
+    tokenList[FUN_EXP]   = TokenDefinition("EXP",    new Token(TOKEN_TYPE_FUNCTION, Function::exp));
+    tokenList[FUN_LOG]   = TokenDefinition("LOG",    new Token(TOKEN_TYPE_FUNCTION, Function::log));
+    tokenList[FUN_INT]   = TokenDefinition("INT",    new Token(TOKEN_TYPE_FUNCTION, Function::xint));
+
+    tokenList[CMD_PRINT] = TokenDefinition("PRINT", new Token(TOKEN_TYPE_COMMAND));
+    tokenList[CMD_REM]   = TokenDefinition("REM",   new Token(TOKEN_TYPE_COMMAND));
 
 }
 

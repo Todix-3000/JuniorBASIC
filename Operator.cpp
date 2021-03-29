@@ -118,8 +118,9 @@ void Operator::neg(std::stack<Token>* stack) {
     stack->push(-params.op1);
 }
 
-void Operator::dummy(std::stack<Token>*) {
-    throw Exception{EXCEPTION_NOT_IMPLEMENTED};
+void Operator::dummy(std::stack<Token>* stack) {
+    Unary params = Operator::getOneValue(stack);
+    stack->push(params.op1);
 }
 
 Binary Operator::getTwoValues(std::stack<Token> * stack) {

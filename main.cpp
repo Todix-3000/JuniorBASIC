@@ -31,8 +31,9 @@ int main() {
 
     ShuntingYard *algorithm = new ShuntingYard();
     try {
-        Tokenizer tokenizer = Tokenizer("10000 PRINT 50");
-
+        Tokenizer tokenizer = Tokenizer("10000 print a%-chr$(9)+ 50");
+        tokenizer = Tokenizer("10000 rem Print a%-chr$(9)+ 50");
+        tokenizer = Tokenizer("10000 MID$(TEST$, 3,7)\\0\")");
         std::cout << std::boolalpha << tokenizer.isCodeline();
         std::cout << tokenizer.getLineNumber();
 
@@ -44,9 +45,14 @@ int main() {
         v->dim("TEST%", VALUE_TYPE_INT, {5,5});
         v->setValue("TEST%", {2,3}, Value(23));
 
-        std::cout << algorithm->run((unsigned char*) "1+(2*3)-8+TEST%(2,5-2),\0") << std::endl;
-        std::cout << algorithm->run((unsigned char *) "3/0.1\0") << std::endl;
-        std::cout << algorithm->run((unsigned char *) "MID$(TEST$, 3,7)\0") << std::endl;
+        tokenizer = Tokenizer("10 1+(2*3)-8+Test%(2,5-2)");
+        std::cout << algorithm->run((unsigned char*) tokenizer.getLine().data()) << std::endl;
+
+        tokenizer = Tokenizer("10 1+sin(1+2.14)");
+        std::cout << algorithm->run((unsigned char *) tokenizer.getLine().data()) << std::endl;
+
+        tokenizer = Tokenizer("mid$(test$, 3,7)\0");
+        std::cout << algorithm->run((unsigned char *) tokenizer.getLine().data()) << std::endl;
 
         //std::cout << algorithm->run((unsigned char *) "\"Hallo\" = \" \" + \"Hallo\"\0") << std::endl;
        // std::cout << algorithm->run((unsigned char*) "-(3*-26./5+6*-1)\0") << std::endl;
