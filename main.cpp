@@ -10,18 +10,26 @@
 
 
 int main() {
+    Program *code = Program::getInstance();
     ShuntingYard *algorithm = new ShuntingYard();
     std::string line;
     do {
         std::cout << '>';
         std::getline(std::cin, line);
         Tokenizer tokenizer = Tokenizer(line);
-        try {
-            std::cout << algorithm->run((unsigned char*) tokenizer.getLine().data()) << std::endl;
-        } catch (Exception e) {
-            std::cout << "EXCEPTION " << e.getCode() << std::endl;
+        if (tokenizer.isCodeline()) {
+            auto lineNumber = tokenizer.getLineNumber();
+            auto codeLine = tokenizer.getLine();
+            code->setLine(tokenizer.getLineNumber(), tokenizer.getLine());
+        } else {
+            try {
+                std::cout << algorithm->run((unsigned char*) tokenizer.getLine().data()) << std::endl;
+            } catch (Exception e) {
+                std::cout << "EXCEPTION " << e.getCode() << std::endl;
+            }
         }
     } while (line != "QUIT");
+    std::cout << "ende";
 /*
     std::cout <<test.size();
     Program *code = Program::getInstance();
