@@ -12,6 +12,7 @@
 int main() {
     Program *code = Program::getInstance();
     ShuntingYard *algorithm = new ShuntingYard();
+    Parser *parser = Parser::getInstance(nullptr);
     std::string line;
     do {
         std::cout << '>';
@@ -23,7 +24,8 @@ int main() {
             code->setLine(tokenizer.getLineNumber(), tokenizer.getLine());
         } else {
             try {
-                std::cout << algorithm->run((unsigned char*) tokenizer.getLine().data()) << std::endl;
+                auto restOfLine = parser->call((unsigned char*) tokenizer.getLine().data());
+                // std::cout << algorithm->run((unsigned char*) tokenizer.getLine().data()) << std::endl;
             } catch (Exception e) {
                 std::cout << "EXCEPTION " << e.getCode() << std::endl;
             }

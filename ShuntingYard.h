@@ -11,5 +11,5 @@ enum {
 class ShuntingYard {
 public:
     ShuntingYard();
-    static Value run(unsigned char* input);
+    static unsigned char* run(unsigned char* input, Value &result);
 };

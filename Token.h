@@ -1,11 +1,12 @@
+#ifndef TOKEN_H
+#define TOKEN_H
+
 #include <cstdlib>
 #include <map>
 #include <stack>
 #include <vector>
 #include "Value.h"
 
-#ifndef TOKEN_H
-#define TOKEN_H
 
 class Token {
 public:
@@ -13,19 +14,24 @@ public:
     Token(Value tokenValue);
     Token(short tokenType, short precedence, short assoc, void (*funcptr)(std::stack<Token>*));
     Token(short tokenType, void (*funcptr)(std::stack<Token>*));
+    Token(short tokenType, unsigned char* (*cmdptr)(unsigned char*));
     Token(short tokenType, std::string varName, short varType);
     short getType();
     short getPrecedence();
     short getAssoc();
     void call(std::stack<Token>*);
+    unsigned char* call(unsigned char*);
+
     void fetchArrayValue(std::stack<Token>*);
     Value getValue();
-    // ~Token() { std::cout << "Kaputt" << tokenValue << std::endl; }
+
 protected:
+
     short tokenType;
     short precedence;
     short assoc;
     void (*funcptr)(std::stack<Token>*);
+    unsigned char* (*cmdptr)(unsigned char*);
     Value tokenValue;
 };
 
@@ -53,7 +59,6 @@ class Parser
 {
 private:
     static Parser* instance;
-    unsigned char* inputPtr;
     int bracketLevel;
 
     TokenVector tokenList;
@@ -67,11 +72,15 @@ protected:
 
 public:
     /* Static access method. */
+    unsigned char* inputPtr;
     static Parser* getInstance(unsigned char * input);
     void setInputPtr(unsigned char * input);
-    Token* getNextToken(bool unaryOperator);
+    Token* getNextTokenForExpression(bool unaryOperator);
     Token* findToken(TokenVector map);
+    std::string findTokenName(unsigned char, short &tokenType);
     Token* findVariable();
+    unsigned char* call(unsigned char* restOfLine);
+
     unsigned char getTokenId(size_t &tokenLength);
     VarDefinition getVariableDefinition();
 };
@@ -99,6 +108,8 @@ enum {
     CMD_RUN,
     CMD_GOTO,
     CMD_IF,
+    CMD_LIST,
+    CMD_LET,
     FUN_SIN,
     FUN_COS,
     FUN_TAN,

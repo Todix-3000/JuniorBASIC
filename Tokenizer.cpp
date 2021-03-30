@@ -29,7 +29,7 @@ Tokenizer::Tokenizer(std::string rawLineInput) {
     std::string upperRawLine = rawLine;
     for (auto & c: upperRawLine) { c = toupper(c); }
     while (rawLine.length()>0) {
-        while (rawLine[0] == ' ') {
+        while (!quoteMode && rawLine[0] == ' ') {
             rawLine = &rawLine[1];
             upperRawLine = &upperRawLine[1];
         }

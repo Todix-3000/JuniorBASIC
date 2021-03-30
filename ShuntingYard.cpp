@@ -27,7 +27,7 @@ public:
 ShuntingYard::ShuntingYard() {
 }
 
-Value ShuntingYard::run(unsigned char* input) {
+unsigned char* ShuntingYard::run(unsigned char* input, Value &result) {
 
     std::stack<Token> tokenStack;
     OutputBuffer outputBuffer;
@@ -38,7 +38,7 @@ Value ShuntingYard::run(unsigned char* input) {
     bool unary{true};
 
     while(true) {
-        token = parser->getNextToken(unary);
+        token = parser->getNextTokenForExpression(unary);
         if (token->getType()==TOKEN_TYPE_UNKNOWN) {
             break;
         }
@@ -122,10 +122,10 @@ Value ShuntingYard::run(unsigned char* input) {
                 outputBuffer.pop();
             }
             if (t.getType()==TOKEN_TYPE_VALUE) {
-                Value v = outputBuffer.top().getValue();
+                result = outputBuffer.top().getValue();
                 outputBuffer.pop();
                 if (outputBuffer.empty()) {
-                    return v;
+                    return parser->inputPtr;
                 }
             }
         }

@@ -10,6 +10,7 @@
 #include "Token.h"
 #include "Operator.h"
 #include "utils.h"
+#include "Command.h"
 #include "Function.h"
 #include "Variable.h"
 
@@ -29,6 +30,12 @@ Token::Token(short tokenType, short precedence, short assoc, void (*funcptr)(std
 Token::Token(short tokenType, void (*funcptr)(std::stack<Token>*)) {
     this->tokenType  = tokenType;
     this->funcptr    = funcptr;
+    tokenValue       = Value();
+}
+
+Token::Token(short tokenType, unsigned char* (*cmdptr)(unsigned char*)) {
+    this->tokenType  = tokenType;
+    this->cmdptr     = cmdptr;
     tokenValue       = Value();
 }
 
@@ -106,7 +113,7 @@ VarDefinition Parser::getVariableDefinition() {
     throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
 }
 
-Token* Parser::getNextToken(bool unaryOperator) {
+Token* Parser::getNextTokenForExpression(bool unaryOperator) {
     Token *myToken;
     while (' ' == *inputPtr) {
         inputPtr++;
@@ -166,6 +173,12 @@ Token* Parser::getNextToken(bool unaryOperator) {
     return new Token(TOKEN_TYPE_UNKNOWN);
 }
 
+std::string Parser::findTokenName(unsigned char tokenId, short &tokenType) {
+    std::string result = tokenList[tokenId].text;
+    tokenType = (result=="") ? -1 : tokenList[tokenId].token->getType();
+    return result;
+}
+
 Token* Parser::findToken(TokenVector map) {
     auto value = inputPtr[0];
     if (value<map.size()) {
@@ -209,6 +222,21 @@ Token* Parser::findVariable() {
 
 void Token::call(std::stack<Token>* tokenStack) {
     funcptr(tokenStack);
+}
+
+unsigned char* Token::call(unsigned char* restOfLine) {
+    return cmdptr(restOfLine);
+}
+
+unsigned char* Parser::call(unsigned char* restOfLine) {
+    Token* myToken;
+    if (tokenList[*restOfLine].text!="") {
+        myToken =  tokenList[*restOfLine].token;
+        restOfLine++;
+    } else {
+        myToken =  tokenList[CMD_LET].token;
+    }
+    return myToken->call(restOfLine);
 }
 
 void Token::fetchArrayValue(std::stack<Token>* tokenStack) {
@@ -265,8 +293,12 @@ Parser::Parser() {
     tokenList[FUN_LOG]   = TokenDefinition("LOG",    new Token(TOKEN_TYPE_FUNCTION, Function::log));
     tokenList[FUN_INT]   = TokenDefinition("INT",    new Token(TOKEN_TYPE_FUNCTION, Function::xint));
 
-    tokenList[CMD_PRINT] = TokenDefinition("PRINT", new Token(TOKEN_TYPE_COMMAND));
-    tokenList[CMD_REM]   = TokenDefinition("REM",   new Token(TOKEN_TYPE_COMMAND));
+    tokenList[CMD_PRINT] = TokenDefinition("PRINT", new Token(TOKEN_TYPE_COMMAND, Command::print));
+    tokenList[CMD_REM]   = TokenDefinition("REM",   new Token(TOKEN_TYPE_COMMAND, Command::rem));
+    tokenList[CMD_LIST]  = TokenDefinition("LIST", new Token(TOKEN_TYPE_COMMAND, Command::list));
+    tokenList[CMD_GOTO]  = TokenDefinition("GOTO",   new Token(TOKEN_TYPE_COMMAND, Command::_goto));
+    tokenList[CMD_LET]   = TokenDefinition("LET",   new Token(TOKEN_TYPE_COMMAND, Command::let));
+
 
 }
 
