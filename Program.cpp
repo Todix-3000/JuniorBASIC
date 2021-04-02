@@ -21,6 +21,10 @@ void Program::setLine(unsigned short lineNumber, std::string lineCode) {
     code[lineNumber] = lineCode;
 }
 
+void Program::removeLine(unsigned short lineNumber) {
+    code.erase(lineNumber);
+}
+
 std::string Program::getLine(unsigned short lineNumber) {
     try {
         return code.at(lineNumber);

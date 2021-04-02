@@ -11,6 +11,10 @@
 
 int main() {
     Program *code = Program::getInstance();
+    code->setLine(10, "A%=10");
+    code->setLine(20, "PRINT A%");
+    code->setLine(30, "A% = A% +1");
+    code->setLine(40, "IF A%<10 GOTO 20");
     ShuntingYard *algorithm = new ShuntingYard();
     Parser *parser = Parser::getInstance(nullptr);
     std::string line;
@@ -20,12 +24,20 @@ int main() {
         Tokenizer tokenizer = Tokenizer(line);
         if (tokenizer.isCodeline()) {
             auto lineNumber = tokenizer.getLineNumber();
-            auto codeLine = tokenizer.getLine();
-            code->setLine(tokenizer.getLineNumber(), tokenizer.getLine());
+            if (tokenizer.getLine().length()) {
+                code->setLine(tokenizer.getLineNumber(), tokenizer.getLine());
+            } else {
+                code->removeLine(tokenizer.getLineNumber());
+            }
         } else {
             try {
-                auto restOfLine = parser->call((unsigned char*) tokenizer.getLine().data());
-                // std::cout << algorithm->run((unsigned char*) tokenizer.getLine().data()) << std::endl;
+                auto restOfLine = (unsigned char*) tokenizer.getLine().data();
+                while (*restOfLine!=0) {
+                    while (*restOfLine==':') {
+                        restOfLine++;
+                    }
+                    restOfLine = parser->call(restOfLine);
+                }
             } catch (Exception e) {
                 std::cout << "EXCEPTION " << e.getCode() << std::endl;
             }

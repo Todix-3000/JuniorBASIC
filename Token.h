@@ -53,8 +53,8 @@ public:
 };
 
 using TokenVector = std::vector<TokenDefinition>;
-using VarDefinition = struct {std::string varName; short varType;};
-
+// using VarDefinition = struct {std::string varName; short varType;};
+typedef struct {std::string varName; short varType;} VarDefinition;
 class Parser
 {
 private:

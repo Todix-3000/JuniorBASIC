@@ -17,6 +17,7 @@ private:
 public:
     static Program* getInstance();
     void setLine(unsigned short lineNumber, std::string lineCode);
+    void removeLine(unsigned short lineNumber);
     std::string getLine(unsigned short lineNumber);
     std::string getNextLine(unsigned short &lineNumber);
     void clear();
