@@ -31,5 +31,6 @@ public:
     void setValue(std::string varName, Value value);
     void setValue(std::string varName, std::vector<int> indexes, Value value);
     void dim(std::string varName, short varType, std::vector<int> indexes);
+    void clearAll();
 };
 #endif //JUNIORBASIC_VARIABLE_H

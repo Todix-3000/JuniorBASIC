@@ -51,3 +51,18 @@ void Program::resetLinePointer() {
     linePointer = code.begin();
 }
 
+void Program::resetProgramCounter() {
+    programCounter = code.begin();
+    programLineCounter = (unsigned char*) programCounter->second.data();
+}
+
+bool Program::setProgramCounter(unsigned short lineNumber) {
+    programCounter = code.find(lineNumber);
+    if (programCounter==code.end()) {
+        return false;
+    }
+    programLineCounter = (unsigned char*) programCounter->second.data();
+
+    return true;
+}
+

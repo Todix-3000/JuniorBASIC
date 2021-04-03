@@ -15,6 +15,11 @@ public:
     static unsigned char* print(unsigned char* restOfLine);
     static unsigned char* rem(unsigned char* restOfLine);
     static unsigned char* let(unsigned char* restOfLine);
-
+    static unsigned char* _if(unsigned char* restOfLine);
+    static unsigned char* run(unsigned char* restOfLine);
+    static unsigned char* then(unsigned char* restOfLine);
+    static unsigned char* load(unsigned char* restOfLine);
+    static unsigned char* save(unsigned char* restOfLine);
+    static unsigned char* _new(unsigned char* restOfLine);
 };
 #endif //JUNIORBASIC_COMMAND_H

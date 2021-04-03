@@ -13,8 +13,12 @@ private:
     static Program *instance;
     std::map<unsigned short, std::string>  code;
     std::map<unsigned short, std::string>::iterator linePointer;
+    std::map<unsigned short, std::string>::iterator programCounter;
+    unsigned char* programLineCounter;
 
 public:
+    void resetProgramCounter();
+    bool setProgramCounter(unsigned short lineNumber);
     static Program* getInstance();
     void setLine(unsigned short lineNumber, std::string lineCode);
     void removeLine(unsigned short lineNumber);

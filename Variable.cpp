@@ -105,3 +105,12 @@ Variable* Variable::getContainer() {
     }
     return instance;
 }
+
+void Variable::clearAll() {
+    intVars.clear();
+    floatVars.clear();
+    stringVars.clear();
+    intArrays.clear();
+    floatArrays.clear();
+    stringArrays.clear();
+}

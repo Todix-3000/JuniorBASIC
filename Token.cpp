@@ -151,7 +151,9 @@ Token* Parser::getNextTokenForExpression(bool unaryOperator) {
         }
     }
     if ((myToken = findToken(tokenList)) != nullptr) {
-        return myToken;
+        if (myToken->getType()!=TOKEN_TYPE_COMMAND) {
+            return myToken;
+        }
     }
     if ((myToken = findVariable()) != nullptr) {
         return myToken;
@@ -295,9 +297,15 @@ Parser::Parser() {
 
     tokenList[CMD_PRINT] = TokenDefinition("PRINT", new Token(TOKEN_TYPE_COMMAND, Command::print));
     tokenList[CMD_REM]   = TokenDefinition("REM",   new Token(TOKEN_TYPE_COMMAND, Command::rem));
-    tokenList[CMD_LIST]  = TokenDefinition("LIST", new Token(TOKEN_TYPE_COMMAND, Command::list));
-    tokenList[CMD_GOTO]  = TokenDefinition("GOTO",   new Token(TOKEN_TYPE_COMMAND, Command::_goto));
+    tokenList[CMD_LIST]  = TokenDefinition("LIST",  new Token(TOKEN_TYPE_COMMAND, Command::list));
+    tokenList[CMD_GOTO]  = TokenDefinition("GOTO",  new Token(TOKEN_TYPE_COMMAND, Command::_goto));
     tokenList[CMD_LET]   = TokenDefinition("LET",   new Token(TOKEN_TYPE_COMMAND, Command::let));
+    tokenList[CMD_RUN]   = TokenDefinition("RUN",   new Token(TOKEN_TYPE_COMMAND, Command::run));
+    tokenList[CMD_IF]    = TokenDefinition("IF",    new Token(TOKEN_TYPE_COMMAND, Command::_if));
+    tokenList[CMD_THEN]  = TokenDefinition("THEN",  new Token(TOKEN_TYPE_COMMAND, Command::then));
+    tokenList[CMD_LOAD]  = TokenDefinition("LOAD",  new Token(TOKEN_TYPE_COMMAND, Command::load));
+    tokenList[CMD_SAVE]  = TokenDefinition("SAVE",  new Token(TOKEN_TYPE_COMMAND, Command::save));
+    tokenList[CMD_NEW]   = TokenDefinition("NEW" ,  new Token(TOKEN_TYPE_COMMAND, Command::_new));
 
 
 }
