@@ -17,6 +17,10 @@ private:
     unsigned char* programLineCounter;
 
 public:
+    bool nextProgramCounter();
+    unsigned char *getProgramLineCounter() const;
+    unsigned short getProgramCounter();
+    void setProgramLineCounter(unsigned char *programLineCounter);
     void resetProgramCounter();
     bool setProgramCounter(unsigned short lineNumber);
     static Program* getInstance();

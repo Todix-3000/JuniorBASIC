@@ -27,7 +27,8 @@ unsigned char* Command::_goto(unsigned char* restOfLine) {
     } catch (std::invalid_argument e) {
         throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
     }
-    return restOfLine;
+    Global::getInstance()->setRunMode();
+    return Program::getInstance()->getProgramLineCounter();
 }
 
 unsigned char* Command::list(unsigned char* restOfLine) {
@@ -79,7 +80,7 @@ unsigned char* Command::list(unsigned char* restOfLine) {
             bool firstChar = true;
             for (auto c : codeLine) {
                 std::string tokenName = Parser::getInstance(nullptr)->findTokenName((unsigned char) c, type);
-                if (insertSpace) { outputLine += ' '; insertSpace = false; }
+                if (insertSpace) { outputLine += ' '; insertSpace = false; firstChar = true;}
                 if (tokenName.length()>0) {
                     if (type == TOKEN_TYPE_COMMAND) {
                         insertSpace = true;
@@ -207,6 +208,7 @@ unsigned char *Command::_if(unsigned char *restOfLine) {
             restOfLine++;
             return _goto(restOfLine);
         } else if (*restOfLine == CMD_THEN) {
+            restOfLine++;
             return restOfLine;
         }
     } else {
@@ -236,7 +238,99 @@ unsigned char *Command::save(unsigned char *restOfLine) {
 
 unsigned char *Command::_new(unsigned char *restOfLine) {
     Program::getInstance()->clear();
-    while (*restOfLine != 0) { restOfLine++; }
+    restOfLine = (unsigned char*) "";
+    return restOfLine;
+}
+
+unsigned char *Command::end(unsigned char *restOfLine) {
+    Global::getInstance()->setDirectMode();
+    return restOfLine;
+}
+
+unsigned char *Command::stop(unsigned char *restOfLine) {
+    Global::getInstance()->setDirectMode();
+    std::cout << "BREAK IN " << Program::getInstance()->getProgramCounter() << std::endl;
+    return restOfLine;
+}
+
+unsigned char *Command::cont(unsigned char *restOfLine) {
+    Global::getInstance()->setRunMode();
+    return restOfLine;
+}
+
+unsigned char *Command::clr(unsigned char *restOfLine) {
+    Variable::getContainer()->clearAll();
+    return restOfLine;
+}
+
+unsigned char *Command::input(unsigned char *restOfLine) {
+    if (*restOfLine == '"') {
+        ShuntingYard *algorithm = new ShuntingYard();
+        Value result;
+        restOfLine = ShuntingYard().run(restOfLine, result);
+        std::cout << result.getString();
+        if (*restOfLine == ';') {
+            restOfLine++;
+        } else {
+            throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+        }
+    }
+    bool lastVar = false;
+    do {
+        Parser* parser = Parser::getInstance(restOfLine);
+        auto varDef = parser->getVariableDefinition();
+        restOfLine = parser->inputPtr;
+        std::vector<int> index;
+        if (*restOfLine=='(') {
+            restOfLine++;
+            bool finished = false;
+            do {
+                Value result;
+                restOfLine = (new ShuntingYard())->run(restOfLine, result);
+                index.push_back(result.getInt());
+                if (*restOfLine == ',') {
+                    restOfLine++;
+                } else if(*restOfLine==')') {
+                    restOfLine++;
+                    finished=true;
+                } else {
+                    throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+                }
+            } while (!finished);
+        }
+        std::cout << '?';
+        std::string line;
+        std::getline(std::cin, line);
+
+        Value result;
+
+        try {
+            switch (varDef.varType) {
+                case VALUE_TYPE_STRING:
+                    result = Value(line);
+                    break;
+                case VALUE_TYPE_INT:
+                    result = Value(std::stoi(line));
+                    break;
+                case VALUE_TYPE_FLOAT:
+                    result = Value(std::stod(line));
+                    break;
+            }
+        } catch (std::invalid_argument e) {
+            throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+        }
+        if (index.size()==0) {
+            Variable::getContainer()->setValue(varDef.varName, result);
+        } else {
+            Variable::getContainer()->setValue(varDef.varName, index, result);
+        }
+
+        if (*restOfLine==';') {
+            restOfLine++;
+        } else {
+            lastVar = true;
+        }
+    } while (!lastVar);
     return restOfLine;
 }
 

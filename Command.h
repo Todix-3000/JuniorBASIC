@@ -21,5 +21,10 @@ public:
     static unsigned char* load(unsigned char* restOfLine);
     static unsigned char* save(unsigned char* restOfLine);
     static unsigned char* _new(unsigned char* restOfLine);
+    static unsigned char* end(unsigned char* restOfLine);
+    static unsigned char* stop(unsigned char* restOfLine);
+    static unsigned char* cont(unsigned char* restOfLine);
+    static unsigned char* clr(unsigned char* restOfLine);
+    static unsigned char* input(unsigned char* restOfLine);
 };
 #endif //JUNIORBASIC_COMMAND_H

@@ -51,6 +51,22 @@ void Program::resetLinePointer() {
     linePointer = code.begin();
 }
 
+unsigned short Program::getProgramCounter() {
+    return programCounter->first;
+}
+
+bool Program::nextProgramCounter() {
+    if (programCounter != code.end()) {
+        programCounter++;
+    }
+    if (programCounter == code.end()) {
+        programLineCounter = (unsigned char *) "";
+        return false;
+    }
+    programLineCounter = (unsigned char*) programCounter->second.data();
+    return true;
+}
+
 void Program::resetProgramCounter() {
     programCounter = code.begin();
     programLineCounter = (unsigned char*) programCounter->second.data();
@@ -58,11 +74,19 @@ void Program::resetProgramCounter() {
 
 bool Program::setProgramCounter(unsigned short lineNumber) {
     programCounter = code.find(lineNumber);
-    if (programCounter==code.end()) {
+    if (programCounter == code.end()) {
         return false;
     }
     programLineCounter = (unsigned char*) programCounter->second.data();
 
     return true;
+}
+
+void Program::setProgramLineCounter(unsigned char *programLineCounter) {
+    Program::programLineCounter = programLineCounter;
+}
+
+unsigned char *Program::getProgramLineCounter() const {
+    return programLineCounter;
 }
 

@@ -154,6 +154,7 @@ Token* Parser::getNextTokenForExpression(bool unaryOperator) {
         if (myToken->getType()!=TOKEN_TYPE_COMMAND) {
             return myToken;
         }
+        inputPtr--;
     }
     if ((myToken = findVariable()) != nullptr) {
         return myToken;
@@ -197,7 +198,8 @@ unsigned char Parser::getTokenId(size_t &tokenLength) {
     TokenVector maps[] = {tokenList};
     tokenLength = 0;
     for (auto const& map : maps ) {
-        for (int i=0; i<map.size(); i++) {
+        // for (int i=0; i<map.size(); i++) {
+        for (int i=map.size()-1; i>=0; i--) {
             auto tok = map.at(i);
             if (tok.token != nullptr) {
                 if ( memcmp (inputPtr, tok.text.data(), tok.text.length()) == 0 ) {
@@ -305,8 +307,12 @@ Parser::Parser() {
     tokenList[CMD_THEN]  = TokenDefinition("THEN",  new Token(TOKEN_TYPE_COMMAND, Command::then));
     tokenList[CMD_LOAD]  = TokenDefinition("LOAD",  new Token(TOKEN_TYPE_COMMAND, Command::load));
     tokenList[CMD_SAVE]  = TokenDefinition("SAVE",  new Token(TOKEN_TYPE_COMMAND, Command::save));
-    tokenList[CMD_NEW]   = TokenDefinition("NEW" ,  new Token(TOKEN_TYPE_COMMAND, Command::_new));
-
+    tokenList[CMD_NEW]   = TokenDefinition("NEW",   new Token(TOKEN_TYPE_COMMAND, Command::_new));
+    tokenList[CMD_END]   = TokenDefinition("END",   new Token(TOKEN_TYPE_COMMAND, Command::end));
+    tokenList[CMD_STOP]  = TokenDefinition("STOP",  new Token(TOKEN_TYPE_COMMAND, Command::stop));
+    tokenList[CMD_CONT]  = TokenDefinition("CONT",  new Token(TOKEN_TYPE_COMMAND, Command::cont));
+    tokenList[CMD_CLR]   = TokenDefinition("CLR",   new Token(TOKEN_TYPE_COMMAND, Command::clr));
+    tokenList[CMD_INPUT] = TokenDefinition("INPUT", new Token(TOKEN_TYPE_COMMAND, Command::input));
 
 }
 

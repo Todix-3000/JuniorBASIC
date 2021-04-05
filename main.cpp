@@ -7,14 +7,11 @@
 #include "Variable.h"
 #include "Program.h"
 #include "Tokenizer.h"
+#include "Global.h"
 
 
 int main() {
     Program *code = Program::getInstance();
-    code->setLine(10, "A%=10");
-    code->setLine(20, "PRINT A%");
-    code->setLine(30, "A% = A% +1");
-    code->setLine(40, "IF A%<10 GOTO 20");
     ShuntingYard *algorithm = new ShuntingYard();
     Parser *parser = Parser::getInstance(nullptr);
     std::string line;
@@ -37,13 +34,25 @@ int main() {
                         restOfLine++;
                     }
                     restOfLine = parser->call(restOfLine);
+                    if (Global::getInstance()->isRunMode()) {
+                        do {
+                            while (*code->getProgramLineCounter() != 0) {
+                                while (*code->getProgramLineCounter() == ':') {
+                                    code->setProgramLineCounter(code->getProgramLineCounter() + 1);
+                                }
+                                code->setProgramLineCounter(parser->call(code->getProgramLineCounter()));
+                            }
+                        } while (code->nextProgramCounter() && Global::getInstance()->isRunMode());
+                        Global::getInstance()->setDirectMode();
+                        restOfLine = (unsigned char*) "";
+                    }
                 }
             } catch (Exception e) {
                 std::cout << "EXCEPTION " << e.getCode() << std::endl;
             }
         }
     } while (line != "QUIT");
-    std::cout << "ende";
+    std::cout << "Bye\n";
 /*
     std::cout <<test.size();
     Program *code = Program::getInstance();
