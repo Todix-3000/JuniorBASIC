@@ -6,6 +6,15 @@
 #define JUNIORBASIC_PROGRAM_H
 #include <string>
 #include <map>
+#include <stack>
+
+typedef struct {
+    int type;
+    unsigned short programCounter;
+    unsigned char* programLineCounter;
+    bool runMode;
+} StackEntry;
+enum {STACK_TYPE_GOSUB, STACK_TYPE_FOR};
 
 class Program {
 private:
@@ -15,8 +24,13 @@ private:
     std::map<unsigned short, std::string>::iterator linePointer;
     std::map<unsigned short, std::string>::iterator programCounter;
     unsigned char* programLineCounter;
+    std::stack<StackEntry>  stack;
 
 public:
+    void stackPush(StackEntry entry);
+    StackEntry stackTop();
+    void stackPop();
+    bool stackEmpty();
     bool nextProgramCounter();
     unsigned char *getProgramLineCounter() const;
     unsigned short getProgramCounter();

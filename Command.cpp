@@ -332,51 +332,83 @@ unsigned char *Command::input(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::close(unsigned char *restOfLine) {
-    return nullptr;
+    return restOfLine;
 }
 
 unsigned char *Command::data(unsigned char *restOfLine) {
-    return nullptr;
+    return restOfLine;
 }
 
 unsigned char *Command::dim(unsigned char *restOfLine) {
-    return nullptr;
+    return restOfLine;
 }
 
 unsigned char *Command::_for(unsigned char *restOfLine) {
-    return nullptr;
+    return restOfLine;
 }
 
 unsigned char *Command::get(unsigned char *restOfLine) {
-    return nullptr;
+    return restOfLine;
 }
 
 unsigned char *Command::gosub(unsigned char *restOfLine) {
-    return nullptr;
+    int param;
+    try {
+        size_t len;
+        std::string line((char *) restOfLine);
+        param = std::stoi(line, &len);
+        if (param<0 || param>USHRT_MAX) {
+            throw Exception(EXCEPTION_RANGE_ERROR);
+        }
+        restOfLine += len;
+        StackEntry stackEntry;
+        stackEntry.type = STACK_TYPE_GOSUB;
+        stackEntry.runMode = Global::getInstance()->isRunMode();
+        stackEntry.programLineCounter = restOfLine;
+        stackEntry.programCounter = Program::getInstance()->getProgramCounter();
+        Program::getInstance()->stackPush(stackEntry);
+        if (!Program::getInstance()->setProgramCounter(param)) {
+            throw Exception(EXCEPTION_UNKNOWN_LINE);
+        }
+    } catch (std::invalid_argument e) {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
+    Global::getInstance()->setRunMode();
+    return Program::getInstance()->getProgramLineCounter();
 }
 
 unsigned char *Command::on(unsigned char *restOfLine) {
-    return nullptr;
+    return restOfLine;
 }
 
 unsigned char *Command::open(unsigned char *restOfLine) {
-    return nullptr;
+    return restOfLine;
 }
 
 unsigned char *Command::read(unsigned char *restOfLine) {
-    return nullptr;
+    return restOfLine;
 }
 
 unsigned char *Command::_return(unsigned char *restOfLine) {
-    return nullptr;
+    Program *code = Program::getInstance();
+    if (code->stackEmpty() || code->stackTop().type!=STACK_TYPE_GOSUB) {
+        throw Exception(EXCEPTION_RETURN_WITHOUT_GOSUB);
+    }
+    StackEntry stackEntry = code->stackTop();
+    code->stackPop();
+    code->setProgramCounter(stackEntry.programCounter);
+    if (!stackEntry.runMode) {
+        Global::getInstance()->setDirectMode();
+    }
+    return stackEntry.programLineCounter;
 }
 
 unsigned char *Command::wait(unsigned char *restOfLine) {
-    return nullptr;
+    return restOfLine;
 }
 
 unsigned char *Command::next(unsigned char *restOfLine) {
-    return nullptr;
+    return restOfLine;
 }
 
 unsigned char *Command::load(unsigned char *restOfLine) {

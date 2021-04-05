@@ -90,3 +90,18 @@ unsigned char *Program::getProgramLineCounter() const {
     return programLineCounter;
 }
 
+void Program::stackPush(StackEntry entry) {
+    stack.push(entry);
+}
+
+void Program::stackPop() {
+    stack.pop();
+}
+StackEntry Program::stackTop() {
+    return stack.top();
+}
+
+bool Program::stackEmpty() {
+    return stack.empty();
+}
+
