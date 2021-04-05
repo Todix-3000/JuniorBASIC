@@ -225,15 +225,7 @@ unsigned char *Command::run(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::illegal(unsigned char *restOfLine) {
-    return nullptr;
-}
-
-unsigned char *Command::load(unsigned char *restOfLine) {
-    return nullptr;
-}
-
-unsigned char *Command::save(unsigned char *restOfLine) {
-    return nullptr;
+    throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
 }
 
 unsigned char *Command::_new(unsigned char *restOfLine) {
@@ -381,4 +373,14 @@ unsigned char *Command::wait(unsigned char *restOfLine) {
 unsigned char *Command::next(unsigned char *restOfLine) {
     return nullptr;
 }
+
+unsigned char *Command::load(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::save(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+
 
