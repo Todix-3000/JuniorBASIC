@@ -9,7 +9,9 @@
 #include "utils.h"
 #include "Variable.h"
 #include "Global.h"
+#include "Tokenizer.h"
 #include <iostream>
+#include <fstream>
 
 unsigned char* Command::_goto(unsigned char* restOfLine) {
     int param;
@@ -31,8 +33,39 @@ unsigned char* Command::_goto(unsigned char* restOfLine) {
     return Program::getInstance()->getProgramLineCounter();
 }
 
-unsigned char* Command::list(unsigned char* restOfLine) {
+void Command::__list(unsigned short start, unsigned short end, std::basic_ostream<char> *stream) {
     Program *code = Program::getInstance();
+    code->resetLinePointer();
+    unsigned short lineNumber;
+    std::string codeLine;
+    do {
+        codeLine = code->getNextLine(lineNumber);
+        if (lineNumber!=0 && lineNumber>=start && lineNumber<=end) {
+            std::string outputLine = "";
+            bool insertSpace = false;
+            short type;
+            bool firstChar = true;
+            for (auto c : codeLine) {
+                std::string tokenName = Parser::getInstance(nullptr)->findTokenName((unsigned char) c, type);
+                if (insertSpace) { outputLine += ' '; insertSpace = false; firstChar = true;}
+                if (tokenName.length()>0) {
+                    if (type == TOKEN_TYPE_COMMAND) {
+                        insertSpace = true;
+                        if (!firstChar) {
+                            outputLine += ' ';
+                        }
+                    }
+                    outputLine += tokenName;
+                } else {
+                    outputLine += c;
+                }
+                firstChar = false;
+            }
+            *stream << lineNumber << ' ' << outputLine << std::endl;
+        }
+    } while (lineNumber!=0);
+}
+unsigned char* Command::list(unsigned char* restOfLine) {
     unsigned short start = 0;
     unsigned short end = USHRT_MAX;
     short paramCount = 0;
@@ -68,35 +101,7 @@ unsigned char* Command::list(unsigned char* restOfLine) {
         }
 
     }
-    code->resetLinePointer();
-    unsigned short lineNumber;
-    std::string codeLine;
-    do {
-        codeLine = code->getNextLine(lineNumber);
-        if (lineNumber!=0 && lineNumber>=start && lineNumber<=end) {
-            std::string outputLine = "";
-            bool insertSpace = false;
-            short type;
-            bool firstChar = true;
-            for (auto c : codeLine) {
-                std::string tokenName = Parser::getInstance(nullptr)->findTokenName((unsigned char) c, type);
-                if (insertSpace) { outputLine += ' '; insertSpace = false; firstChar = true;}
-                if (tokenName.length()>0) {
-                    if (type == TOKEN_TYPE_COMMAND) {
-                        insertSpace = true;
-                        if (!firstChar) {
-                            outputLine += ' ';
-                        }
-                    }
-                    outputLine += tokenName;
-                } else {
-                    outputLine += c;
-                }
-                firstChar = false;
-            }
-            std::cout << lineNumber << ' ' << outputLine << std::endl;
-        }
-    } while (lineNumber!=0);
+    __list(start, end, &std::cout);
 
     return restOfLine;
 }
@@ -317,7 +322,7 @@ unsigned char *Command::input(unsigned char *restOfLine) {
             Variable::getContainer()->setValue(varDef.varName, index, result);
         }
 
-        if (*restOfLine==';') {
+        if (*restOfLine==',') {
             restOfLine++;
         } else {
             lastVar = true;
@@ -375,11 +380,42 @@ unsigned char *Command::next(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::load(unsigned char *restOfLine) {
-    return nullptr;
+    Value result;
+
+    restOfLine = ShuntingYard().run(restOfLine, result);
+    std::ifstream in(result.getString(), std::ios::in);
+    if (!in.is_open()) {
+        throw Exception(EXCEPTION_FILE_READ);
+    }
+    Program *code = Program::getInstance();
+
+    code->clear();
+    Variable::getContainer()->clearAll();
+
+    std::string line;
+    while (std::getline(in, line)) {
+        Tokenizer tokenizer = Tokenizer(line);
+        if (tokenizer.isCodeline()) {
+            auto lineNumber = tokenizer.getLineNumber();
+            if (tokenizer.getLine().length()) {
+                code->setLine(tokenizer.getLineNumber(), tokenizer.getLine());
+            }
+        }
+    }
+    code->resetProgramCounter();
+    restOfLine = (unsigned char*) "";
+    return restOfLine;
 }
 
 unsigned char *Command::save(unsigned char *restOfLine) {
-    return nullptr;
+    Value result;
+    restOfLine = ShuntingYard().run(restOfLine, result);
+    std::ofstream out(result.getString(), std::ios::trunc | std::ios::out);
+    if (!out.is_open()) {
+        throw Exception(EXCEPTION_FILE_WRITE);
+    }
+    __list(0, USHRT_MAX, &out);
+    return restOfLine;
 }
 
 

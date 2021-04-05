@@ -38,5 +38,8 @@ public:
     static unsigned char* read(unsigned char* restOfLine);
     static unsigned char* _return(unsigned char* restOfLine);
     static unsigned char* wait(unsigned char* restOfLine);
+
+private:
+    static void __list(unsigned short start, unsigned short end, std::basic_ostream<char> *stream);
 };
 #endif //JUNIORBASIC_COMMAND_H

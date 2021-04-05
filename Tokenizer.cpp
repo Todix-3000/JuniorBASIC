@@ -22,30 +22,34 @@ Tokenizer::Tokenizer(std::string rawLineInput) {
             lineNumber = line;
             rawLine = &rawLine[idx];
         }
-    } catch (const std::out_of_range& oor) {
+    } catch (const std::out_of_range &oor) {
         throw Exception(EXCEPTION_RANGE_ERROR);
     } catch (...) {};
 
     std::string upperRawLine = rawLine;
-    for (auto & c: upperRawLine) { c = toupper(c); }
-    while (rawLine.length()>0) {
+    for (auto &c: upperRawLine) { c = toupper(c); }
+    while (rawLine.length() > 0) {
         while (!quoteMode && rawLine[0] == ' ') {
             rawLine = &rawLine[1];
             upperRawLine = &upperRawLine[1];
         }
-        size_t tokenLength;
-        unsigned char tokenId = Parser::getInstance((unsigned char *) upperRawLine.data())->getTokenId(tokenLength);
+        size_t tokenLength = 0;
+        unsigned char tokenId = 0;
+
+        if (!quoteMode) {
+            tokenId = Parser::getInstance((unsigned char *) upperRawLine.data())->getTokenId(tokenLength);
+        }
         if (tokenLength > 0) {
             parsedLine += tokenId;
             rawLine.replace(0, tokenLength, "");
             upperRawLine.replace(0, tokenLength, "");
-            if (tokenId==CMD_REM) {
+            if (tokenId == CMD_REM) {
                 if (rawLine[0] == ' ') { rawLine = &rawLine[1]; }
                 parsedLine += rawLine;
                 rawLine = "";
             }
         } else {
-            if (rawLine[0]=='"') {
+            if (rawLine[0] == '"') {
                 quoteMode = !quoteMode;
             }
             parsedLine += quoteMode ? rawLine[0] : upperRawLine[0];
