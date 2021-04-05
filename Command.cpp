@@ -224,7 +224,7 @@ unsigned char *Command::run(unsigned char *restOfLine) {
     return restOfLine;
 }
 
-unsigned char *Command::then(unsigned char *restOfLine) {
+unsigned char *Command::illegal(unsigned char *restOfLine) {
     return nullptr;
 }
 
@@ -332,5 +332,53 @@ unsigned char *Command::input(unsigned char *restOfLine) {
         }
     } while (!lastVar);
     return restOfLine;
+}
+
+unsigned char *Command::close(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::data(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::dim(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::_for(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::get(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::gosub(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::on(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::open(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::read(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::_return(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::wait(unsigned char *restOfLine) {
+    return nullptr;
+}
+
+unsigned char *Command::next(unsigned char *restOfLine) {
+    return nullptr;
 }
 

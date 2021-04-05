@@ -304,7 +304,7 @@ Parser::Parser() {
     tokenList[CMD_LET]   = TokenDefinition("LET",   new Token(TOKEN_TYPE_COMMAND, Command::let));
     tokenList[CMD_RUN]   = TokenDefinition("RUN",   new Token(TOKEN_TYPE_COMMAND, Command::run));
     tokenList[CMD_IF]    = TokenDefinition("IF",    new Token(TOKEN_TYPE_COMMAND, Command::_if));
-    tokenList[CMD_THEN]  = TokenDefinition("THEN",  new Token(TOKEN_TYPE_COMMAND, Command::then));
+    tokenList[CMD_THEN]  = TokenDefinition("THEN",  new Token(TOKEN_TYPE_COMMAND, Command::illegal));
     tokenList[CMD_LOAD]  = TokenDefinition("LOAD",  new Token(TOKEN_TYPE_COMMAND, Command::load));
     tokenList[CMD_SAVE]  = TokenDefinition("SAVE",  new Token(TOKEN_TYPE_COMMAND, Command::save));
     tokenList[CMD_NEW]   = TokenDefinition("NEW",   new Token(TOKEN_TYPE_COMMAND, Command::_new));
@@ -313,7 +313,20 @@ Parser::Parser() {
     tokenList[CMD_CONT]  = TokenDefinition("CONT",  new Token(TOKEN_TYPE_COMMAND, Command::cont));
     tokenList[CMD_CLR]   = TokenDefinition("CLR",   new Token(TOKEN_TYPE_COMMAND, Command::clr));
     tokenList[CMD_INPUT] = TokenDefinition("INPUT", new Token(TOKEN_TYPE_COMMAND, Command::input));
-
+    tokenList[CMD_CLOSE] = TokenDefinition("CLOSE", new Token(TOKEN_TYPE_COMMAND, Command::close));
+    tokenList[CMD_DATA]  = TokenDefinition("DATA",  new Token(TOKEN_TYPE_COMMAND, Command::data));
+    tokenList[CMD_DIM]   = TokenDefinition("DIM",   new Token(TOKEN_TYPE_COMMAND, Command::dim));
+    tokenList[CMD_FOR]   = TokenDefinition("FOR",   new Token(TOKEN_TYPE_COMMAND, Command::_for));
+    tokenList[CMD_GET]   = TokenDefinition("GET",   new Token(TOKEN_TYPE_COMMAND, Command::get));
+    tokenList[CMD_GOSUB] = TokenDefinition("GOSUB", new Token(TOKEN_TYPE_COMMAND, Command::gosub));
+    tokenList[CMD_NEXT]  = TokenDefinition("NEXT",  new Token(TOKEN_TYPE_COMMAND, Command::next));
+    tokenList[CMD_ON]    = TokenDefinition("ON",    new Token(TOKEN_TYPE_COMMAND, Command::on));
+    tokenList[CMD_OPEN]  = TokenDefinition("OPEN",  new Token(TOKEN_TYPE_COMMAND, Command::open));
+    tokenList[CMD_READ]  = TokenDefinition("READ",  new Token(TOKEN_TYPE_COMMAND, Command::read));
+    tokenList[CMD_RETURN]= TokenDefinition("RETURN",new Token(TOKEN_TYPE_COMMAND, Command::_return));
+    tokenList[CMD_STEP]  = TokenDefinition("STEP",  new Token(TOKEN_TYPE_COMMAND, Command::illegal));
+    tokenList[CMD_TO]    = TokenDefinition("TO",    new Token(TOKEN_TYPE_COMMAND, Command::illegal));
+    tokenList[CMD_WAIT]  = TokenDefinition("WAIT",  new Token(TOKEN_TYPE_COMMAND, Command::wait));
 }
 
 TokenDefinition::TokenDefinition(std::string text, Token *token) {
