@@ -7,6 +7,7 @@
 #define JUNIORBASIC_COMMAND_H
 
 #include <string>
+#include <vector>
 
 class Command {
 public:
@@ -41,5 +42,6 @@ public:
 
 private:
     static void __list(unsigned short start, unsigned short end, std::basic_ostream<char> *stream);
+    static unsigned char* __getVarIndex(unsigned char* restOfLine, std::vector<int> &index);
 };
 #endif //JUNIORBASIC_COMMAND_H

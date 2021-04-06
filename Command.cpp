@@ -12,6 +12,7 @@
 #include "Tokenizer.h"
 #include <iostream>
 #include <fstream>
+#include <conio.h>
 
 unsigned char* Command::_goto(unsigned char* restOfLine) {
     int param;
@@ -278,23 +279,7 @@ unsigned char *Command::input(unsigned char *restOfLine) {
         auto varDef = parser->getVariableDefinition();
         restOfLine = parser->inputPtr;
         std::vector<int> index;
-        if (*restOfLine=='(') {
-            restOfLine++;
-            bool finished = false;
-            do {
-                Value result;
-                restOfLine = (new ShuntingYard())->run(restOfLine, result);
-                index.push_back(result.getInt());
-                if (*restOfLine == ',') {
-                    restOfLine++;
-                } else if(*restOfLine==')') {
-                    restOfLine++;
-                    finished=true;
-                } else {
-                    throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
-                }
-            } while (!finished);
-        }
+        restOfLine = __getVarIndex(restOfLine, index);
         std::cout << '?';
         std::string line;
         std::getline(std::cin, line);
@@ -331,6 +316,28 @@ unsigned char *Command::input(unsigned char *restOfLine) {
     return restOfLine;
 }
 
+unsigned char* Command::__getVarIndex(unsigned char* restOfLine, std::vector<int> &index) {
+    index.clear();
+    if (*restOfLine == '(') {
+        restOfLine++;
+        bool finished = false;
+        do {
+            Value result;
+            restOfLine = (new ShuntingYard())->run(restOfLine, result);
+            index.push_back(result.getInt());
+            if (*restOfLine == ',') {
+                restOfLine++;
+            } else if (*restOfLine == ')') {
+                restOfLine++;
+                finished = true;
+            } else {
+                throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+            }
+        } while (!finished);
+    }
+    return restOfLine;
+}
+
 unsigned char *Command::close(unsigned char *restOfLine) {
     return restOfLine;
 }
@@ -348,6 +355,40 @@ unsigned char *Command::_for(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::get(unsigned char *restOfLine) {
+    Parser *parser = Parser::getInstance(restOfLine);
+    auto varDef = parser->getVariableDefinition();
+    restOfLine = parser->inputPtr;
+    std::vector<int> index;
+    restOfLine = __getVarIndex(restOfLine, index);
+    char c;
+    std::string line = "";
+    if (kbhit()) {
+        c = getch();
+        line += c;
+    }
+    Value result;
+
+    try {
+        switch (varDef.varType) {
+            case VALUE_TYPE_STRING:
+                result = Value(line);
+                break;
+            case VALUE_TYPE_INT:
+                result = Value(std::stoi(line));
+                break;
+            case VALUE_TYPE_FLOAT:
+                result = Value(std::stod(line));
+                break;
+        }
+    } catch (std::invalid_argument e) {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
+    if (index.size() == 0) {
+        Variable::getContainer()->setValue(varDef.varName, result);
+    } else {
+        Variable::getContainer()->setValue(varDef.varName, index, result);
+    }
+
     return restOfLine;
 }
 
