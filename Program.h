@@ -8,14 +8,14 @@
 #include <map>
 #include <stack>
 #include "Token.h"
+#include "ForNextDefinition.h"
 
 typedef struct {
     int type;
     unsigned short programCounter;
     unsigned char* programLineCounter;
     bool runMode;
-    VarDefinition varDef;
-    std::vector<int> varIndex;
+    ForNextDefinition* forNextefinition;
 } StackEntry;
 
 enum {STACK_TYPE_GOSUB, STACK_TYPE_FOR};

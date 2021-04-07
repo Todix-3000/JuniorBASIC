@@ -517,6 +517,7 @@ unsigned char *Command::_for(unsigned char *restOfLine) {
     entry.varIndex = index;
     entry.type = STACK_TYPE_FOR;
     entry.runMode = Global::getInstance()->isRunMode();
+    entry.forNextefinition = new ForNextDefinition(varDef, index, );
     entry.programLineCounter = restOfLine;
     entry.programCounter = entry.runMode ? Program::getInstance()->getProgramCounter() : 0;
 
