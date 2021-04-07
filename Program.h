@@ -7,13 +7,17 @@
 #include <string>
 #include <map>
 #include <stack>
+#include "Token.h"
 
 typedef struct {
     int type;
     unsigned short programCounter;
     unsigned char* programLineCounter;
     bool runMode;
+    VarDefinition varDef;
+    std::vector<int> varIndex;
 } StackEntry;
+
 enum {STACK_TYPE_GOSUB, STACK_TYPE_FOR};
 
 class Program {
@@ -31,6 +35,7 @@ public:
     StackEntry stackTop();
     void stackPop();
     bool stackEmpty();
+    void stackClear();
     bool nextProgramCounter();
     unsigned char *getProgramLineCounter() const;
     unsigned short getProgramCounter();

@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include "Tokenizer.h"
 
 class Command {
 public:
@@ -31,6 +32,7 @@ public:
     static unsigned char* data(unsigned char* restOfLine);
     static unsigned char* dim(unsigned char* restOfLine);
     static unsigned char* _for(unsigned char* restOfLine);
+    static unsigned char* to(unsigned char* restOfLine);
     static unsigned char* next(unsigned char* restOfLine);
     static unsigned char* get(unsigned char* restOfLine);
     static unsigned char* gosub(unsigned char* restOfLine);
@@ -42,6 +44,6 @@ public:
 
 private:
     static void __list(unsigned short start, unsigned short end, std::basic_ostream<char> *stream);
-    static unsigned char* __getVarIndex(unsigned char* restOfLine, std::vector<int> &index);
+    static unsigned char* __getVarIndex(unsigned char* restOfLine, VarDefinition &varDef, std::vector<int> &index);
 };
 #endif //JUNIORBASIC_COMMAND_H

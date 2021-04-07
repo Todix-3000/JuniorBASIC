@@ -113,4 +113,5 @@ void Variable::clearAll() {
     intArrays.clear();
     floatArrays.clear();
     stringArrays.clear();
+    dimensions.clear();
 }

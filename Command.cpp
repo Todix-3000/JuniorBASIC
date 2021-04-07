@@ -147,27 +147,10 @@ unsigned char* Command::rem(unsigned char* restOfLine) {
 }
 
 unsigned char* Command::let(unsigned char* restOfLine) {
-    Parser* parser = Parser::getInstance(restOfLine);
-    auto varDef = parser->getVariableDefinition();
-    restOfLine = parser->inputPtr;
+    VarDefinition varDef;
     std::vector<int> index;
-    if (*restOfLine=='(') {
-        restOfLine++;
-        bool finished = false;
-        do {
-            Value result;
-            restOfLine = (new ShuntingYard())->run(restOfLine, result);
-            index.push_back(result.getInt());
-            if (*restOfLine == ',') {
-                restOfLine++;
-            } else if(*restOfLine==')') {
-                restOfLine++;
-                finished=true;
-            } else {
-                throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
-            }
-        } while (!finished);
-    }
+    restOfLine = __getVarIndex(restOfLine, varDef, index);
+
     if (*restOfLine!='=') {
         throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
     }
@@ -227,6 +210,7 @@ unsigned char *Command::run(unsigned char *restOfLine) {
     Variable::getContainer()->clearAll();
     Global::getInstance()->setRunMode();
     Program::getInstance()->resetProgramCounter();
+    Program::getInstance()->stackClear();
     return restOfLine;
 }
 
@@ -275,11 +259,9 @@ unsigned char *Command::input(unsigned char *restOfLine) {
     }
     bool lastVar = false;
     do {
-        Parser* parser = Parser::getInstance(restOfLine);
-        auto varDef = parser->getVariableDefinition();
-        restOfLine = parser->inputPtr;
+        VarDefinition varDef;
         std::vector<int> index;
-        restOfLine = __getVarIndex(restOfLine, index);
+        restOfLine = __getVarIndex(restOfLine, varDef, index);
         std::cout << '?';
         std::string line;
         std::getline(std::cin, line);
@@ -316,7 +298,11 @@ unsigned char *Command::input(unsigned char *restOfLine) {
     return restOfLine;
 }
 
-unsigned char* Command::__getVarIndex(unsigned char* restOfLine, std::vector<int> &index) {
+unsigned char* Command::__getVarIndex(unsigned char* restOfLine, VarDefinition &varDef, std::vector<int> &index) {
+    Parser *parser = Parser::getInstance(restOfLine);
+    varDef = parser->getVariableDefinition();
+    restOfLine = parser->inputPtr;
+
     index.clear();
     if (*restOfLine == '(') {
         restOfLine++;
@@ -347,19 +333,25 @@ unsigned char *Command::data(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::dim(unsigned char *restOfLine) {
-    return restOfLine;
-}
-
-unsigned char *Command::_for(unsigned char *restOfLine) {
+    bool lastVar = false;
+    do {
+        VarDefinition varDef;
+        std::vector<int> index;
+        restOfLine = __getVarIndex(restOfLine, varDef, index);
+        Variable::getContainer()->dim(varDef.varName, varDef.varType, index);
+        if (*restOfLine==',') {
+            restOfLine++;
+        } else {
+            lastVar = true;
+        }
+    } while (!lastVar);
     return restOfLine;
 }
 
 unsigned char *Command::get(unsigned char *restOfLine) {
-    Parser *parser = Parser::getInstance(restOfLine);
-    auto varDef = parser->getVariableDefinition();
-    restOfLine = parser->inputPtr;
+    VarDefinition varDef;
     std::vector<int> index;
-    restOfLine = __getVarIndex(restOfLine, index);
+    restOfLine = __getVarIndex(restOfLine, varDef, index);
     char c;
     std::string line = "";
     if (kbhit()) {
@@ -406,7 +398,7 @@ unsigned char *Command::gosub(unsigned char *restOfLine) {
         stackEntry.type = STACK_TYPE_GOSUB;
         stackEntry.runMode = Global::getInstance()->isRunMode();
         stackEntry.programLineCounter = restOfLine;
-        stackEntry.programCounter = Program::getInstance()->getProgramCounter();
+        stackEntry.programCounter = stackEntry.runMode ? Program::getInstance()->getProgramCounter() : 0;
         Program::getInstance()->stackPush(stackEntry);
         if (!Program::getInstance()->setProgramCounter(param)) {
             throw Exception(EXCEPTION_UNKNOWN_LINE);
@@ -488,6 +480,57 @@ unsigned char *Command::save(unsigned char *restOfLine) {
         throw Exception(EXCEPTION_FILE_WRITE);
     }
     __list(0, USHRT_MAX, &out);
+    return restOfLine;
+}
+
+unsigned char *Command::_for(unsigned char *restOfLine) {
+    VarDefinition varDef;
+    std::vector<int> index;
+    restOfLine = __getVarIndex(restOfLine, varDef, index);
+
+    if (*restOfLine!='=') {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
+    restOfLine++;
+    Value result;
+    restOfLine = (new ShuntingYard())->run(restOfLine, result);
+    if (result.getType()!= varDef.varType) {
+        if (varDef.varType==VALUE_TYPE_FLOAT) {
+            result = Value(result.getFloat());
+        } else if (varDef.varType==VALUE_TYPE_INT) {
+            result = Value(result.getInt());
+        } else {
+            result = Value(result.getString());
+        }
+    }
+    if (*restOfLine != CMD_TO) {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
+    if (index.size()==0) {
+        Variable::getContainer()->setValue(varDef.varName, result);
+    } else {
+        Variable::getContainer()->setValue(varDef.varName, index, result);
+    }
+
+    StackEntry entry;
+    entry.varDef = varDef;
+    entry.varIndex = index;
+    entry.type = STACK_TYPE_FOR;
+    entry.runMode = Global::getInstance()->isRunMode();
+    entry.programLineCounter = restOfLine;
+    entry.programCounter = entry.runMode ? Program::getInstance()->getProgramCounter() : 0;
+
+    Program::getInstance()->stackPush(entry);
+    return restOfLine;
+}
+
+
+unsigned char *Command::to(unsigned char *restOfLine) {
+    StackEntry entry = Program::getInstance()->stackTop();
+    entry.programLineCounter++;
+    if (entry.programLineCounter!=restOfLine) {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
     return restOfLine;
 }
 

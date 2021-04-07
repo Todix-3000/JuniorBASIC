@@ -105,3 +105,9 @@ bool Program::stackEmpty() {
     return stack.empty();
 }
 
+void Program::stackClear() {
+    while (!stack.empty()) {
+        stack.pop();
+    }
+}
+
