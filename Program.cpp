@@ -95,6 +95,9 @@ void Program::stackPush(StackEntry entry) {
 }
 
 void Program::stackPop() {
+    if (stack.top().forNextDefinition != nullptr) {
+        delete stack.top().forNextDefinition;
+    }
     stack.pop();
 }
 StackEntry Program::stackTop() {
@@ -106,8 +109,8 @@ bool Program::stackEmpty() {
 }
 
 void Program::stackClear() {
-    while (!stack.empty()) {
-        stack.pop();
+    while (!stackEmpty()) {
+        stackPop();
     }
 }
 

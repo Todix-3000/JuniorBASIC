@@ -166,6 +166,7 @@ Unary Operator::getOneValue(std::stack<Token> * stack) {
             }
             v1 = stack->top();
         }
+        stack->pop();
         if (v1.getType() == TOKEN_TYPE_VALUE) {
             result.op1 = v1.getValue();
             return result;

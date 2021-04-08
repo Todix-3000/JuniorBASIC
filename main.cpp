@@ -49,6 +49,7 @@ int main() {
                 }
             } catch (Exception e) {
                 std::cout << "EXCEPTION " << e.getCode() << std::endl;
+                Global::getInstance()->setDirectMode();
             }
         }
     } while (line != "QUIT");

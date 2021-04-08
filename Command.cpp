@@ -399,6 +399,7 @@ unsigned char *Command::gosub(unsigned char *restOfLine) {
         stackEntry.runMode = Global::getInstance()->isRunMode();
         stackEntry.programLineCounter = restOfLine;
         stackEntry.programCounter = stackEntry.runMode ? Program::getInstance()->getProgramCounter() : 0;
+        stackEntry.forNextDefinition = nullptr;
         Program::getInstance()->stackPush(stackEntry);
         if (!Program::getInstance()->setProgramCounter(param)) {
             throw Exception(EXCEPTION_UNKNOWN_LINE);
@@ -424,6 +425,9 @@ unsigned char *Command::read(unsigned char *restOfLine) {
 
 unsigned char *Command::_return(unsigned char *restOfLine) {
     Program *code = Program::getInstance();
+    while (!code->stackEmpty() && code->stackTop().type!=CMD_GOSUB) {
+        code->stackPop();
+    }
     if (code->stackEmpty() || code->stackTop().type!=CMD_GOSUB) {
         throw Exception(EXCEPTION_RETURN_WITHOUT_GOSUB);
     }
@@ -444,8 +448,9 @@ unsigned char *Command::wait(unsigned char *restOfLine) {
 
 unsigned char *Command::next(unsigned char *restOfLine) {
     Program *code = Program::getInstance();
-    bool endOfParams = true;
+    bool endOfParams;
     do {
+        endOfParams = true;
         if (code->stackEmpty() || code->stackTop().type != CMD_FOR) {
             throw Exception(EXCEPTION_NEXT_WITHOUT_FOR);
         }
@@ -478,7 +483,6 @@ unsigned char *Command::next(unsigned char *restOfLine) {
             }
             endOfParams = true;
         } else {
-            delete code->stackTop().forNextDefinition;
             code->stackPop();
         }
         if (*restOfLine==',') {
