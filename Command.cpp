@@ -329,6 +329,22 @@ unsigned char *Command::close(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::data(unsigned char *restOfLine) {
+    bool searchAgain = true;
+    do {
+        try {
+            Parser *parser = Parser::getInstance(restOfLine);
+            parser->getLiteralValue();
+            restOfLine = parser->inputPtr;
+            if (*restOfLine == ',') {
+                restOfLine++;
+            } else {
+                searchAgain = false;
+            }
+        } catch (NotFount e) {
+            searchAgain = false;
+        }
+    } while (searchAgain);
+
     return restOfLine;
 }
 

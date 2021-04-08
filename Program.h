@@ -28,6 +28,8 @@ private:
     std::map<unsigned short, std::string>::iterator linePointer;
     std::map<unsigned short, std::string>::iterator programCounter;
     unsigned char* programLineCounter;
+    std::map<unsigned short, std::string>::iterator dataCounter;
+    unsigned char* dataLineCounter;
     std::stack<StackEntry>  stack;
 
 public:
@@ -36,12 +38,19 @@ public:
     void stackPop();
     bool stackEmpty();
     void stackClear();
+
     bool nextProgramCounter();
     unsigned char *getProgramLineCounter() const;
     unsigned short getProgramCounter();
     void setProgramLineCounter(unsigned char *programLineCounter);
     void resetProgramCounter();
     bool setProgramCounter(unsigned short lineNumber);
+
+    void resetDataCounter();
+    bool setDataCounter(unsigned short lineNumber);
+    void setDataLineCounter(unsigned char *dataLineCounter);
+    unsigned char *getDataLineCounter() const;
+
     static Program* getInstance();
     void setLine(unsigned short lineNumber, std::string lineCode);
     void removeLine(unsigned short lineNumber);

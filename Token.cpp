@@ -113,11 +113,7 @@ VarDefinition Parser::getVariableDefinition() {
     throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
 }
 
-Token* Parser::getNextTokenForExpression(bool unaryOperator) {
-    Token *myToken;
-    while (' ' == *inputPtr) {
-        inputPtr++;
-    }
+Value Parser::getLiteralValue() {
     if (*inputPtr >= '0' && *inputPtr <= '9') {
         size_t intLength;
         size_t doubleLength;
@@ -125,10 +121,10 @@ Token* Parser::getNextTokenForExpression(bool unaryOperator) {
         double doubleValue = std::stod((char*)inputPtr, &doubleLength);
         if (doubleLength>intLength) {
             inputPtr = &inputPtr[doubleLength];
-            return new Token(Value(doubleValue));
+            return Value(doubleValue);
         }
         inputPtr = &inputPtr[intLength];
-        return new Token(Value(intValue));
+        return Value(intValue);
     }
     if (*inputPtr == '"') {
         unsigned char* start = ++inputPtr;
@@ -142,9 +138,20 @@ Token* Parser::getNextTokenForExpression(bool unaryOperator) {
         memcpy( subbuff, start, inputPtr-start );
         subbuff[inputPtr-start] = '\0';
         inputPtr++;
-        return new Token(std::string(subbuff));
-
+        return Value(std::string(subbuff));
     }
+    throw NotFount();
+}
+
+Token* Parser::getNextTokenForExpression(bool unaryOperator) {
+    Token *myToken;
+    while (' ' == *inputPtr) {
+        inputPtr++;
+    }
+    try {
+        return new Token(getLiteralValue());
+    } catch (NotFount e) {}
+
     if (unaryOperator) {
         if ((myToken = findToken(unaryOperatorToken)) != nullptr) {
             return myToken;

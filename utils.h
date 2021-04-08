@@ -21,6 +21,7 @@ enum {
     EXCEPTION_FILE_WRITE, EXCEPTION_RETURN_WITHOUT_GOSUB, EXCEPTION_NEXT_WITHOUT_FOR
 };
 
+class NotFount: public std::exception {};
 class Exception: public std::exception {
 public:
     Exception(int code);

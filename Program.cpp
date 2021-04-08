@@ -86,6 +86,29 @@ void Program::setProgramLineCounter(unsigned char *programLineCounter) {
     Program::programLineCounter = programLineCounter;
 }
 
+void Program::resetDataCounter() {
+    dataCounter = code.begin();
+    dataLineCounter = (unsigned char*) dataCounter->second.data();
+}
+
+bool Program::setDataCounter(unsigned short lineNumber) {
+    dataCounter = code.find(lineNumber);
+    if (dataCounter == code.end()) {
+        return false;
+    }
+    dataLineCounter = (unsigned char*) dataCounter->second.data();
+
+    return true;
+}
+
+void Program::setDataLineCounter(unsigned char *dataLineCounter) {
+    Program::dataLineCounter = dataLineCounter;
+}
+
+unsigned char *Program::getDataLineCounter() const {
+    return dataLineCounter;
+}
+
 unsigned char *Program::getProgramLineCounter() const {
     return programLineCounter;
 }

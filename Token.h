@@ -83,6 +83,8 @@ public:
 
     unsigned char getTokenId(size_t &tokenLength);
     VarDefinition getVariableDefinition();
+
+    Value getLiteralValue();
 };
 
 enum {
