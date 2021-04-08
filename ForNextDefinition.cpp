@@ -4,12 +4,12 @@
 
 #include "ForNextDefinition.h"
 #include "utils.h"
+#include "Variable.h"
 
-ForNextDefinition::ForNextDefinition(VarDefinition varDef, std::vector<int> varIndex, char direction, Value counter, Value target, Value step) {
+ForNextDefinition::ForNextDefinition(VarDefinition varDef, std::vector<int> varIndex, char direction, Value target, Value step) {
     this->varDef      = varDef;
     this->varIndex    = varIndex;
     this->direction   = direction;
-    this->counter     = counter;
     this->target      = target;
     this->step        = step;
 }
@@ -22,16 +22,20 @@ bool ForNextDefinition::checkNextStep(VarDefinition varDef, std::vector<int> var
 }
 
 bool ForNextDefinition::checkNextStep() {
-    this->counter = this->counter + this->step;
+    Value counter = Variable::getContainer()->getValue(varDef.varName, varDef.varType, varIndex);
+    counter = counter + this->step;
+    Variable::getContainer()->setValue(varDef.varName, varIndex, counter);
+
     if (direction > 0) {
-        if ((this->counter > this->target).getInt() == 1) {
+        if ((counter > this->target).getInt() == 1) {
             return false;
         }
     } else {
-        if ((this->counter < this->target).getInt() == 1) {
+        if ((counter < this->target).getInt() == 1) {
             return false;
         }
     }
+
     return true;
 }
 
@@ -43,7 +47,4 @@ const std::vector<int> &ForNextDefinition::getVarIndex() const {
     return varIndex;
 }
 
-const Value &ForNextDefinition::getCounter() const {
-    return counter;
-}
 

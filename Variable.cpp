@@ -19,6 +19,9 @@ Value Variable::getValue(std::string varName, int varType) {
 }
 
 Value Variable::getValue(std::string varName, short varType, std::vector<int> indexes) {
+    if (indexes.size()==0) {
+        return getValue(varName, varType);
+    }
     int linearIndex = getLinearIndex(varName, varType, indexes);
 
     switch (varType) {
@@ -47,6 +50,9 @@ void Variable::setValue(std::string varName, Value value) {
 }
 
 void Variable::setValue(std::string varName, std::vector<int> indexes, Value value) {
+    if (indexes.size()==0) {
+        setValue(varName, value);
+    }
     int linearIndex = getLinearIndex(varName, value.getType(), indexes);
 
     switch (value.getType()) {

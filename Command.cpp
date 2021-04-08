@@ -468,14 +468,7 @@ unsigned char *Command::next(unsigned char *restOfLine) {
         } else {
             continueLoop = code->stackTop().forNextDefinition->checkNextStep();
         }
-        if (code->stackTop().forNextDefinition->getVarIndex().size() == 0) {
-            Variable::getContainer()->setValue(code->stackTop().forNextDefinition->getVarDef().varName,
-                                               code->stackTop().forNextDefinition->getCounter());
-        } else {
-            Variable::getContainer()->setValue(code->stackTop().forNextDefinition->getVarDef().varName,
-                                               code->stackTop().forNextDefinition->getVarIndex(),
-                                               code->stackTop().forNextDefinition->getCounter());
-        }
+
         if (continueLoop) {
             restOfLine = code->stackTop().programLineCounter;
             if (Global::getInstance()->isRunMode()) {
@@ -561,11 +554,7 @@ unsigned char *Command::_for(unsigned char *restOfLine) {
     if (target.getType() == VALUE_TYPE_STRING) {
         throw Exception(EXCEPTION_TYPE_MISMATCH);
     }
-    if (index.size()==0) {
-        Variable::getContainer()->setValue(varDef.varName, counter);
-    } else {
-        Variable::getContainer()->setValue(varDef.varName, index, counter);
-    }
+    Variable::getContainer()->setValue(varDef.varName, index, counter);
 
     Value step = Value(1);
     char direction = 1;
@@ -581,7 +570,7 @@ unsigned char *Command::_for(unsigned char *restOfLine) {
     }
 
     StackEntry entry;
-    entry.forNextDefinition = new ForNextDefinition(varDef, index, direction, counter, target, step);
+    entry.forNextDefinition = new ForNextDefinition(varDef, index, direction, target, step);
     entry.type = CMD_FOR;
     entry.runMode = Global::getInstance()->isRunMode();
     entry.programLineCounter = restOfLine;
