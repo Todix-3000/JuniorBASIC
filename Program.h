@@ -15,7 +15,7 @@ typedef struct {
     unsigned short programCounter;
     unsigned char* programLineCounter;
     bool runMode;
-    ForNextDefinition* forNextefinition;
+    ForNextDefinition* forNextDefinition;
 } StackEntry;
 
 enum {STACK_TYPE_GOSUB, STACK_TYPE_FOR};

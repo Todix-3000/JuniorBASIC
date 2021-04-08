@@ -325,7 +325,7 @@ Parser::Parser() {
     tokenList[CMD_READ]  = TokenDefinition("READ",  new Token(TOKEN_TYPE_COMMAND, Command::read));
     tokenList[CMD_RETURN]= TokenDefinition("RETURN",new Token(TOKEN_TYPE_COMMAND, Command::_return));
     tokenList[CMD_STEP]  = TokenDefinition("STEP",  new Token(TOKEN_TYPE_COMMAND, Command::illegal));
-    tokenList[CMD_TO]    = TokenDefinition("TO",    new Token(TOKEN_TYPE_COMMAND, Command::to));
+    tokenList[CMD_TO]    = TokenDefinition("TO",    new Token(TOKEN_TYPE_COMMAND, Command::illegal));
     tokenList[CMD_WAIT]  = TokenDefinition("WAIT",  new Token(TOKEN_TYPE_COMMAND, Command::wait));
 }
 

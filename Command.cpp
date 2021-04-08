@@ -395,7 +395,7 @@ unsigned char *Command::gosub(unsigned char *restOfLine) {
         }
         restOfLine += len;
         StackEntry stackEntry;
-        stackEntry.type = STACK_TYPE_GOSUB;
+        stackEntry.type = CMD_GOSUB;
         stackEntry.runMode = Global::getInstance()->isRunMode();
         stackEntry.programLineCounter = restOfLine;
         stackEntry.programCounter = stackEntry.runMode ? Program::getInstance()->getProgramCounter() : 0;
@@ -424,12 +424,14 @@ unsigned char *Command::read(unsigned char *restOfLine) {
 
 unsigned char *Command::_return(unsigned char *restOfLine) {
     Program *code = Program::getInstance();
-    if (code->stackEmpty() || code->stackTop().type!=STACK_TYPE_GOSUB) {
+    if (code->stackEmpty() || code->stackTop().type!=CMD_GOSUB) {
         throw Exception(EXCEPTION_RETURN_WITHOUT_GOSUB);
     }
     StackEntry stackEntry = code->stackTop();
     code->stackPop();
-    code->setProgramCounter(stackEntry.programCounter);
+    if (Global::getInstance()->isRunMode()) {
+        code->setProgramCounter(stackEntry.programCounter);
+    }
     if (!stackEntry.runMode) {
         Global::getInstance()->setDirectMode();
     }
@@ -441,6 +443,49 @@ unsigned char *Command::wait(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::next(unsigned char *restOfLine) {
+    Program *code = Program::getInstance();
+    bool endOfParams = true;
+    do {
+        if (code->stackEmpty() || code->stackTop().type != CMD_FOR) {
+            throw Exception(EXCEPTION_NEXT_WITHOUT_FOR);
+        }
+        VarDefinition varDef;
+        std::vector<int> index;
+        bool hasIndex = true;
+        try {
+            restOfLine = __getVarIndex(restOfLine, varDef, index);
+        } catch (Exception) {
+            hasIndex = false;
+        }
+        bool continueLoop;
+        if (hasIndex) {
+            continueLoop = code->stackTop().forNextDefinition->checkNextStep(varDef, index);
+        } else {
+            continueLoop = code->stackTop().forNextDefinition->checkNextStep();
+        }
+        if (code->stackTop().forNextDefinition->getVarIndex().size() == 0) {
+            Variable::getContainer()->setValue(code->stackTop().forNextDefinition->getVarDef().varName,
+                                               code->stackTop().forNextDefinition->getCounter());
+        } else {
+            Variable::getContainer()->setValue(code->stackTop().forNextDefinition->getVarDef().varName,
+                                               code->stackTop().forNextDefinition->getVarIndex(),
+                                               code->stackTop().forNextDefinition->getCounter());
+        }
+        if (continueLoop) {
+            restOfLine = code->stackTop().programLineCounter;
+            if (Global::getInstance()->isRunMode()) {
+                code->setProgramCounter(code->stackTop().programCounter);
+            }
+            endOfParams = true;
+        } else {
+            delete code->stackTop().forNextDefinition;
+            code->stackPop();
+        }
+        if (*restOfLine==',') {
+            restOfLine++;
+            endOfParams = false;
+        }
+    } while (!endOfParams);
     return restOfLine;
 }
 
@@ -492,32 +537,49 @@ unsigned char *Command::_for(unsigned char *restOfLine) {
         throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
     }
     restOfLine++;
-    Value result;
-    restOfLine = (new ShuntingYard())->run(restOfLine, result);
-    if (result.getType()!= varDef.varType) {
+    Value counter;
+    restOfLine = (new ShuntingYard())->run(restOfLine, counter);
+    if (counter.getType() != varDef.varType) {
         if (varDef.varType==VALUE_TYPE_FLOAT) {
-            result = Value(result.getFloat());
+            counter = Value(counter.getFloat());
         } else if (varDef.varType==VALUE_TYPE_INT) {
-            result = Value(result.getInt());
+            counter = Value(counter.getInt());
         } else {
-            result = Value(result.getString());
+            throw Exception(EXCEPTION_TYPE_MISMATCH);
         }
     }
     if (*restOfLine != CMD_TO) {
         throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
     }
+    restOfLine++;
+    Value target;
+    restOfLine = (new ShuntingYard())->run(restOfLine, target);
+    if (target.getType() == VALUE_TYPE_STRING) {
+        throw Exception(EXCEPTION_TYPE_MISMATCH);
+    }
     if (index.size()==0) {
-        Variable::getContainer()->setValue(varDef.varName, result);
+        Variable::getContainer()->setValue(varDef.varName, counter);
     } else {
-        Variable::getContainer()->setValue(varDef.varName, index, result);
+        Variable::getContainer()->setValue(varDef.varName, index, counter);
+    }
+
+    Value step = Value(1);
+    char direction = 1;
+    if (*restOfLine == CMD_STEP) {
+        restOfLine++;
+        restOfLine = (new ShuntingYard())->run(restOfLine, step);
+        if (step.getType() == VALUE_TYPE_STRING) {
+            throw Exception(EXCEPTION_TYPE_MISMATCH);
+        }
+        if (step.getFloat()<0) {
+            direction = -1;
+        }
     }
 
     StackEntry entry;
-    entry.varDef = varDef;
-    entry.varIndex = index;
-    entry.type = STACK_TYPE_FOR;
+    entry.forNextDefinition = new ForNextDefinition(varDef, index, direction, counter, target, step);
+    entry.type = CMD_FOR;
     entry.runMode = Global::getInstance()->isRunMode();
-    entry.forNextefinition = new ForNextDefinition(varDef, index, );
     entry.programLineCounter = restOfLine;
     entry.programCounter = entry.runMode ? Program::getInstance()->getProgramCounter() : 0;
 
@@ -527,11 +589,6 @@ unsigned char *Command::_for(unsigned char *restOfLine) {
 
 
 unsigned char *Command::to(unsigned char *restOfLine) {
-    StackEntry entry = Program::getInstance()->stackTop();
-    entry.programLineCounter++;
-    if (entry.programLineCounter!=restOfLine) {
-        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
-    }
     return restOfLine;
 }
 
