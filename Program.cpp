@@ -6,6 +6,7 @@
 
 Program::Program() {
     resetLinePointer();
+    resetDataCounter();
 }
 
 Program* Program::instance = nullptr;
@@ -64,6 +65,18 @@ bool Program::nextProgramCounter() {
         return false;
     }
     programLineCounter = (unsigned char*) programCounter->second.data();
+    return true;
+}
+
+bool Program::nextDataCounter() {
+    if (dataCounter != code.end()) {
+        dataCounter++;
+    }
+    if (dataCounter == code.end()) {
+        dataLineCounter = (unsigned char *) "";
+        return false;
+    }
+    dataLineCounter = (unsigned char*) dataCounter->second.data();
     return true;
 }
 

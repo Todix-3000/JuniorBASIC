@@ -210,6 +210,7 @@ unsigned char *Command::run(unsigned char *restOfLine) {
     Variable::getContainer()->clearAll();
     Global::getInstance()->setRunMode();
     Program::getInstance()->resetProgramCounter();
+    Program::getInstance()->resetDataCounter();
     Program::getInstance()->stackClear();
     return restOfLine;
 }
@@ -283,11 +284,7 @@ unsigned char *Command::input(unsigned char *restOfLine) {
         } catch (std::invalid_argument e) {
             throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
         }
-        if (index.size()==0) {
-            Variable::getContainer()->setValue(varDef.varName, result);
-        } else {
-            Variable::getContainer()->setValue(varDef.varName, index, result);
-        }
+        Variable::getContainer()->setValue(varDef.varName, index, result);
 
         if (*restOfLine==',') {
             restOfLine++;
@@ -428,6 +425,65 @@ unsigned char *Command::gosub(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::on(unsigned char *restOfLine) {
+    Value result;
+    unsigned char command;
+    std::vector<int> params;
+
+    restOfLine = ShuntingYard().run(restOfLine, result);
+    if (*restOfLine==CMD_GOSUB || *restOfLine==CMD_GOTO) {
+        command = *restOfLine;
+        restOfLine++;
+    } else {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
+    int param;
+    bool searchAgain = true;
+    try {
+        do {
+            size_t len;
+            std::string line((char *) restOfLine);
+            param = std::stoi(line, &len);
+            if (param < 0 || param > USHRT_MAX) {
+                throw Exception(EXCEPTION_RANGE_ERROR);
+            }
+            restOfLine += len;
+            params.push_back(param);
+            if (*restOfLine == ',') {
+                restOfLine++;
+            } else {
+                searchAgain = false;
+            }
+        } while (searchAgain);
+    } catch (std::invalid_argument e) {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
+
+    int onValue = result.getInt()-1;
+    if (onValue>=0 && onValue<params.size()) {
+        param = params[onValue];
+        switch (command) {
+            case CMD_GOTO:
+                if (!Program::getInstance()->setProgramCounter(param)) {
+                    throw Exception(EXCEPTION_UNKNOWN_LINE);
+                }
+                break;
+            case CMD_GOSUB:
+                StackEntry stackEntry;
+                stackEntry.type = CMD_GOSUB;
+                stackEntry.runMode = Global::getInstance()->isRunMode();
+                stackEntry.programLineCounter = restOfLine;
+                stackEntry.programCounter = stackEntry.runMode ? Program::getInstance()->getProgramCounter() : 0;
+                stackEntry.forNextDefinition = nullptr;
+                Program::getInstance()->stackPush(stackEntry);
+                if (!Program::getInstance()->setProgramCounter(param)) {
+                    throw Exception(EXCEPTION_UNKNOWN_LINE);
+                }
+                break;
+        }
+        Global::getInstance()->setRunMode();
+
+        return Program::getInstance()->getProgramLineCounter();
+    }
     return restOfLine;
 }
 
@@ -436,6 +492,66 @@ unsigned char *Command::open(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::read(unsigned char *restOfLine) {
+
+    bool lastVar = false;
+    do {
+        VarDefinition varDef;
+        std::vector<int> index;
+        restOfLine = __getVarIndex(restOfLine, varDef, index);
+
+        auto code = Program::getInstance();
+        auto dataLinePointer = code->getDataLineCounter();
+        if (*dataLinePointer != ',') {
+            do {
+                if (*dataLinePointer == CMD_DATA) {
+                    break;
+                } else if (*dataLinePointer == CMD_REM) {
+                    if (!code->nextDataCounter()) {
+                        throw Exception(EXCEPTION_OUT_OF_DATA);
+                    }
+                    dataLinePointer = code->getDataLineCounter();
+                } else if (*dataLinePointer == '"') {
+                    auto parser = Parser::getInstance(dataLinePointer);
+                    parser->getLiteralValue();
+                    dataLinePointer = parser->inputPtr;
+                } else {
+                    dataLinePointer++;
+                }
+                if (*dataLinePointer == 0) {
+                    if (!code->nextDataCounter()) {
+                        throw Exception(EXCEPTION_OUT_OF_DATA);
+                    }
+                    dataLinePointer = code->getDataLineCounter();
+                }
+            } while (true);
+        }
+        dataLinePointer++;
+        Value result;
+        dataLinePointer = ShuntingYard().run(dataLinePointer, result);
+        code->setDataLineCounter(dataLinePointer);
+        if (varDef.varType != result.getType()) {
+            switch (varDef.varType) {
+                case VALUE_TYPE_INT:
+                    result = Value(result.getInt());
+                    break;
+                case VALUE_TYPE_FLOAT:
+                    result = Value(result.getFloat());
+                    break;
+                case VALUE_TYPE_STRING:
+                    result = Value(result.getString());
+                    break;
+            }
+        }
+        Variable::getContainer()->setValue(varDef.varName, index, result);
+
+        if (*restOfLine==',') {
+            restOfLine++;
+        } else {
+            lastVar = true;
+        }
+    } while (!lastVar);
+
+
     return restOfLine;
 }
 
@@ -458,7 +574,8 @@ unsigned char *Command::_return(unsigned char *restOfLine) {
     return stackEntry.programLineCounter;
 }
 
-unsigned char *Command::wait(unsigned char *restOfLine) {
+unsigned char *Command::restore(unsigned char *restOfLine) {
+    Program::getInstance()->resetDataCounter();
     return restOfLine;
 }
 
@@ -593,11 +710,6 @@ unsigned char *Command::_for(unsigned char *restOfLine) {
     entry.programCounter = entry.runMode ? Program::getInstance()->getProgramCounter() : 0;
 
     Program::getInstance()->stackPush(entry);
-    return restOfLine;
-}
-
-
-unsigned char *Command::to(unsigned char *restOfLine) {
     return restOfLine;
 }
 

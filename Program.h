@@ -46,6 +46,7 @@ public:
     void resetProgramCounter();
     bool setProgramCounter(unsigned short lineNumber);
 
+    bool nextDataCounter();
     void resetDataCounter();
     bool setDataCounter(unsigned short lineNumber);
     void setDataLineCounter(unsigned char *dataLineCounter);

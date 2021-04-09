@@ -134,7 +134,7 @@ enum {
     CMD_STEP,
     CMD_THEN,
     CMD_TO,
-    CMD_WAIT,
+    CMD_RESTORE,
     FUN_SIN,
     FUN_COS,
     FUN_TAN,

@@ -32,7 +32,6 @@ public:
     static unsigned char* data(unsigned char* restOfLine);
     static unsigned char* dim(unsigned char* restOfLine);
     static unsigned char* _for(unsigned char* restOfLine);
-    static unsigned char* to(unsigned char* restOfLine);
     static unsigned char* next(unsigned char* restOfLine);
     static unsigned char* get(unsigned char* restOfLine);
     static unsigned char* gosub(unsigned char* restOfLine);
@@ -40,7 +39,7 @@ public:
     static unsigned char* open(unsigned char* restOfLine);
     static unsigned char* read(unsigned char* restOfLine);
     static unsigned char* _return(unsigned char* restOfLine);
-    static unsigned char* wait(unsigned char* restOfLine);
+    static unsigned char* restore(unsigned char* restOfLine);
 
 private:
     static void __list(unsigned short start, unsigned short end, std::basic_ostream<char> *stream);
