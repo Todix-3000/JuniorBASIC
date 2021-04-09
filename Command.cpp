@@ -488,6 +488,26 @@ unsigned char *Command::on(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::open(unsigned char *restOfLine) {
+    Value fileId;
+    restOfLine = ShuntingYard().run(restOfLine, fileId);
+    if (fileId.getInt() < 0 || fileId.getInt() > UCHAR_MAX) {
+        throw Exception(EXCEPTION_RANGE_ERROR);
+    }
+    if (*restOfLine==',') {
+        restOfLine++;
+    }
+    Value fileName;
+    restOfLine = ShuntingYard().run(restOfLine, fileName);
+
+    Value fileOptions = Value("r");
+    if (*restOfLine==',') {
+        restOfLine++;
+        restOfLine = ShuntingYard().run(restOfLine, fileOptions);
+    }
+
+    if (Variable::getContainer()->fileIsOpen(fileId.getInt())) {
+        throw Exception(EXCEPTION_FILE_OPEN);
+    }
     return restOfLine;
 }
 

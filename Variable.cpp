@@ -121,3 +121,31 @@ void Variable::clearAll() {
     stringArrays.clear();
     dimensions.clear();
 }
+
+bool Variable::fileIsOpen(int fileId) {
+    auto fileIterator = files.find(fileId);
+    return fileIterator != files.end();
+}
+
+void Variable::fileOpen(int fileId, std::fstream* fileStream) {
+    if (!fileIsOpen(fileId)) {
+        files[fileId] = fileStream;
+    } else {
+        throw Exception(EXCEPTION_FILE_OPEN);
+    }
+}
+
+void Variable::fileClose(int fileId) {
+    if (!fileIsOpen(fileId)) {
+        throw Exception(EXCEPTION_FILE_NOT_OPEN);
+    }
+    delete &files[fileId];
+    files.erase(fileId);
+}
+
+std::fstream *Variable::fileGet(int fileId) {
+    if (!fileIsOpen(fileId)) {
+        throw Exception(EXCEPTION_FILE_NOT_OPEN);
+    }
+    return files[fileId];
+}
