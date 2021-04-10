@@ -128,7 +128,7 @@ bool Variable::fileIsOpen(int fileId) {
     return fileIterator != files.end();
 }
 
-void Variable::fileOpen(int fileId, std::fstream* fileStream) {
+void Variable::fileOpen(int fileId, std::basic_fstream<char>* fileStream) {
     if (!fileIsOpen(fileId)) {
         files[fileId] = fileStream;
     } else {
@@ -144,7 +144,7 @@ void Variable::fileClose(int fileId) {
     files.erase(fileId);
 }
 
-std::fstream *Variable::fileGet(int fileId) {
+std::basic_fstream<char> *Variable::fileGet(int fileId) {
     if (!fileIsOpen(fileId)) {
         throw Exception(EXCEPTION_FILE_NOT_OPEN);
     }

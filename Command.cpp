@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <conio.h>
+#include <sstream>
 
 unsigned char* Command::_goto(unsigned char* restOfLine) {
     int param;
@@ -107,7 +108,7 @@ unsigned char* Command::list(unsigned char* restOfLine) {
     return restOfLine;
 }
 
-void Command::__print(std::string s, std::fstream* stream) {
+void Command::__print(std::string s, std::basic_fstream<char>* stream) {
     if (stream== nullptr) {
         std::cout << s;
     } else {
@@ -119,7 +120,7 @@ void Command::__print(std::string s, std::fstream* stream) {
 }
 
 unsigned char* Command::print(unsigned char* restOfLine) {
-    std::fstream* stream;
+    std::basic_fstream<char>* stream;
     restOfLine = __getFileHandle(restOfLine, stream);
 
     ShuntingYard *algorithm = new ShuntingYard();
@@ -135,12 +136,15 @@ unsigned char* Command::print(unsigned char* restOfLine) {
             __print(" ", stream);
         } else {
             restOfLine = algorithm->run(restOfLine, result);
+            std::ostringstream ss;
             switch (result.getType()) {
                 case VALUE_TYPE_INT:
-                    __print(std::to_string(result.getInt()), stream);
+                    ss << result.getInt();
+                    __print(ss.str(), stream);
                     break;
                 case VALUE_TYPE_FLOAT:
-                    __print(std::to_string(result.getFloat()), stream);
+                    ss << result.getFloat();
+                    __print(ss.str(), stream);
                     break;
                 case VALUE_TYPE_STRING:
                     __print(result.getString(), stream);
@@ -266,7 +270,7 @@ unsigned char *Command::clr(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::input(unsigned char *restOfLine) {
-    std::fstream* stream;
+    std::basic_fstream<char>* stream;
     restOfLine = __getFileHandle(restOfLine, stream);
 
     if (stream== nullptr) {
@@ -387,7 +391,7 @@ unsigned char *Command::dim(unsigned char *restOfLine) {
     return restOfLine;
 }
 
-unsigned char *Command::__getFileHandle(unsigned char *restOfLine, std::fstream* &stream) {
+unsigned char *Command::__getFileHandle(unsigned char *restOfLine, std::basic_fstream<char>* &stream) {
     if (*restOfLine=='#') {
         restOfLine++;
         Parser *parser = Parser::getInstance(restOfLine);
@@ -406,7 +410,7 @@ unsigned char *Command::__getFileHandle(unsigned char *restOfLine, std::fstream*
 }
 
 unsigned char *Command::get(unsigned char *restOfLine) {
-    std::fstream* stream;
+    std::basic_fstream<char>* stream;
     restOfLine = __getFileHandle(restOfLine, stream);
 
     VarDefinition varDef;
@@ -585,8 +589,8 @@ unsigned char *Command::open(unsigned char *restOfLine) {
     if (Variable::getContainer()->fileIsOpen(fileId.getInt())) {
         throw Exception(EXCEPTION_FILE_OPEN);
     }
-
-    std::fstream *fileStream = new std::fstream;
+    std::basic_fstream<char> *fileStream = new std::basic_fstream<char>;
+    //std::fstream *fileStream = new std::fstream;
     fileStream->open(fileName.getString(), fileMode);
     if (!fileStream->is_open()) {
         if (fileMode | std::fstream::in) {

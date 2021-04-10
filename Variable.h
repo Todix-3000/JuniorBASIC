@@ -22,7 +22,7 @@ private:
 
     std::map<std::string, std::vector<int>>         dimensions;
 
-    std::map<int, std::fstream*>                   files;
+    std::map<int, std::basic_fstream<char>*>                   files;
 
     int getLinearIndex(std::string varName, short varType, std::vector<int> indexes);
 
@@ -35,9 +35,9 @@ public:
     void setValue(std::string varName, std::vector<int> indexes, Value value);
     void dim(std::string varName, short varType, std::vector<int> indexes);
     void clearAll();
-    void fileOpen(int, std::fstream*);
+    void fileOpen(int, std::basic_fstream<char>*);
     bool fileIsOpen(int);
     void fileClose(int);
-    std::fstream *fileGet(int);
+    std::basic_fstream<char> *fileGet(int);
 };
 #endif //JUNIORBASIC_VARIABLE_H
