@@ -11,10 +11,14 @@
 
 
 int main() {
+    std::cout << "JuniorBASIC v1.0" << std::endl;
+    std::cout << "(c) 2021 by Torsten Dix" << std::endl << std::endl;
+
     Program *code = Program::getInstance();
     ShuntingYard *algorithm = new ShuntingYard();
     Parser *parser = Parser::getInstance(nullptr);
     std::string line;
+
     do {
         std::cout << '>';
         std::getline(std::cin, line);
@@ -28,9 +32,9 @@ int main() {
             }
         } else {
             try {
-                auto restOfLine = (unsigned char*) tokenizer.getLine().data();
-                while (*restOfLine!=0) {
-                    while (*restOfLine==':') {
+                auto restOfLine = (unsigned char *) tokenizer.getLine().data();
+                while (*restOfLine != 0) {
+                    while (*restOfLine == ':') {
                         restOfLine++;
                     }
                     restOfLine = parser->call(restOfLine);
@@ -44,11 +48,22 @@ int main() {
                             }
                         } while (code->nextProgramCounter() && Global::getInstance()->isRunMode());
                         Global::getInstance()->setDirectMode();
-                        restOfLine = (unsigned char*) "";
+                        restOfLine = (unsigned char *) "";
                     }
                 }
+            } catch (Break e) {
+                std::cout << "?BREAK";
+                if (Global::getInstance()->isRunMode()) {
+                    std::cout << " IN LINE " << Program::getInstance()->getProgramCounter();
+                }
+                std::cout << std::endl;
+                Global::getInstance()->setDirectMode();
             } catch (Exception e) {
-                std::cout << "EXCEPTION " << e.getCode() << std::endl;
+                std::cout << "?" << e.getMessage() << " ERROR";
+                if (Global::getInstance()->isRunMode()) {
+                    std::cout << " IN LINE " << Program::getInstance()->getProgramCounter();
+                }
+                std::cout << std::endl;
                 Global::getInstance()->setDirectMode();
             }
         }

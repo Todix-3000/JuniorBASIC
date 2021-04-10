@@ -44,5 +44,7 @@ public:
 private:
     static void __list(unsigned short start, unsigned short end, std::basic_ostream<char> *stream);
     static unsigned char* __getVarIndex(unsigned char* restOfLine, VarDefinition &varDef, std::vector<int> &index);
+    static unsigned char* __getFileHandle(unsigned char *restOfLine, std::fstream* &stream);
+    static void __print(std::string, std::fstream*);
 };
 #endif //JUNIORBASIC_COMMAND_H

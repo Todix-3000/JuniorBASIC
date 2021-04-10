@@ -107,7 +107,21 @@ unsigned char* Command::list(unsigned char* restOfLine) {
     return restOfLine;
 }
 
+void Command::__print(std::string s, std::fstream* stream) {
+    if (stream== nullptr) {
+        std::cout << s;
+    } else {
+        stream->write(s.data(), s.length());
+        if (stream->bad()) {
+            throw Exception(EXCEPTION_FILE_WRITE);
+        }
+    }
+}
+
 unsigned char* Command::print(unsigned char* restOfLine) {
+    std::fstream* stream;
+    restOfLine = __getFileHandle(restOfLine, stream);
+
     ShuntingYard *algorithm = new ShuntingYard();
     Value result;
     bool lineFeed = true;
@@ -118,25 +132,29 @@ unsigned char* Command::print(unsigned char* restOfLine) {
         } else if (*restOfLine == ',') {
             restOfLine++;
             lineFeed = false;
-            std::cout << ' ';
+            __print(" ", stream);
         } else {
             restOfLine = algorithm->run(restOfLine, result);
             switch (result.getType()) {
                 case VALUE_TYPE_INT:
-                    std::cout << result.getInt();
+                    __print(std::to_string(result.getInt()), stream);
                     break;
                 case VALUE_TYPE_FLOAT:
-                    std::cout << result.getFloat();
+                    __print(std::to_string(result.getFloat()), stream);
                     break;
                 case VALUE_TYPE_STRING:
-                    std::cout << result.getString();
+                    __print(result.getString(), stream);
                     break;
             }
             lineFeed = true;
         }
     }
     if (lineFeed) {
-        std::cout << std::endl;
+        if (stream!= nullptr) {
+            __print("\n", stream );
+        } else {
+            std::cout << std::endl;
+        }
     }
     return restOfLine;
 }
@@ -231,9 +249,10 @@ unsigned char *Command::end(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::stop(unsigned char *restOfLine) {
-    Global::getInstance()->setDirectMode();
-    std::cout << "BREAK IN " << Program::getInstance()->getProgramCounter() << std::endl;
-    return restOfLine;
+    if (Global::getInstance()->isRunMode()) {
+        Program::getInstance()->setProgramLineCounter(restOfLine);
+    }
+    throw Break();
 }
 
 unsigned char *Command::cont(unsigned char *restOfLine) {
@@ -247,15 +266,20 @@ unsigned char *Command::clr(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::input(unsigned char *restOfLine) {
-    if (*restOfLine == '"') {
-        ShuntingYard *algorithm = new ShuntingYard();
-        Value result;
-        restOfLine = ShuntingYard().run(restOfLine, result);
-        std::cout << result.getString();
-        if (*restOfLine == ';') {
-            restOfLine++;
-        } else {
-            throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    std::fstream* stream;
+    restOfLine = __getFileHandle(restOfLine, stream);
+
+    if (stream== nullptr) {
+        if (*restOfLine == '"') {
+            ShuntingYard *algorithm = new ShuntingYard();
+            Value result;
+            restOfLine = ShuntingYard().run(restOfLine, result);
+            std::cout << result.getString();
+            if (*restOfLine == ';') {
+                restOfLine++;
+            } else {
+                throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+            }
         }
     }
     bool lastVar = false;
@@ -263,10 +287,16 @@ unsigned char *Command::input(unsigned char *restOfLine) {
         VarDefinition varDef;
         std::vector<int> index;
         restOfLine = __getVarIndex(restOfLine, varDef, index);
-        std::cout << '?';
         std::string line;
-        std::getline(std::cin, line);
-
+        if (stream== nullptr) {
+            std::cout << '?';
+            std::getline(std::cin, line);
+        } else {
+            std::getline(*stream, line);
+            if (stream->bad()) {
+                throw Exception(EXCEPTION_FILE_READ);
+            }
+        }
         Value result;
 
         try {
@@ -321,10 +351,6 @@ unsigned char* Command::__getVarIndex(unsigned char* restOfLine, VarDefinition &
     return restOfLine;
 }
 
-unsigned char *Command::close(unsigned char *restOfLine) {
-    return restOfLine;
-}
-
 unsigned char *Command::data(unsigned char *restOfLine) {
     bool searchAgain = true;
     do {
@@ -361,15 +387,41 @@ unsigned char *Command::dim(unsigned char *restOfLine) {
     return restOfLine;
 }
 
+unsigned char *Command::__getFileHandle(unsigned char *restOfLine, std::fstream* &stream) {
+    if (*restOfLine=='#') {
+        restOfLine++;
+        Parser *parser = Parser::getInstance(restOfLine);
+        Value fileId = parser->getLiteralValue();
+        restOfLine = parser->inputPtr;
+        if (*restOfLine==',') {
+            restOfLine++;
+        } else {
+            throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+        }
+        stream = Variable::getContainer()->fileGet(fileId.getInt());
+    } else {
+        stream = nullptr;
+    }
+    return restOfLine;
+}
+
 unsigned char *Command::get(unsigned char *restOfLine) {
+    std::fstream* stream;
+    restOfLine = __getFileHandle(restOfLine, stream);
+
     VarDefinition varDef;
     std::vector<int> index;
     restOfLine = __getVarIndex(restOfLine, varDef, index);
     char c;
     std::string line = "";
-    if (kbhit()) {
-        c = getch();
+    if (stream!= nullptr && !stream->eof()) {
+        c = stream->get();
         line += c;
+    } else {
+        if (kbhit()) {
+            c = getch();
+            line += c;
+        }
     }
     Value result;
 
@@ -487,10 +539,21 @@ unsigned char *Command::on(unsigned char *restOfLine) {
     return restOfLine;
 }
 
+
+unsigned char *Command::close(unsigned char *restOfLine) {
+    Value fileId;
+    restOfLine = ShuntingYard().run(restOfLine, fileId);
+    if (fileId.getInt() <= 0 || fileId.getInt() > UCHAR_MAX) {
+        throw Exception(EXCEPTION_RANGE_ERROR);
+    }
+    Variable::getContainer()->fileClose(fileId.getInt());
+    return restOfLine;
+}
+
 unsigned char *Command::open(unsigned char *restOfLine) {
     Value fileId;
     restOfLine = ShuntingYard().run(restOfLine, fileId);
-    if (fileId.getInt() < 0 || fileId.getInt() > UCHAR_MAX) {
+    if (fileId.getInt() <= 0 || fileId.getInt() > UCHAR_MAX) {
         throw Exception(EXCEPTION_RANGE_ERROR);
     }
     if (*restOfLine==',') {
@@ -498,16 +561,41 @@ unsigned char *Command::open(unsigned char *restOfLine) {
     }
     Value fileName;
     restOfLine = ShuntingYard().run(restOfLine, fileName);
-
+    std::ios_base::openmode fileMode = std::fstream::in;
     Value fileOptions = Value("r");
     if (*restOfLine==',') {
         restOfLine++;
         restOfLine = ShuntingYard().run(restOfLine, fileOptions);
+        if (fileOptions.getString().length()<1) {
+            throw Exception(EXCEPTION_RANGE_ERROR);
+        }
+        switch (toupper(fileOptions.getString()[0])) {
+            case 'R':
+                break;
+            case 'W':
+                fileMode = std::fstream::out;
+                break;
+            case 'A':
+                fileMode = std::fstream::out | std::fstream::app;
+                break;
+            default:
+                throw Exception(EXCEPTION_RANGE_ERROR);
+        }
     }
-
     if (Variable::getContainer()->fileIsOpen(fileId.getInt())) {
         throw Exception(EXCEPTION_FILE_OPEN);
     }
+
+    std::fstream *fileStream = new std::fstream;
+    fileStream->open(fileName.getString(), fileMode);
+    if (!fileStream->is_open()) {
+        if (fileMode | std::fstream::in) {
+            throw Exception(EXCEPTION_FILE_READ);
+        }
+        throw Exception(EXCEPTION_FILE_WRITE);
+    }
+    Variable::getContainer()->fileOpen(fileId.getInt(), fileStream);
+
     return restOfLine;
 }
 

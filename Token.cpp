@@ -241,7 +241,7 @@ unsigned char* Token::call(unsigned char* restOfLine) {
 
 unsigned char* Parser::call(unsigned char* restOfLine) {
     Token* myToken;
-    if (tokenList[*restOfLine].text!="") {
+    if (tokenList[*restOfLine].text!="" && tokenList[*restOfLine].token->getType()==TOKEN_TYPE_COMMAND) {
         myToken =  tokenList[*restOfLine].token;
         restOfLine++;
     } else {

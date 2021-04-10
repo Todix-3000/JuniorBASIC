@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <type_traits>
 #include <exception>
+#include <string>
 
 template<typename Base, typename T>
 inline bool instanceof(const T*) {
@@ -23,10 +24,12 @@ enum {
 };
 
 class NotFount: public std::exception {};
+class Break: public std::exception {};
 class Exception: public std::exception {
 public:
     Exception(int code);
     int getCode();
+    std::string getMessage();
 private:
     int code;
 };

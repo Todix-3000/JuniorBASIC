@@ -4,7 +4,7 @@
 
 #include "Variable.h"
 #include "utils.h"
-
+#include <fstream>
 
 Value Variable::getValue(std::string varName, int varType) {
     switch (varType) {
@@ -120,6 +120,7 @@ void Variable::clearAll() {
     floatArrays.clear();
     stringArrays.clear();
     dimensions.clear();
+    files.clear();
 }
 
 bool Variable::fileIsOpen(int fileId) {
@@ -139,7 +140,7 @@ void Variable::fileClose(int fileId) {
     if (!fileIsOpen(fileId)) {
         throw Exception(EXCEPTION_FILE_NOT_OPEN);
     }
-    delete &files[fileId];
+    delete files[fileId];
     files.erase(fileId);
 }
 
