@@ -14,6 +14,8 @@
 #include <fstream>
 #include <conio.h>
 #include <sstream>
+#include <dirent.h>
+#include <direct.h>
 
 unsigned char* Command::_goto(unsigned char* restOfLine) {
     int param;
@@ -826,4 +828,55 @@ unsigned char *Command::_for(unsigned char *restOfLine) {
 }
 
 
+unsigned char *Command::dir(unsigned char *restOfLine) {
+    Value pathName = Value(".");
+    if (*restOfLine!=':' && *restOfLine!=0) {
+        restOfLine = ShuntingYard().run(restOfLine, pathName);
+    }
+    DIR *dir;
+    dirent *dirEntity;
+    if ((dir= opendir(pathName.getString().data()))!= nullptr) {
+        while ((dirEntity = readdir(dir)) != nullptr) {
+            std::cout << dirEntity->d_ino << ' ' << dirEntity->d_name << std::endl;
+        }
+    }
+    return restOfLine;
+}
 
+unsigned char *Command::kill(unsigned char *restOfLine) {
+    Value pathName;
+    restOfLine = ShuntingYard().run(restOfLine, pathName);
+    if (remove(pathName.getString().data()) != 0) {
+        throw Exception(EXCEPTION_FILESYSTEM);
+    }
+
+    return restOfLine;
+}
+
+unsigned char *Command::chdir(unsigned char *restOfLine) {
+    Value pathName;
+    restOfLine = ShuntingYard().run(restOfLine, pathName);
+
+    if (_chdir(pathName.getString().data()) != 0) {
+        throw Exception(EXCEPTION_FILESYSTEM);
+    }
+    return restOfLine;
+}
+
+unsigned char *Command::mkdir(unsigned char *restOfLine) {
+    Value pathName;
+    restOfLine = ShuntingYard().run(restOfLine, pathName);
+
+    if (_mkdir(pathName.getString().data()) != 0) {
+        throw Exception(EXCEPTION_FILESYSTEM);
+    }
+    return restOfLine;
+}
+unsigned char *Command::rmdir(unsigned char *restOfLine) {
+    Value pathName;
+    restOfLine = ShuntingYard().run(restOfLine, pathName);
+    if (_rmdir(pathName.getString().data()) != 0) {
+        throw Exception(EXCEPTION_FILESYSTEM);
+    }
+    return restOfLine;
+}

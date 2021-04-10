@@ -334,6 +334,11 @@ Parser::Parser() {
     tokenList[CMD_STEP]  = TokenDefinition("STEP",  new Token(TOKEN_TYPE_COMMAND, Command::illegal));
     tokenList[CMD_TO]    = TokenDefinition("TO",    new Token(TOKEN_TYPE_COMMAND, Command::illegal));
     tokenList[CMD_RESTORE]= TokenDefinition("RESTORE",new Token(TOKEN_TYPE_COMMAND, Command::restore));
+    tokenList[CMD_DIR]   = TokenDefinition("DIR",  new Token(TOKEN_TYPE_COMMAND, Command::dir));
+    tokenList[CMD_KILL]  = TokenDefinition("KILL", new Token(TOKEN_TYPE_COMMAND, Command::kill));
+    tokenList[CMD_CHDIR] = TokenDefinition("CHDIR",new Token(TOKEN_TYPE_COMMAND, Command::chdir));
+    tokenList[CMD_MKDIR] = TokenDefinition("MKDIR",new Token(TOKEN_TYPE_COMMAND, Command::mkdir));
+    tokenList[CMD_RMDIR] = TokenDefinition("RMDIR",new Token(TOKEN_TYPE_COMMAND, Command::rmdir));
 }
 
 TokenDefinition::TokenDefinition(std::string text, Token *token) {

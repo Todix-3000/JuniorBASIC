@@ -7,6 +7,7 @@
 Program::Program() {
     resetLinePointer();
     resetDataCounter();
+    resetProgramCounter();
 }
 
 Program* Program::instance = nullptr;

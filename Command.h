@@ -40,6 +40,11 @@ public:
     static unsigned char* read(unsigned char* restOfLine);
     static unsigned char* _return(unsigned char* restOfLine);
     static unsigned char* restore(unsigned char* restOfLine);
+    static unsigned char* dir(unsigned char* restOfLine);
+    static unsigned char* kill(unsigned char* restOfLine);
+    static unsigned char* chdir(unsigned char* restOfLine);
+    static unsigned char* mkdir(unsigned char* restOfLine);
+    static unsigned char* rmdir(unsigned char* restOfLine);
 
 private:
     static void __list(unsigned short start, unsigned short end, std::basic_ostream<char> *stream);
