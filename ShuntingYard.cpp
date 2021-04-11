@@ -13,6 +13,7 @@ public:
     void push(Token token) {
         switch (token.getType()) {
             case TOKEN_TYPE_OPERATOR:
+            case TOKEN_TYPE_UNARYOPERATOR:
             case TOKEN_TYPE_FUNCTION:
                 token.call(this);
                 return;
@@ -67,11 +68,12 @@ unsigned char* ShuntingYard::run(unsigned char* input, Value &result) {
                 } while (true);
                 break;
             case TOKEN_TYPE_OPERATOR:
+            case TOKEN_TYPE_UNARYOPERATOR:
                 unary=true;
                 while (!tokenStack.empty() &&
-                  tokenStack.top().getType()==TOKEN_TYPE_OPERATOR &&
-                  token->getAssoc()==LEFT &&
-                  token->getPrecedence()<=tokenStack.top().getPrecedence()) {
+                        (tokenStack.top().getType()==TOKEN_TYPE_OPERATOR || tokenStack.top().getType()==TOKEN_TYPE_UNARYOPERATOR) &&
+                        token->getAssoc()==LEFT &&
+                        token->getPrecedence()<=tokenStack.top().getPrecedence()) {
                     outputBuffer.push(tokenStack.top());
                     tokenStack.pop();
                 }
@@ -102,7 +104,8 @@ unsigned char* ShuntingYard::run(unsigned char* input, Value &result) {
                 if (tokenStack.empty()) {
                     tokenStack.push(*parser->dummyFunction);
                 }
-                if (tokenStack.top().getType() == TOKEN_TYPE_FUNCTION || tokenStack.top().getType() == TOKEN_TYPE_ARRAY) {
+                if (tokenStack.top().getType() == TOKEN_TYPE_FUNCTION || tokenStack.top().getType() == TOKEN_TYPE_ARRAY
+                        || tokenStack.top().getType() == TOKEN_TYPE_UNARYOPERATOR) {
                     outputBuffer.push(tokenStack.top());
                     tokenStack.pop();
                 }

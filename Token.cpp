@@ -257,8 +257,8 @@ void Token::fetchArrayValue(std::stack<Token>* tokenStack) {
 Parser::Parser() {
     unaryOperatorToken.assign(127, TokenDefinition("", nullptr));
 
-    unaryOperatorToken[OP_ADD] = TokenDefinition("+", new Token(TOKEN_TYPE_OPERATOR, 13, LEFT, Operator::dummy));
-    unaryOperatorToken[OP_SUB] = TokenDefinition("-", new Token(TOKEN_TYPE_OPERATOR, 13, LEFT, Operator::neg));
+    unaryOperatorToken[OP_ADD] = TokenDefinition("+", new Token(TOKEN_TYPE_UNARYOPERATOR, 13, LEFT, Operator::dummy));
+    unaryOperatorToken[OP_SUB] = TokenDefinition("-", new Token(TOKEN_TYPE_UNARYOPERATOR, 13, LEFT, Operator::neg));
 
     seperatorToken    = new Token(TOKEN_TYPE_SEPERATOR);
     bracketOpenToken  = new Token(TOKEN_TYPE_BRACKETOPEN);
