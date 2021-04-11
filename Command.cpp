@@ -610,13 +610,11 @@ unsigned char *Command::open(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::read(unsigned char *restOfLine) {
-
     bool lastVar = false;
     do {
         VarDefinition varDef;
         std::vector<int> index;
         restOfLine = __getVarIndex(restOfLine, varDef, index);
-
         auto code = Program::getInstance();
         auto dataLinePointer = code->getDataLineCounter();
         if (*dataLinePointer != ',') {
@@ -632,15 +630,15 @@ unsigned char *Command::read(unsigned char *restOfLine) {
                     auto parser = Parser::getInstance(dataLinePointer);
                     parser->getLiteralValue();
                     dataLinePointer = parser->inputPtr;
-                } else {
-                    dataLinePointer++;
-                }
-                if (*dataLinePointer == 0) {
+                } else if (*dataLinePointer == 0) {
                     if (!code->nextDataCounter()) {
                         throw Exception(EXCEPTION_OUT_OF_DATA);
                     }
                     dataLinePointer = code->getDataLineCounter();
+                } else {
+                    dataLinePointer++;
                 }
+
             } while (true);
         }
         dataLinePointer++;

@@ -264,6 +264,8 @@ Parser::Parser() {
     bracketOpenToken  = new Token(TOKEN_TYPE_BRACKETOPEN);
     bracketCloseToken = new Token(TOKEN_TYPE_BRACKETCLOSE);
 
+    dummyFunction     = new Token(TOKEN_TYPE_FUNCTION, Function::dummy);
+
     tokenList.assign(255, TokenDefinition("", nullptr));
 
     tokenList[OP_POW]     = TokenDefinition("^",  new Token(TOKEN_TYPE_OPERATOR, 12, RIGHT, Operator::pow));

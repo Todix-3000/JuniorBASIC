@@ -85,6 +85,8 @@ public:
     VarDefinition getVariableDefinition();
 
     Value getLiteralValue();
+
+    Token* dummyFunction;
 };
 
 enum {

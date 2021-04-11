@@ -13,6 +13,7 @@
 
 class Function {
 public:
+    static void dummy(std::stack<Token>*);
     static void sin(std::stack<Token>*);
     static void cos(std::stack<Token>*);
     static void tan(std::stack<Token>*);

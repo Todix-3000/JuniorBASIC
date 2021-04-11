@@ -99,6 +99,9 @@ unsigned char* ShuntingYard::run(unsigned char* input, Value &result) {
                 } while (tokenStack.top().getType() != TOKEN_TYPE_BRACKETOPEN);
                 // Token rememberBracket = tokenStack.top();
                 tokenStack.pop();
+                if (tokenStack.empty()) {
+                    tokenStack.push(*parser->dummyFunction);
+                }
                 if (tokenStack.top().getType() == TOKEN_TYPE_FUNCTION || tokenStack.top().getType() == TOKEN_TYPE_ARRAY) {
                     outputBuffer.push(tokenStack.top());
                     tokenStack.pop();

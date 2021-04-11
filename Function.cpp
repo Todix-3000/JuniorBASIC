@@ -264,12 +264,12 @@ void Function::mid(std::stack<Token>* stack) {
         throw Exception(EXCEPTION_TYPE_MISMATCH);
     }
     std::string value = params[0].getValue().getString();
-    int start = params[1].getValue().getInt();
+    int start = params[1].getValue().getInt()-1;
     if (start<0) {
         throw Exception(EXCEPTION_RANGE_ERROR);
     }
-    if (start>value.length()) {
-        start = value.length();
+    if (start>=value.length()) {
+        start = value.length()-1;
     }
     int len = value.length()-start;
     if (params.size()==3) {
@@ -324,4 +324,13 @@ std::vector<Token> Function::getValuesFromStack(std::stack<Token>* stack) {
         }
     }
     return result;
+}
+
+void Function::dummy(std::stack<Token> *stack) {
+    auto params = getValuesFromStack(stack);
+    if (params.size()!=1) {
+        throw Exception(EXCEPTION_PARAMETER_COUNT);
+    }
+
+    stack->push(params[0]);
 }
