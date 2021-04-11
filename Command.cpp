@@ -16,6 +16,10 @@
 #include <sstream>
 #include <dirent.h>
 #include <direct.h>
+#include <regex>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <iomanip>
 
 unsigned char* Command::_goto(unsigned char* restOfLine) {
     int param;
@@ -829,15 +833,48 @@ unsigned char *Command::_for(unsigned char *restOfLine) {
 
 
 unsigned char *Command::dir(unsigned char *restOfLine) {
-    Value pathName = Value(".");
+    Value wildcard = Value("*");
     if (*restOfLine!=':' && *restOfLine!=0) {
-        restOfLine = ShuntingYard().run(restOfLine, pathName);
+        restOfLine = ShuntingYard().run(restOfLine, wildcard);
+        if (wildcard.getString() == "") {
+            wildcard = Value("*");
+        }
     }
+    std::string regexp = "^";
+    std::string wildCardSource = wildcard.getString();
+    for (int i=0; i<wildCardSource.length(); i++) {
+        char ch = toupper(wildCardSource[i]);
+        if ((ch>='0' && ch<='9') || (ch>='A' && ch<='Z')) {
+            regexp.push_back(ch);
+        } else if (ch=='*') {
+            regexp += ".*";
+        } else {
+            regexp.push_back('\\');
+            regexp.push_back(ch);
+        }
+    }
+    regexp += "$";
     DIR *dir;
     dirent *dirEntity;
-    if ((dir= opendir(pathName.getString().data()))!= nullptr) {
+    if ((dir= opendir("."))!= nullptr) {
         while ((dirEntity = readdir(dir)) != nullptr) {
-            std::cout << dirEntity->d_ino << ' ' << dirEntity->d_name << std::endl;
+            auto const regex = std::regex(regexp, std::regex::icase);
+            auto const myText = std::string(dirEntity->d_name);
+            auto matchResults = std::smatch{};
+            if (std::string(dirEntity->d_name) != std::string(".") &&
+                std::string(dirEntity->d_name) != std::string("..") &&
+                std::regex_search(myText, matchResults, regex)) {
+                std::string filename = std::string (dirEntity->d_name);
+                struct stat stat_buf;
+                int rc = stat(filename.c_str(), &stat_buf);
+                int size = rc == 0 ? stat_buf.st_size : -1;
+                if(S_ISDIR(stat_buf.st_mode)) {
+                    std::cout << "<DIR>      ";
+                } else {
+                    std::cout << std::setw(10) << std::setfill(' ') << size << " ";
+                }
+                std::cout << dirEntity->d_name << std::endl;
+            }
         }
     }
     return restOfLine;

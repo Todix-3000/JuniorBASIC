@@ -9,35 +9,47 @@
 #include "Tokenizer.h"
 #include "Global.h"
 
+bool isBreak = false;
+
+void setBreak(int signalId) {
+    isBreak = true;
+    signal(SIGINT, setBreak);
+}
 
 int main() {
     std::cout << "JuniorBASIC v1.0" << std::endl;
     std::cout << "(c) 2021 by Torsten Dix" << std::endl << std::endl;
-
+    signal(SIGINT, setBreak);
     Program *code = Program::getInstance();
     ShuntingYard *algorithm = new ShuntingYard();
     Parser *parser = Parser::getInstance(nullptr);
     std::string line;
 
     do {
-        std::cout << '>';
-        std::getline(std::cin, line);
-        Tokenizer tokenizer = Tokenizer(line);
-        if (tokenizer.isCodeline()) {
-            auto lineNumber = tokenizer.getLineNumber();
-            if (tokenizer.getLine().length()) {
-                code->setLine(tokenizer.getLineNumber(), tokenizer.getLine());
-            } else {
-                code->removeLine(tokenizer.getLineNumber());
+        try {
+            std::cout << '>';
+            std::cin.clear();
+            std::getline(std::cin, line);
+            if (isBreak) {
+                isBreak = false;
+                throw Break();
             }
-        } else {
-            try {
+            Tokenizer tokenizer = Tokenizer(line);
+            if (tokenizer.isCodeline()) {
+                auto lineNumber = tokenizer.getLineNumber();
+                if (tokenizer.getLine().length()) {
+                    code->setLine(tokenizer.getLineNumber(), tokenizer.getLine());
+                } else {
+                    code->removeLine(tokenizer.getLineNumber());
+                }
+            } else {
                 auto restOfLine = (unsigned char *) tokenizer.getLine().data();
                 while (*restOfLine != 0) {
                     while (*restOfLine == ':') {
                         restOfLine++;
                     }
                     restOfLine = parser->call(restOfLine);
+
                     if (Global::getInstance()->isRunMode()) {
                         do {
                             while (*code->getProgramLineCounter() != 0) {
@@ -45,27 +57,32 @@ int main() {
                                     code->setProgramLineCounter(code->getProgramLineCounter() + 1);
                                 }
                                 code->setProgramLineCounter(parser->call(code->getProgramLineCounter()));
+                                if (isBreak) {
+                                    isBreak = false;
+                                    throw Break();
+                                }
                             }
                         } while (code->nextProgramCounter() && Global::getInstance()->isRunMode());
                         Global::getInstance()->setDirectMode();
                         restOfLine = (unsigned char *) "";
                     }
                 }
-            } catch (Break e) {
-                std::cout << "?BREAK";
-                if (Global::getInstance()->isRunMode()) {
-                    std::cout << " IN LINE " << Program::getInstance()->getProgramCounter();
-                }
-                std::cout << std::endl;
-                Global::getInstance()->setDirectMode();
-            } catch (Exception e) {
-                std::cout << "?" << e.getMessage() << " ERROR";
-                if (Global::getInstance()->isRunMode()) {
-                    std::cout << " IN LINE " << Program::getInstance()->getProgramCounter();
-                }
-                std::cout << std::endl;
-                Global::getInstance()->setDirectMode();
+
             }
+        } catch (Break e) {
+            std::cout << "?BREAK";
+            if (Global::getInstance()->isRunMode()) {
+                std::cout << " IN LINE " << Program::getInstance()->getProgramCounter();
+            }
+            std::cout << std::endl;
+            Global::getInstance()->setDirectMode();
+        } catch (Exception e) {
+            std::cout << "?" << e.getMessage() << " ERROR";
+            if (Global::getInstance()->isRunMode()) {
+                std::cout << " IN LINE " << Program::getInstance()->getProgramCounter();
+            }
+            std::cout << std::endl;
+            Global::getInstance()->setDirectMode();
         }
     } while (line != "QUIT");
     std::cout << "Bye\n";
