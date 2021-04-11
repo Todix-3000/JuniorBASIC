@@ -63,6 +63,9 @@ void Command::__list(unsigned short start, unsigned short end, std::basic_ostrea
                             outputLine += ' ';
                         }
                     }
+                    if (type == TOKEN_TYPE_OPERATOR && tokenName[0]>='A' && tokenName[0]<='Z') {
+                        tokenName = " " + tokenName + " ";
+                    }
                     outputLine += tokenName;
                 } else {
                     outputLine += c;
