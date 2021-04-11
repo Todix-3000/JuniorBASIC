@@ -856,24 +856,31 @@ unsigned char *Command::dir(unsigned char *restOfLine) {
     regexp += "$";
     DIR *dir;
     dirent *dirEntity;
+    std::vector<std::string> fileList;
     if ((dir= opendir("."))!= nullptr) {
         while ((dirEntity = readdir(dir)) != nullptr) {
             auto const regex = std::regex(regexp, std::regex::icase);
             auto const myText = std::string(dirEntity->d_name);
             auto matchResults = std::smatch{};
-            if (std::string(dirEntity->d_name) != std::string(".") &&
-                std::string(dirEntity->d_name) != std::string("..") &&
-                std::regex_search(myText, matchResults, regex)) {
-                std::string filename = std::string (dirEntity->d_name);
-                struct stat stat_buf;
-                int rc = stat(filename.c_str(), &stat_buf);
-                int size = rc == 0 ? stat_buf.st_size : -1;
-                if(S_ISDIR(stat_buf.st_mode)) {
-                    std::cout << "<DIR>      ";
-                } else {
-                    std::cout << std::setw(10) << std::setfill(' ') << size << " ";
-                }
-                std::cout << dirEntity->d_name << std::endl;
+            if (std::string(dirEntity->d_name) != std::string(".") && std::regex_search(myText, matchResults, regex)) {
+                fileList.push_back(std::string(dirEntity->d_name));
+            }
+        }
+        for (std::string filename : fileList) {
+            struct stat stat_buf;
+            int rc = stat(filename.c_str(), &stat_buf);
+            if(S_ISDIR(stat_buf.st_mode)) {
+                std::cout << "<DIR>      ";
+                std::cout << filename << std::endl;
+            }
+        }
+        for (std::string filename : fileList) {
+            struct stat stat_buf;
+            int rc = stat(filename.c_str(), &stat_buf);
+            int size = rc == 0 ? stat_buf.st_size : -1;
+            if(!S_ISDIR(stat_buf.st_mode)) {
+                std::cout << std::setw(10) << std::setfill(' ') << size << " ";
+                std::cout << filename << std::endl;
             }
         }
     }
