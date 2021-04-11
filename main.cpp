@@ -43,7 +43,9 @@ int main() {
                     code->removeLine(tokenizer.getLineNumber());
                 }
             } else {
-                auto restOfLine = (unsigned char *) tokenizer.getLine().data();
+                auto tokenLine = tokenizer.getLine();
+                auto tokenLineChar = tokenLine.data();
+                unsigned char* restOfLine = (unsigned char *) tokenLineChar;
                 while (*restOfLine != 0) {
                     while (*restOfLine == ':') {
                         restOfLine++;
