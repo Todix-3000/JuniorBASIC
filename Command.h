@@ -45,6 +45,8 @@ public:
     static unsigned char* chdir(unsigned char* restOfLine);
     static unsigned char* mkdir(unsigned char* restOfLine);
     static unsigned char* rmdir(unsigned char* restOfLine);
+    static unsigned char* sleep(unsigned char* restOfLine);
+    static unsigned char* quit(unsigned char* restOfLine);
 
 private:
     static void __list(unsigned short start, unsigned short end, std::basic_ostream<char> *stream);

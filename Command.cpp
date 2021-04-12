@@ -20,6 +20,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <iomanip>
+#include <thread>
+#include <chrono>
 
 unsigned char* Command::_goto(unsigned char* restOfLine) {
     int param;
@@ -924,4 +926,24 @@ unsigned char *Command::rmdir(unsigned char *restOfLine) {
         throw Exception(EXCEPTION_FILESYSTEM);
     }
     return restOfLine;
+}
+
+unsigned char *Command::sleep(unsigned char *restOfLine) {
+    Value seconds;
+    restOfLine = ShuntingYard().run(restOfLine, seconds);
+    seconds = Value(seconds.getFloat()*1000);
+    std::this_thread::sleep_for(std::chrono::milliseconds(seconds.getInt()));
+    return restOfLine;
+}
+
+unsigned char *Command::quit(unsigned char *restOfLine) {
+    if (Global::getInstance()->isDircetMode()) {
+        std::cout << "ARE YOU SURE? (Y/N)?";
+        char c = getch();
+        if (c!='y' && c!= 'Y') {
+            std::cout << std::endl;
+            return restOfLine;
+        }
+    }
+    throw Quit();
 }

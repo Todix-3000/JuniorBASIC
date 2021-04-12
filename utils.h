@@ -26,6 +26,7 @@ enum {
 
 class NotFount: public std::exception {};
 class Break: public std::exception {};
+class Quit: public std::exception {};
 class Exception: public std::exception {
 public:
     Exception(int code);

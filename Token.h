@@ -142,6 +142,8 @@ enum {
     CMD_CHDIR,
     CMD_MKDIR,
     CMD_RMDIR,
+    CMD_SLEEP,
+    CMD_QUIT,
     FUN_SIN,
     FUN_COS,
     FUN_TAN,

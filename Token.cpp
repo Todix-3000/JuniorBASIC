@@ -341,6 +341,8 @@ Parser::Parser() {
     tokenList[CMD_CHDIR] = TokenDefinition("CHDIR",new Token(TOKEN_TYPE_COMMAND, Command::chdir));
     tokenList[CMD_MKDIR] = TokenDefinition("MKDIR",new Token(TOKEN_TYPE_COMMAND, Command::mkdir));
     tokenList[CMD_RMDIR] = TokenDefinition("RMDIR",new Token(TOKEN_TYPE_COMMAND, Command::rmdir));
+    tokenList[CMD_SLEEP] = TokenDefinition("SLEEP",new Token(TOKEN_TYPE_COMMAND, Command::sleep));
+    tokenList[CMD_QUIT]  = TokenDefinition("QUIT",new Token(TOKEN_TYPE_COMMAND, Command::quit));
 }
 
 TokenDefinition::TokenDefinition(std::string text, Token *token) {
