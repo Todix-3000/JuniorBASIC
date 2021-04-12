@@ -88,7 +88,7 @@ int main() {
             }
         } while (true);
     } catch (Quit e) {
-        std::cout << "Bye\n";
+        std::cout << std::endl;
     }
 
     return 0;
