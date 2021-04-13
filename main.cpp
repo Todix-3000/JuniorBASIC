@@ -8,7 +8,7 @@
 #include "Program.h"
 #include "Tokenizer.h"
 #include "Global.h"
-
+#include "Console.h"
 bool isBreak = false;
 
 void setBreak(int signalId) {
@@ -16,8 +16,16 @@ void setBreak(int signalId) {
     signal(SIGINT, setBreak);
 }
 
+
 int main() {
+    Console::foregroundColor(11);
+    Console::backgroundColor(1);
+    Console::clear();
+    Console::setCursor(0,1);
+
+
     std::cout << "JuniorBASIC v1.0" << std::endl;
+
     std::cout << "(c) 2021 by Torsten Dix" << std::endl << std::endl;
     signal(SIGINT, setBreak);
     Program *code = Program::getInstance();
