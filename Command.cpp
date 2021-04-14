@@ -574,7 +574,7 @@ unsigned char *Command::close(unsigned char *restOfLine) {
     if (*restOfLine!='#') {
         throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
     }
-
+    restOfLine++;
     Value fileId;
     restOfLine = ShuntingYard().run(restOfLine, fileId);
     if (fileId.getInt() <= 0 || fileId.getInt() > UCHAR_MAX) {
