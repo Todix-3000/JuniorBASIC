@@ -343,6 +343,8 @@ Parser::Parser() {
     tokenList[CMD_RMDIR] = TokenDefinition("RMDIR",new Token(TOKEN_TYPE_COMMAND, Command::rmdir));
     tokenList[CMD_SLEEP] = TokenDefinition("SLEEP",new Token(TOKEN_TYPE_COMMAND, Command::sleep));
     tokenList[CMD_QUIT]  = TokenDefinition("QUIT",new Token(TOKEN_TYPE_COMMAND, Command::quit));
+    tokenList[CMD_COLOR] = TokenDefinition("COLOR",new Token(TOKEN_TYPE_COMMAND, Command::color));
+    tokenList[CMD_CLS]  = TokenDefinition("CLS",new Token(TOKEN_TYPE_COMMAND, Command::cls));
 }
 
 TokenDefinition::TokenDefinition(std::string text, Token *token) {

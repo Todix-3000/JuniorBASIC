@@ -144,6 +144,8 @@ enum {
     CMD_RMDIR,
     CMD_SLEEP,
     CMD_QUIT,
+    CMD_COLOR,
+    CMD_CLS,
     FUN_SIN,
     FUN_COS,
     FUN_TAN,

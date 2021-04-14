@@ -31,6 +31,7 @@ void Console::clear() {
     if (hStdOut == INVALID_HANDLE_VALUE) {
         return;
     }
+
     if (!GetConsoleScreenBufferInfo(hStdOut, &csbi)) {
         return;
     }
@@ -80,6 +81,29 @@ void Console::backgroundColor(unsigned int c) {
         return;
     }
     SetConsoleTextAttribute(hStdOut, (info.wAttributes & 0x000f) | (c << 4));
+}
+
+void Console::init() {
+//    system("mode con COLS=80");
+//ShowWindow(GetConsoleWindow(),SW_MAXIMIZE);
+  //  SendMessage(GetConsoleWindow(),WM_SYSKEYDOWN,VK_RETURN,0x20000000);
+        keybd_event(VK_MENU,
+                    0x38,
+                    0,
+                    0);
+        keybd_event(VK_RETURN,
+                    0x1c,
+                    0,
+                    0);
+        keybd_event(VK_RETURN,
+                    0x1c,
+                    KEYEVENTF_KEYUP,
+                    0);
+        keybd_event(VK_MENU,
+                    0x38,
+                    KEYEVENTF_KEYUP,
+                    0);
+
 }
 
 

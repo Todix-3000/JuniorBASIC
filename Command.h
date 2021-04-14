@@ -47,6 +47,8 @@ public:
     static unsigned char* rmdir(unsigned char* restOfLine);
     static unsigned char* sleep(unsigned char* restOfLine);
     static unsigned char* quit(unsigned char* restOfLine);
+    static unsigned char* color(unsigned char* restOfLine);
+    static unsigned char* cls(unsigned char* restOfLine);
 
 private:
     static void __list(unsigned short start, unsigned short end, std::basic_ostream<char> *stream);

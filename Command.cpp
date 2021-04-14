@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <thread>
 #include <chrono>
+#include "Console.h"
 
 unsigned char* Command::_goto(unsigned char* restOfLine) {
     int param;
@@ -145,6 +146,20 @@ unsigned char* Command::print(unsigned char* restOfLine) {
             restOfLine++;
             lineFeed = false;
             __print(" ", stream);
+        } else if (*restOfLine =='@' && stream == nullptr){
+            restOfLine++;
+            Value cursorX, cursorY;
+            restOfLine = algorithm->run(restOfLine, cursorX);
+            if (*restOfLine!=',') {
+                throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+            }
+            restOfLine++;
+            restOfLine = algorithm->run(restOfLine, cursorY);
+            if (cursorX.getInt()<1 || cursorY.getInt()<1 || cursorX.getInt()>999 || cursorY.getInt()>999) {
+                throw Exception(EXCEPTION_RANGE_ERROR);
+            }
+            Console::setCursor(cursorX.getInt()-1, cursorY.getInt()-1);
+
         } else {
             restOfLine = algorithm->run(restOfLine, result);
             std::ostringstream ss;
@@ -556,6 +571,10 @@ unsigned char *Command::on(unsigned char *restOfLine) {
 
 
 unsigned char *Command::close(unsigned char *restOfLine) {
+    if (*restOfLine!='#') {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
+
     Value fileId;
     restOfLine = ShuntingYard().run(restOfLine, fileId);
     if (fileId.getInt() <= 0 || fileId.getInt() > UCHAR_MAX) {
@@ -566,14 +585,20 @@ unsigned char *Command::close(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::open(unsigned char *restOfLine) {
+    if (*restOfLine!='#') {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
+    restOfLine++;
     Value fileId;
     restOfLine = ShuntingYard().run(restOfLine, fileId);
     if (fileId.getInt() <= 0 || fileId.getInt() > UCHAR_MAX) {
         throw Exception(EXCEPTION_RANGE_ERROR);
     }
-    if (*restOfLine==',') {
-        restOfLine++;
+    if (*restOfLine!=',') {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
     }
+    restOfLine++;
+
     Value fileName;
     restOfLine = ShuntingYard().run(restOfLine, fileName);
     std::ios_base::openmode fileMode = std::fstream::in;
@@ -946,4 +971,32 @@ unsigned char *Command::quit(unsigned char *restOfLine) {
         }
     }
     throw Quit();
+}
+
+unsigned char *Command::color(unsigned char *restOfLine) {
+    Value colorType;
+    restOfLine = ShuntingYard().run(restOfLine, colorType);
+    if (*restOfLine!=',') {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
+    restOfLine++;
+    Value color;
+    restOfLine = ShuntingYard().run(restOfLine, color);
+    int colorId = color.getInt();
+    if (colorId>15 || colorId<0) {
+        throw Exception(EXCEPTION_RANGE_ERROR);
+    }
+    if (colorType.getInt()==0) {
+        Console::backgroundColor(colorId);
+    } else if (colorType.getInt()==1) {
+        Console::foregroundColor(colorId);
+    } else {
+        throw Exception(EXCEPTION_RANGE_ERROR);
+    }
+    return restOfLine;
+}
+
+unsigned char *Command::cls(unsigned char *restOfLine) {
+    Console::clear();
+    return restOfLine;
 }

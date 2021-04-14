@@ -18,18 +18,17 @@ void setBreak(int signalId) {
 
 
 int main() {
-    Console::foregroundColor(11);
-    Console::backgroundColor(1);
+    Console::init();
+    Console::foregroundColor(14);
+    Console::backgroundColor(0);
     Console::clear();
-    Console::setCursor(0,1);
-
 
     std::cout << "JuniorBASIC v1.0" << std::endl;
-
     std::cout << "(c) 2021 by Torsten Dix" << std::endl << std::endl;
+
+    Console::foregroundColor(10);
     signal(SIGINT, setBreak);
     Program *code = Program::getInstance();
-    ShuntingYard *algorithm = new ShuntingYard();
     Parser *parser = Parser::getInstance(nullptr);
     std::string line;
     try {

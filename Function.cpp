@@ -268,7 +268,7 @@ void Function::mid(std::stack<Token>* stack) {
     if (start<0) {
         throw Exception(EXCEPTION_RANGE_ERROR);
     }
-    if (start>=value.length()) {
+    if (start>value.length()) {
         start = value.length()-1;
     }
     int len = value.length()-start;
