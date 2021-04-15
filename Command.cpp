@@ -1000,3 +1000,22 @@ unsigned char *Command::cls(unsigned char *restOfLine) {
     Console::clear();
     return restOfLine;
 }
+
+unsigned char *Command::sound(unsigned char *restOfLine) {
+    Value frequency;
+    restOfLine = ShuntingYard().run(restOfLine, frequency);
+    if (*restOfLine!=',') {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
+    restOfLine++;
+    Value duration;
+    restOfLine = ShuntingYard().run(restOfLine, duration);
+    if (duration.getFloat()>60.0) {
+        throw Exception(EXCEPTION_RANGE_ERROR);
+    }
+    if (frequency.getInt()<0 || frequency.getInt()>16000) {
+        throw Exception(EXCEPTION_RANGE_ERROR);
+    }
+    Console::sound(frequency.getInt(), duration.getFloat()*1000);
+    return restOfLine;
+}

@@ -345,6 +345,7 @@ Parser::Parser() {
     tokenList[CMD_QUIT]  = TokenDefinition("QUIT",new Token(TOKEN_TYPE_COMMAND, Command::quit));
     tokenList[CMD_COLOR] = TokenDefinition("COLOR",new Token(TOKEN_TYPE_COMMAND, Command::color));
     tokenList[CMD_CLS]  = TokenDefinition("CLS",new Token(TOKEN_TYPE_COMMAND, Command::cls));
+    tokenList[CMD_SOUND] = TokenDefinition("SOUND",new Token(TOKEN_TYPE_COMMAND, Command::sound));
 }
 
 TokenDefinition::TokenDefinition(std::string text, Token *token) {

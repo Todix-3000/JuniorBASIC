@@ -146,6 +146,7 @@ enum {
     CMD_QUIT,
     CMD_COLOR,
     CMD_CLS,
+    CMD_SOUND,
     FUN_SIN,
     FUN_COS,
     FUN_TAN,

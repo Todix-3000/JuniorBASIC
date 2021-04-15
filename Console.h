@@ -4,6 +4,9 @@
 
 #ifndef JUNIORBASIC_SONSOLE_H
 #define JUNIORBASIC_SONSOLE_H
+
+#include <string>
+
 class Console {
 
 public:
@@ -12,9 +15,13 @@ public:
     static void foregroundColor(unsigned int c);
     static void backgroundColor(unsigned int c);
     static void init();
+    static void sound(unsigned short freq, unsigned short time);
+    static int getChar();
+    static bool isKeyPressed();
+    static std::string input();
+    static std::string input(std::string preSelect);
 
 // private:
-    static void setColor(unsigned int fg, unsigned int bg);
 };
 
 #endif //JUNIORBASIC_SONSOLE_H
