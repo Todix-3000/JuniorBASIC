@@ -103,7 +103,7 @@ unsigned char* ShuntingYard::run(unsigned char* input, Value &result) {
                 tokenStack.pop();
                 if (tokenStack.empty()) {
                     tokenStack.push(*parser->dummyFunction);
-                }
+                } else
                 if (tokenStack.top().getType() == TOKEN_TYPE_FUNCTION || tokenStack.top().getType() == TOKEN_TYPE_ARRAY
                         || tokenStack.top().getType() == TOKEN_TYPE_UNARYOPERATOR) {
                     outputBuffer.push(tokenStack.top());

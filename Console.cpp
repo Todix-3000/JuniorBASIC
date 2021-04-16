@@ -95,6 +95,17 @@ void Console::init() {
     keybd_event(VK_RETURN, 0x1c, KEYEVENTF_KEYUP, 0);
     keybd_event(VK_MENU, 0x38, KEYEVENTF_KEYUP, 0);
 
+    CONSOLE_FONT_INFOEX cfi;
+    cfi.cbSize = sizeof(cfi);
+    cfi.nFont = 0;
+    cfi.dwFontSize.X = 0;                   // Width of each character in the font
+    cfi.dwFontSize.Y = 24;                  // Height
+    cfi.FontFamily = FF_DONTCARE;
+    cfi.FontWeight = FW_NORMAL;
+    std::wcscpy(cfi.FaceName, L"Consolas"); // Choose your font
+    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
+
+
     SetConsoleDisplayMode(GetStdHandle(STD_OUTPUT_HANDLE), CONSOLE_FULLSCREEN_MODE, 0);
 
     HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -128,6 +139,13 @@ std::string Console::input() {
 }
 
 std::string Console::input(std::string preSelect) {
+    keybd_event(VK_MENU, 0, 0, 0);
+    keybd_event(VK_NUMPAD6, 0xcd, 0, 0);
+    keybd_event(VK_NUMPAD6, 0xcd, KEYEVENTF_KEYUP, 0);
+    keybd_event(VK_NUMPAD5, 0xcc, 0, 0);
+    keybd_event(VK_NUMPAD5, 0xcc, KEYEVENTF_KEYUP, 0);
+
+    keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0);
     return input();
 }
 

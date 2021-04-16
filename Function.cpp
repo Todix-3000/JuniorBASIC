@@ -174,7 +174,7 @@ void Function::asc(std::stack<Token>* stack) {
     if (value.length()==0) {
         stack->push(Value(0));
     } else {
-        stack->push(Value((int) value[0]));
+        stack->push(Value( ((unsigned char) value[0])));
     }
 }
 

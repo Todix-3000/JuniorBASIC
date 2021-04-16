@@ -56,22 +56,34 @@ void Command::__list(unsigned short start, unsigned short end, std::basic_ostrea
             bool insertSpace = false;
             short type;
             bool firstChar = true;
+            bool inString = false;
             for (auto c : codeLine) {
-                std::string tokenName = Parser::getInstance(nullptr)->findTokenName((unsigned char) c, type);
-                if (insertSpace) { outputLine += ' '; insertSpace = false; firstChar = true;}
-                if (tokenName.length()>0) {
+                if (c == '"') {
+                    inString = !inString;
+                }
+                std::string tokenName;
+                if (!inString) {
+                    tokenName = Parser::getInstance(nullptr)->findTokenName((unsigned char) c, type);
+                }
+                if (insertSpace) {
+                    outputLine += ' ';
+                    insertSpace = false;
+                    firstChar = true;
+                }
+                if (tokenName.length() > 0) {
                     if (type == TOKEN_TYPE_COMMAND) {
                         insertSpace = true;
                         if (!firstChar) {
                             outputLine += ' ';
                         }
                     }
-                    if (type == TOKEN_TYPE_OPERATOR && tokenName[0]>='A' && tokenName[0]<='Z') {
+                    if (type == TOKEN_TYPE_OPERATOR && tokenName[0] >= 'A' && tokenName[0] <= 'Z') {
                         tokenName = " " + tokenName + " ";
                     }
                     outputLine += tokenName;
                 } else {
                     outputLine += c;
+
                 }
                 firstChar = false;
             }
@@ -110,13 +122,13 @@ unsigned char* Command::list(unsigned char* restOfLine) {
             ok = true;
         } catch (std::invalid_argument e) {
         }
-        if (paramCount==0) {
-            end=start;
-        }
         if (!ok) {
             throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
         }
 
+    }
+    if (paramCount==0 && start!=0) {
+        end=start;
     }
     __list(start, end, &std::cout);
 
