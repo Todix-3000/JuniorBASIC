@@ -1,0 +1,10 @@
+
+- FEATURE: Startfont setzen
+- FEATURE: Cursor im RunMode verstecken (Außer bei Input)
+- FEATURE: RENUMBER
+- FEATURE: EDIT
+- BUG: -(1+2) gibt Syntax-Error
+- BUG: Arrays funktionieren nicht
+- BUG: LIST: Token in Strings nicht interpretieren
+- BUG: LIST <line> verhält sich wie LIST <line>-
+- BUG: ASC liefert negative Zahlen

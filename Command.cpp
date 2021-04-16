@@ -110,6 +110,9 @@ unsigned char* Command::list(unsigned char* restOfLine) {
             ok = true;
         } catch (std::invalid_argument e) {
         }
+        if (paramCount==0) {
+            end=start;
+        }
         if (!ok) {
             throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
         }
