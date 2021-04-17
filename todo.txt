@@ -1,2 +1,1 @@
-- FEATURE: Cursor im RunMode verstecken (Außer bei Input)
 - FEATURE: RENUMBER

@@ -20,6 +20,8 @@ public:
     static bool isKeyPressed();
     static std::string input();
     static std::string input(std::string preSelect);
+    static void hideCursor();
+    static void showCursor();
 
 // private:
 };

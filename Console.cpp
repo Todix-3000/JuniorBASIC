@@ -118,6 +118,7 @@ void Console::init() {
 
     HWND x = GetConsoleWindow();
     ShowScrollBar(x, SB_BOTH, FALSE);
+    hideCursor();
 }
 
 void Console::sound(unsigned short freq, unsigned short time) {
@@ -134,7 +135,9 @@ bool Console::isKeyPressed() {
 
 std::string Console::input() {
     std::string line;
+    showCursor();
     std::getline(std::cin, line);
+    hideCursor();
     return line;
 }
 
@@ -155,6 +158,28 @@ std::string Console::input(std::string preSelect) {
         keybd_event(0x12, MapVirtualKey(0x12, 0), KEYEVENTF_KEYUP, 0); // Alt relese
     }
     return input();
+}
+
+void Console::hideCursor() {
+    CONSOLE_CURSOR_INFO info;
+    HANDLE  out;
+
+    info.bVisible = 0;
+    info.dwSize   =   1;
+
+    out = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleCursorInfo( out,  &info );
+}
+
+void Console::showCursor() {
+    CONSOLE_CURSOR_INFO info;
+    HANDLE  out;
+
+    info.bVisible = 1;
+    info.dwSize   =   1;
+
+    out = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleCursorInfo( out,  &info );
 }
 
 
