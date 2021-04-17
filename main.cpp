@@ -9,6 +9,8 @@
 #include "Tokenizer.h"
 #include "Global.h"
 #include "Console.h"
+#include "Command.h"
+
 bool isBreak = false;
 
 void setBreak(int signalId) {
@@ -17,11 +19,17 @@ void setBreak(int signalId) {
 }
 
 
-int main() {
-     Console::init();
+int main(int argc, char* argv[]) {
+    Console::init();
     Console::foregroundColor(2);
     Console::backgroundColor(7);
     Console::clear();
+
+    std::string startParam = "";
+
+    if (argc>1) {
+        startParam = argv[1];
+    }
 
     std::cout << "JuniorBASIC v1.0" << std::endl;
     std::cout << "(c) 2021 by Torsten Dix" << std::endl << std::endl;
@@ -34,10 +42,14 @@ int main() {
     try {
         do {
             try {
-                std::cout << '>';
                 std::cin.clear();
-                line = Console::input(Global::getInstance()->getOutputBuffer());
-
+                if (startParam.length()) {
+                    line = "RUN \""+startParam+"\"";
+                    startParam = "";
+                } else {
+                    std::cout << '>';
+                    line = Console::input(Global::getInstance()->getOutputBuffer());
+                }
                 if (isBreak) {
                     isBreak = false;
                     throw Break();

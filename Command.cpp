@@ -275,6 +275,9 @@ unsigned char *Command::_if(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::run(unsigned char *restOfLine) {
+    if (*restOfLine!=0 && *restOfLine!=':') {
+        restOfLine = load(restOfLine);
+    }
     Variable::getContainer()->clearAll();
     Global::getInstance()->setRunMode();
     Program::getInstance()->resetProgramCounter();
