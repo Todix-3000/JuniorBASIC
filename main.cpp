@@ -18,15 +18,15 @@ void setBreak(int signalId) {
 
 
 int main() {
-    Console::init();
-    Console::foregroundColor(14);
-    Console::backgroundColor(0);
+     Console::init();
+    Console::foregroundColor(2);
+    Console::backgroundColor(7);
     Console::clear();
 
     std::cout << "JuniorBASIC v1.0" << std::endl;
     std::cout << "(c) 2021 by Torsten Dix" << std::endl << std::endl;
 
-    Console::foregroundColor(10);
+    Console::foregroundColor(0);
     signal(SIGINT, setBreak);
     Program *code = Program::getInstance();
     Parser *parser = Parser::getInstance(nullptr);
@@ -36,7 +36,8 @@ int main() {
             try {
                 std::cout << '>';
                 std::cin.clear();
-                std::getline(std::cin, line);
+                line = Console::input(Global::getInstance()->getOutputBuffer());
+
                 if (isBreak) {
                     isBreak = false;
                     throw Break();

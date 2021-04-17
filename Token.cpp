@@ -346,6 +346,8 @@ Parser::Parser() {
     tokenList[CMD_COLOR] = TokenDefinition("COLOR",new Token(TOKEN_TYPE_COMMAND, Command::color));
     tokenList[CMD_CLS]  = TokenDefinition("CLS",new Token(TOKEN_TYPE_COMMAND, Command::cls));
     tokenList[CMD_SOUND] = TokenDefinition("SOUND",new Token(TOKEN_TYPE_COMMAND, Command::sound));
+    tokenList[CMD_EDIT]  = TokenDefinition("EDIT",new Token(TOKEN_TYPE_COMMAND, Command::edit));
+    tokenList[CMD_RENUMBER] = TokenDefinition("RENUMBER",new Token(TOKEN_TYPE_COMMAND, Command::renumber));
 }
 
 TokenDefinition::TokenDefinition(std::string text, Token *token) {

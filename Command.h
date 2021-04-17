@@ -50,9 +50,11 @@ public:
     static unsigned char* color(unsigned char* restOfLine);
     static unsigned char* cls(unsigned char* restOfLine);
     static unsigned char* sound(unsigned char* restOfLine);
-
+    static unsigned char* edit(unsigned char* restOfLine);
+    static unsigned char* renumber(unsigned char* restOfLine);
 private:
     static void __list(unsigned short start, unsigned short end, std::basic_ostream<char> *stream);
+    static std::string __listLine(std::string codeLine);
     static unsigned char* __getVarIndex(unsigned char* restOfLine, VarDefinition &varDef, std::vector<int> &index);
     static unsigned char* __getFileHandle(unsigned char *restOfLine, std::fstream* &stream);
     static void __print(std::string, std::fstream*);

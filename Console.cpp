@@ -139,13 +139,21 @@ std::string Console::input() {
 }
 
 std::string Console::input(std::string preSelect) {
-    keybd_event(VK_MENU, 0, 0, 0);
-    keybd_event(VK_NUMPAD6, 0xcd, 0, 0);
-    keybd_event(VK_NUMPAD6, 0xcd, KEYEVENTF_KEYUP, 0);
-    keybd_event(VK_NUMPAD5, 0xcc, 0, 0);
-    keybd_event(VK_NUMPAD5, 0xcc, KEYEVENTF_KEYUP, 0);
-
-    keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0);
+    for (unsigned char c : preSelect) {
+        int k1 = (c/100);
+        int k2 = (c/10)%10;
+        int k3 = c%10;
+        keybd_event(0x12, MapVirtualKey(0x12, 0), 0, 0); //Alt press
+        if (k1!=0) {
+            keybd_event(0x60+k1, MapVirtualKey(0x60+k1, 0), 0, 0); // Numpad2 press
+            keybd_event(0x60+k1, MapVirtualKey(0x60+k1, 0), KEYEVENTF_KEYUP, 0); //Numpad2 relese
+        }
+        keybd_event(0x60+k2, MapVirtualKey(0x60+k2, 0), 0, 0); // Numpad9 press
+        keybd_event(0x60+k2, MapVirtualKey(0x60+k2, 0), KEYEVENTF_KEYUP, 0); //Numpad9 relese
+        keybd_event(0x60+k3, MapVirtualKey(0x60+k3, 0), 0, 0); // Numpad9 press
+        keybd_event(0x60+k3, MapVirtualKey(0x60+k3, 0), KEYEVENTF_KEYUP, 0); //Numpad9 relese
+        keybd_event(0x12, MapVirtualKey(0x12, 0), KEYEVENTF_KEYUP, 0); // Alt relese
+    }
     return input();
 }
 

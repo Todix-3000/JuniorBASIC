@@ -11,12 +11,14 @@ private:
 
     static Global *instance;
     bool runMode;
-
+    std::string outputBuffer;
 public:
     void setRunMode() ;
     void setDirectMode();
     bool isRunMode();
     bool isDircetMode();
     static Global *getInstance();
+    void setOutputBuffer(std::string buffer);
+    std::string getOutputBuffer();
 };
 #endif //JUNIORBASIC_GLOBAL_H

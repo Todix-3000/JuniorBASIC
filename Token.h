@@ -147,6 +147,8 @@ enum {
     CMD_COLOR,
     CMD_CLS,
     CMD_SOUND,
+    CMD_EDIT,
+    CMD_RENUMBER,
     FUN_SIN,
     FUN_COS,
     FUN_TAN,

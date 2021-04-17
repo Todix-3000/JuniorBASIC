@@ -16,7 +16,8 @@ Global* Global::getInstance() {
 }
 
 Global::Global() {
-
+    outputBuffer = "";
+    setDirectMode();
 }
 
 void Global::setRunMode() {
@@ -33,6 +34,16 @@ bool Global::isRunMode() {
 
 bool Global::isDircetMode() {
     return !runMode;
+}
+
+void Global::setOutputBuffer(std::string buffer) {
+    outputBuffer = buffer;
+}
+
+std::string Global::getOutputBuffer() {
+    std::string tmp = outputBuffer;
+    outputBuffer = "";
+    return tmp;
 }
 
 

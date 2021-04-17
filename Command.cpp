@@ -44,6 +44,45 @@ unsigned char* Command::_goto(unsigned char* restOfLine) {
     return Program::getInstance()->getProgramLineCounter();
 }
 
+std::string Command::__listLine(std::string codeLine) {
+    std::string outputLine = "";
+    bool insertSpace = false;
+    short type;
+    bool firstChar = true;
+    bool inString = false;
+    for (auto c : codeLine) {
+        if (c == '"') {
+            inString = !inString;
+        }
+        std::string tokenName;
+        if (!inString) {
+            tokenName = Parser::getInstance(nullptr)->findTokenName((unsigned char) c, type);
+        }
+        if (insertSpace) {
+            outputLine += ' ';
+            insertSpace = false;
+            firstChar = true;
+        }
+        if (tokenName.length() > 0) {
+            if (type == TOKEN_TYPE_COMMAND) {
+                insertSpace = true;
+                if (!firstChar) {
+                    outputLine += ' ';
+                }
+            }
+            if (type == TOKEN_TYPE_OPERATOR && tokenName[0] >= 'A' && tokenName[0] <= 'Z') {
+                tokenName = " " + tokenName + " ";
+            }
+            outputLine += tokenName;
+        } else {
+            outputLine += c;
+
+        }
+        firstChar = false;
+    }
+    return outputLine;
+}
+
 void Command::__list(unsigned short start, unsigned short end, std::basic_ostream<char> *stream) {
     Program *code = Program::getInstance();
     code->resetLinePointer();
@@ -52,45 +91,11 @@ void Command::__list(unsigned short start, unsigned short end, std::basic_ostrea
     do {
         codeLine = code->getNextLine(lineNumber);
         if (lineNumber!=0 && lineNumber>=start && lineNumber<=end) {
-            std::string outputLine = "";
-            bool insertSpace = false;
-            short type;
-            bool firstChar = true;
-            bool inString = false;
-            for (auto c : codeLine) {
-                if (c == '"') {
-                    inString = !inString;
-                }
-                std::string tokenName;
-                if (!inString) {
-                    tokenName = Parser::getInstance(nullptr)->findTokenName((unsigned char) c, type);
-                }
-                if (insertSpace) {
-                    outputLine += ' ';
-                    insertSpace = false;
-                    firstChar = true;
-                }
-                if (tokenName.length() > 0) {
-                    if (type == TOKEN_TYPE_COMMAND) {
-                        insertSpace = true;
-                        if (!firstChar) {
-                            outputLine += ' ';
-                        }
-                    }
-                    if (type == TOKEN_TYPE_OPERATOR && tokenName[0] >= 'A' && tokenName[0] <= 'Z') {
-                        tokenName = " " + tokenName + " ";
-                    }
-                    outputLine += tokenName;
-                } else {
-                    outputLine += c;
-
-                }
-                firstChar = false;
-            }
-            *stream << lineNumber << ' ' << outputLine << std::endl;
+            *stream << lineNumber << ' ' << __listLine(codeLine) << std::endl;
         }
     } while (lineNumber!=0);
 }
+
 unsigned char* Command::list(unsigned char* restOfLine) {
     unsigned short start = 0;
     unsigned short end = USHRT_MAX;
@@ -335,7 +340,7 @@ unsigned char *Command::input(unsigned char *restOfLine) {
         std::string line;
         if (stream== nullptr) {
             std::cout << '?';
-            std::getline(std::cin, line);
+            line = Console::input();
         } else {
             std::getline(*stream, line);
             if (stream->bad()) {
@@ -1032,5 +1037,44 @@ unsigned char *Command::sound(unsigned char *restOfLine) {
         throw Exception(EXCEPTION_RANGE_ERROR);
     }
     Console::sound(frequency.getInt(), duration.getFloat()*1000);
+    return restOfLine;
+}
+
+unsigned char *Command::edit(unsigned char *restOfLine) {
+    int param;
+    try {
+        size_t len;
+        std::string line((char *) restOfLine);
+        param = std::stoi(line, &len);
+        if (param <= 0 || param > USHRT_MAX) {
+            throw Exception(EXCEPTION_RANGE_ERROR);
+        }
+        restOfLine += len;
+
+        Program *code = Program::getInstance();
+        code->resetLinePointer();
+        unsigned short lineNumber;
+        std::string codeLine;
+        bool ok = false;
+        do {
+            codeLine = code->getNextLine(lineNumber);
+            if (lineNumber==param) {
+                ok = true;
+                std::stringstream ss;
+                ss << lineNumber << ' ' << __listLine(codeLine);
+                Global::getInstance()->setOutputBuffer(ss.str());
+            }
+        } while (lineNumber!=0);
+        if (!ok) {
+            throw Exception(EXCEPTION_UNKNOWN_LINE);
+        }
+    } catch (std::invalid_argument e) {
+        throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+    }
+    return restOfLine;
+}
+
+unsigned char *Command::renumber(unsigned char *restOfLine) {
+    throw Exception(EXCEPTION_NOT_IMPLEMENTED);
     return restOfLine;
 }
