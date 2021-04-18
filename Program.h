@@ -59,5 +59,6 @@ public:
     std::string getNextLine(unsigned short &lineNumber);
     void clear();
     void resetLinePointer();
+    void rewriteLineNumbers(std::map<int,int> lineNumbers);
 };
 #endif //JUNIORBASIC_PROGRAM_H

@@ -46,6 +46,8 @@ std::string Exception::getMessage() {
             return "FILE IS NOT OPEN";
         case EXCEPTION_FILESYSTEM:
             return "FILESYSTEM";
+        case EXCEPTION_RUN_MODE:
+            return "RUN MODE";
         default:
             return "UNKNOWN";
 

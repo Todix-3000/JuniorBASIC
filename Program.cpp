@@ -87,10 +87,11 @@ void Program::resetProgramCounter() {
 }
 
 bool Program::setProgramCounter(unsigned short lineNumber) {
-    programCounter = code.find(lineNumber);
-    if (programCounter == code.end()) {
+    auto tmpProgramCounter = code.find(lineNumber);
+    if (tmpProgramCounter == code.end()) {
         return false;
     }
+    programCounter = tmpProgramCounter;
     programLineCounter = (unsigned char*) programCounter->second.data();
 
     return true;
@@ -151,3 +152,14 @@ void Program::stackClear() {
     }
 }
 
+void Program::rewriteLineNumbers(std::map<int,int> lineNumbers) {
+    std::map<unsigned short, std::string> tmpCode;
+    for (auto assoc : lineNumbers) {
+        tmpCode[assoc.second] = code[assoc.first];
+        code.erase(assoc.first);
+    }
+    for (auto newCode : tmpCode) {
+        code[newCode.first] = newCode.second;
+    }
+    resetProgramCounter();
+}

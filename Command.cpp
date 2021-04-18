@@ -275,12 +275,30 @@ unsigned char *Command::_if(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::run(unsigned char *restOfLine) {
-    if (*restOfLine!=0 && *restOfLine!=':') {
+    int param = 0;
+    if (*restOfLine>='0' && *restOfLine<='9') {
+        try {
+            size_t len;
+            std::string line((char *) restOfLine);
+            param = std::stoi(line, &len);
+            if (param<0 || param>USHRT_MAX) {
+                throw Exception(EXCEPTION_RANGE_ERROR);
+            }
+            restOfLine += len;
+            if (!Program::getInstance()->setProgramCounter(param)) {
+                throw Exception(EXCEPTION_UNKNOWN_LINE);
+            }
+        } catch (std::invalid_argument e) {
+            throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+        }
+    } else if (*restOfLine!=0 && *restOfLine!=':') {
         restOfLine = load(restOfLine);
     }
     Variable::getContainer()->clearAll();
     Global::getInstance()->setRunMode();
-    Program::getInstance()->resetProgramCounter();
+    if (param==0) {
+        Program::getInstance()->resetProgramCounter();
+    }
     Program::getInstance()->resetDataCounter();
     Program::getInstance()->stackClear();
     return restOfLine;
@@ -1078,6 +1096,78 @@ unsigned char *Command::edit(unsigned char *restOfLine) {
 }
 
 unsigned char *Command::renumber(unsigned char *restOfLine) {
-    throw Exception(EXCEPTION_NOT_IMPLEMENTED);
+    if (Global::getInstance()->isRunMode()) {
+        throw Exception(EXCEPTION_RUN_MODE);
+    }
+    int params[] = {10, 10, 0};
+    for (int i = 0; i < 3; i++) {
+        try {
+            if (*restOfLine==0 || *restOfLine==':') {
+                break;
+            }
+            size_t len;
+            std::string line((char *) restOfLine);
+            params[i] = std::stoi(line, &len);
+            if (params[i] < 0 || params[i] > USHRT_MAX) {
+                throw Exception(EXCEPTION_RANGE_ERROR);
+            }
+            restOfLine += len;
+            if (*restOfLine != ',') {
+                break;
+            }
+            *restOfLine++;
+
+        } catch (std::invalid_argument e) {
+            throw Exception(EXCEPTION_ILLEGAL_EXPRESSION);
+        }
+    }
+    if (params[0] < params[2]) {
+        throw Exception(EXCEPTION_RANGE_ERROR);
+    }
+    Program *code = Program::getInstance();
+    code->resetLinePointer();
+    unsigned short lineNumber;
+    std::string codeLine;
+    std::map<int, int> lineAssociation;
+    int newLineNumber = params[0];
+    do {
+        codeLine = code->getNextLine(lineNumber);
+        if (lineNumber>=params[2] && lineNumber!=0) {
+            if (newLineNumber>USHRT_MAX) {
+                throw Exception(EXCEPTION_RANGE_ERROR);
+            }
+            lineAssociation[lineNumber] = newLineNumber;
+            newLineNumber += params[1];
+        }
+    } while (lineNumber!=0);
+    code->rewriteLineNumbers(lineAssociation);
+    code->resetProgramCounter();
+    auto linePointer = code->getProgramLineCounter();
+    do {
+        if (*linePointer == CMD_GOSUB || *linePointer == CMD_GOTO || *linePointer == CMD_RUN ||
+            *linePointer == CMD_RUN) {
+            *linePointer++;
+            if (*linePointer>='0' && *linePointer<='9') {
+                std::cout << linePointer << std::endl;
+            }
+        } else if (*linePointer == CMD_REM) {
+            code->nextProgramCounter();
+            linePointer = code->getProgramLineCounter();
+        } else if (*linePointer == '"') {
+            auto parser = Parser::getInstance(linePointer);
+            parser->getLiteralValue();
+            linePointer = parser->inputPtr;
+        } else if (*linePointer == 0 || *linePointer == CMD_REM) {
+            if (!code->nextProgramCounter()) {
+                break;
+            }
+            linePointer = code->getProgramLineCounter();
+        } else {
+            linePointer++;
+        }
+
+    } while (true);
+
+
     return restOfLine;
 }

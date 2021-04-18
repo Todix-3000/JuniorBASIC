@@ -20,7 +20,7 @@ void setBreak(int signalId) {
 
 
 int main(int argc, char* argv[]) {
-    Console::init();
+    // Console::init();
     Console::foregroundColor(2);
     Console::backgroundColor(7);
     Console::clear();
