@@ -1102,7 +1102,7 @@ unsigned char *Command::renumber(unsigned char *restOfLine) {
     int params[] = {10, 10, 0};
     for (int i = 0; i < 3; i++) {
         try {
-            if (*restOfLine==0 || *restOfLine==':') {
+            if (*restOfLine == 0 || *restOfLine == ':') {
                 break;
             }
             size_t len;
@@ -1132,37 +1132,57 @@ unsigned char *Command::renumber(unsigned char *restOfLine) {
     int newLineNumber = params[0];
     do {
         codeLine = code->getNextLine(lineNumber);
-        if (lineNumber>=params[2] && lineNumber!=0) {
-            if (newLineNumber>USHRT_MAX) {
+        if (lineNumber >= params[2] && lineNumber != 0) {
+            if (newLineNumber > USHRT_MAX) {
                 throw Exception(EXCEPTION_RANGE_ERROR);
             }
             lineAssociation[lineNumber] = newLineNumber;
             newLineNumber += params[1];
+        } else if (lineNumber < params[2] && lineNumber != 0) {
+            lineAssociation[lineNumber] = lineNumber;
         }
-    } while (lineNumber!=0);
+    } while (lineNumber != 0);
     code->rewriteLineNumbers(lineAssociation);
     code->resetProgramCounter();
     auto linePointer = code->getProgramLineCounter();
+    std::string newCodeLine = "";
+    bool quoteMode = false;
     do {
         if (*linePointer == CMD_GOSUB || *linePointer == CMD_GOTO || *linePointer == CMD_RUN ||
             *linePointer == CMD_RUN) {
-            *linePointer++;
-            if (*linePointer>='0' && *linePointer<='9') {
-                std::cout << linePointer << std::endl;
+            newCodeLine += *linePointer;
+            linePointer++;
+            while (*linePointer >= '0' && *linePointer <= '9') {
+                size_t len;
+                auto oldLine = std::stoi((char *)linePointer, &len);
+                std::stringstream ss;
+                ss << lineAssociation[oldLine];
+                newCodeLine += ss.str();
+                linePointer += len;
+                if (*linePointer==',') {
+                    newCodeLine +=',';
+                    *linePointer++;
+                }
             }
         } else if (*linePointer == CMD_REM) {
-            code->nextProgramCounter();
-            linePointer = code->getProgramLineCounter();
+           while (*linePointer != 0) {
+               newCodeLine += *linePointer;
+               linePointer++;
+           }
         } else if (*linePointer == '"') {
-            auto parser = Parser::getInstance(linePointer);
-            parser->getLiteralValue();
-            linePointer = parser->inputPtr;
-        } else if (*linePointer == 0 || *linePointer == CMD_REM) {
+            quoteMode = !quoteMode;
+            newCodeLine += *linePointer;
+            linePointer++;
+        } else if (*linePointer == 0) {
+            code->setLine(code->getProgramCounter(), newCodeLine);
             if (!code->nextProgramCounter()) {
                 break;
             }
+            newCodeLine = "";
+            quoteMode = false;
             linePointer = code->getProgramLineCounter();
         } else {
+            newCodeLine += *linePointer;
             linePointer++;
         }
 
