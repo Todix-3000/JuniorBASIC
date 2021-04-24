@@ -271,7 +271,7 @@ Parser::Parser() {
     tokenList[OP_POW]     = TokenDefinition("^",  new Token(TOKEN_TYPE_OPERATOR, 12, RIGHT, Operator::pow));
     tokenList[OP_MUL]     = TokenDefinition("*",  new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::mul));
     tokenList[OP_DIV]     = TokenDefinition("/",  new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::div));
-    tokenList[OP_MOD]     = TokenDefinition("%",  new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::mod));
+    tokenList[OP_MOD]     = TokenDefinition("MOD",new Token(TOKEN_TYPE_OPERATOR, 11, LEFT, Operator::mod));
     tokenList[OP_ADD]     = TokenDefinition("+",  new Token(TOKEN_TYPE_OPERATOR, 10, LEFT, Operator::add));
     tokenList[OP_SUB]     = TokenDefinition("-",  new Token(TOKEN_TYPE_OPERATOR, 10, LEFT, Operator::sub));
     tokenList[OP_LEQT]    = TokenDefinition("<=", new Token(TOKEN_TYPE_OPERATOR, 8, LEFT, Operator::leqt));

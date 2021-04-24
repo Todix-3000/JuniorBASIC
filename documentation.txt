@@ -1,0 +1,189 @@
+Commands:
+
+Functions:
+
+Operators:
+    + <value>
+        No operation
+
+    - <value>
+        negate the value
+
+    <value-1> ^ <value-2>
+        calculates value-1 to the power of value-2
+
+    <value-1> * <value-2>
+        multiplication
+
+    <value-1> / <value-2>
+        division
+
+    <value-1> MOD <value-2>
+        modulo operation
+
+    <value-1> + <value-2>
+        addition or string concatenation
+
+    <value-1> - <value-2>
+        substraction
+
+    <value-1> <= <value-2>
+        1 if less or equal, else 0
+
+    <value-1> >= <value-2>
+        1 if higher or equal, else 0
+
+    <value-1> <> <value-2>
+        1 if not equal, else 0
+
+    <value-1> < <value-2>
+        1 if less, else 0
+
+    <value-1> > <value-2>
+        1 if higher, else 0
+
+    <value-1> = <value-2>
+        1 if equal, else 0
+
+    <value-1> AND <value-2>
+        Binary AND
+
+    <value-1> OR <value-2>
+        Binary OR
+
+    <value-1> XOR <value-2>
+        Binary XOR
+
+    <value-1> && <value-2>
+        1 if value-1 not zero AND value-2 not zero, else 0 (logical AND)
+
+    <value-1> || <value-2>
+        1 if value-1 not zero OR value-2 not zero, else 0 (logical OR)
+
+    tokenList[FUN_SIN]   = TokenDefinition("SIN",    new Token(TOKEN_TYPE_FUNCTION, Function::sin));
+    tokenList[FUN_COS]   = TokenDefinition("COS",    new Token(TOKEN_TYPE_FUNCTION, Function::cos));
+    tokenList[FUN_TAN]   = TokenDefinition("TAN",    new Token(TOKEN_TYPE_FUNCTION, Function::tan));
+    tokenList[FUN_ATN]   = TokenDefinition("ATN",    new Token(TOKEN_TYPE_FUNCTION, Function::atn));
+    tokenList[FUN_SQR]   = TokenDefinition("SQR",    new Token(TOKEN_TYPE_FUNCTION, Function::sqr));
+    tokenList[FUN_RND]   = TokenDefinition("RND",    new Token(TOKEN_TYPE_FUNCTION, Function::rnd));
+    tokenList[FUN_ASC]   = TokenDefinition("ASC",    new Token(TOKEN_TYPE_FUNCTION, Function::asc));
+    tokenList[FUN_LEN]   = TokenDefinition("LEN",    new Token(TOKEN_TYPE_FUNCTION, Function::len));
+    tokenList[FUN_VAL]   = TokenDefinition("VAL",    new Token(TOKEN_TYPE_FUNCTION, Function::val));
+    tokenList[FUN_CHR]   = TokenDefinition("CHR$",   new Token(TOKEN_TYPE_FUNCTION, Function::chr));
+    tokenList[FUN_STR]   = TokenDefinition("STR$",   new Token(TOKEN_TYPE_FUNCTION, Function::str));
+    tokenList[FUN_LEFT]  = TokenDefinition("LEFT$",  new Token(TOKEN_TYPE_FUNCTION, Function::left));
+    tokenList[FUN_RIGHT] = TokenDefinition("RIGHT$", new Token(TOKEN_TYPE_FUNCTION, Function::right));
+    tokenList[FUN_MID]   = TokenDefinition("MID$",   new Token(TOKEN_TYPE_FUNCTION, Function::mid));
+    tokenList[FUN_ABS]   = TokenDefinition("ABS",    new Token(TOKEN_TYPE_FUNCTION, Function::abs));
+    tokenList[FUN_SGN]   = TokenDefinition("SGN",    new Token(TOKEN_TYPE_FUNCTION, Function::sgn));
+    tokenList[FUN_EXP]   = TokenDefinition("EXP",    new Token(TOKEN_TYPE_FUNCTION, Function::exp));
+    tokenList[FUN_LOG]   = TokenDefinition("LOG",    new Token(TOKEN_TYPE_FUNCTION, Function::log));
+    tokenList[FUN_INT]   = TokenDefinition("INT",    new Token(TOKEN_TYPE_FUNCTION, Function::xint));
+
+    tokenList[CMD_PRINT] = TokenDefinition("PRINT", new Token(TOKEN_TYPE_COMMAND, Command::print));
+    tokenList[CMD_LIST]  = TokenDefinition("LIST",  new Token(TOKEN_TYPE_COMMAND, Command::list));
+    tokenList[CMD_GOTO]  = TokenDefinition("GOTO",  new Token(TOKEN_TYPE_COMMAND, Command::_goto));
+    tokenList[CMD_RUN]   = TokenDefinition("RUN",   new Token(TOKEN_TYPE_COMMAND, Command::run));
+    tokenList[CMD_IF]    = TokenDefinition("IF",    new Token(TOKEN_TYPE_COMMAND, Command::_if));
+    tokenList[CMD_THEN]  = TokenDefinition("THEN",  new Token(TOKEN_TYPE_COMMAND, Command::illegal));
+    tokenList[CMD_LOAD]  = TokenDefinition("LOAD",  new Token(TOKEN_TYPE_COMMAND, Command::load));
+    tokenList[CMD_SAVE]  = TokenDefinition("SAVE",  new Token(TOKEN_TYPE_COMMAND, Command::save));
+    tokenList[CMD_STOP]  = TokenDefinition("STOP",  new Token(TOKEN_TYPE_COMMAND, Command::stop));
+    tokenList[CMD_CONT]  = TokenDefinition("CONT",  new Token(TOKEN_TYPE_COMMAND, Command::cont));
+    tokenList[CMD_INPUT] = TokenDefinition("INPUT", new Token(TOKEN_TYPE_COMMAND, Command::input));
+    tokenList[CMD_ON]    = TokenDefinition("ON",    new Token(TOKEN_TYPE_COMMAND, Command::on));
+
+
+    CHDIR <path>
+        Change the current disc directory
+
+    CLOSE #<file-number>
+        Close a file
+
+    CLR
+        Clear all variables
+
+    CLS
+        Clear Screen
+
+    COLOR <index>, <color>
+        Set a system text-color (0-15) to index 0 (background) or 1 (foreground)
+
+    DATA <value-1>[,value-2[,...]]
+        Provides data for the READ statement. Only literal values are allowed
+
+    DIM <variable>(<dimension-1>[,<dimension-2[,...]])
+        Set the maximum size of an array. DIM will be called automaticly with default
+        values 10, if an array variable is first used without DIM
+
+    DIR [<mask>]
+        List the content of the current directory. Mask may contain * as a wildcard
+
+    EDIT <line-number>
+        Edit an existing line
+
+    END
+        Stop program execution
+
+    FOR <variable> = <start-value> TO <end-value> [STEP <step-width] : NEXT [<variable>]
+        Loops over the area between FOR and NEXT statement, assigning variable values in the
+        given range. Default for step is 1. The variable parameter at next is optional, if set
+        it has to match the last FOR variable
+
+    GET <variable>
+        Put next character from keybord buffer to the variable. If the buffer is empty
+        variable will be assigned an empty string
+
+    GET #<file-number>
+        Put next character from an open file to the variable. If the buffer is empty
+        variable will be assigned an empty string
+
+    GOSUB <line-number>
+        Jump to a subroutine in the given line. Line-number has to be an integer literal.
+        After reaching a RETURN-statement, execution continues after this statement
+
+    GOTO <line-number>
+        Jump to the given line. Line-number has to be an integer literal
+
+    KILL <file>
+        Remove a file on disc
+
+    LET <variable> = <value>
+        Assign value to the variable. The word LET is optional
+
+    MKDIR <path>
+        Create a directory on disc
+
+    NEW
+        Clear program
+
+    OPEN #<file-number>,<file-name>[,<file-mode>]
+        Opens the given file and assigns a file number. Valid modes are
+        R (default) for read, W for write and A for append
+
+    QUIT
+        Quits JuniorBASIC interpreter
+
+    READ <variable>
+        Get the next DATA value and put it to variable
+
+    REM [<comment>]
+        ignore the rest of the line, including :
+
+    RENUMBER [<new-start>[,<new-step>[,<old-start>]]]
+        Assign new line numbers to a part of the program
+
+    RESTORE
+        Reset the data pointer for the READ command
+
+    RETURN
+        Return from a subroutine
+
+    RMDIR <path>
+        Remove a directory on disc
+
+    SLEEP <seconds>
+        Wait for the given time
+
+    SOUND <frequency>, <seconds>
+        Play a sound for the given time
