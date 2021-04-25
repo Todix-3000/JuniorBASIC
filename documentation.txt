@@ -1,6 +1,4 @@
-Commands:
-
-Functions:
+This is a short documentation about all the supported operators, functions and commands in JuniorBASIC 1.0
 
 Operators:
     + <value>
@@ -60,40 +58,66 @@ Operators:
     <value-1> || <value-2>
         1 if value-1 not zero OR value-2 not zero, else 0 (logical OR)
 
-    tokenList[FUN_SIN]   = TokenDefinition("SIN",    new Token(TOKEN_TYPE_FUNCTION, Function::sin));
-    tokenList[FUN_COS]   = TokenDefinition("COS",    new Token(TOKEN_TYPE_FUNCTION, Function::cos));
-    tokenList[FUN_TAN]   = TokenDefinition("TAN",    new Token(TOKEN_TYPE_FUNCTION, Function::tan));
-    tokenList[FUN_ATN]   = TokenDefinition("ATN",    new Token(TOKEN_TYPE_FUNCTION, Function::atn));
-    tokenList[FUN_SQR]   = TokenDefinition("SQR",    new Token(TOKEN_TYPE_FUNCTION, Function::sqr));
-    tokenList[FUN_RND]   = TokenDefinition("RND",    new Token(TOKEN_TYPE_FUNCTION, Function::rnd));
-    tokenList[FUN_ASC]   = TokenDefinition("ASC",    new Token(TOKEN_TYPE_FUNCTION, Function::asc));
-    tokenList[FUN_LEN]   = TokenDefinition("LEN",    new Token(TOKEN_TYPE_FUNCTION, Function::len));
-    tokenList[FUN_VAL]   = TokenDefinition("VAL",    new Token(TOKEN_TYPE_FUNCTION, Function::val));
-    tokenList[FUN_CHR]   = TokenDefinition("CHR$",   new Token(TOKEN_TYPE_FUNCTION, Function::chr));
-    tokenList[FUN_STR]   = TokenDefinition("STR$",   new Token(TOKEN_TYPE_FUNCTION, Function::str));
-    tokenList[FUN_LEFT]  = TokenDefinition("LEFT$",  new Token(TOKEN_TYPE_FUNCTION, Function::left));
-    tokenList[FUN_RIGHT] = TokenDefinition("RIGHT$", new Token(TOKEN_TYPE_FUNCTION, Function::right));
-    tokenList[FUN_MID]   = TokenDefinition("MID$",   new Token(TOKEN_TYPE_FUNCTION, Function::mid));
-    tokenList[FUN_ABS]   = TokenDefinition("ABS",    new Token(TOKEN_TYPE_FUNCTION, Function::abs));
-    tokenList[FUN_SGN]   = TokenDefinition("SGN",    new Token(TOKEN_TYPE_FUNCTION, Function::sgn));
-    tokenList[FUN_EXP]   = TokenDefinition("EXP",    new Token(TOKEN_TYPE_FUNCTION, Function::exp));
-    tokenList[FUN_LOG]   = TokenDefinition("LOG",    new Token(TOKEN_TYPE_FUNCTION, Function::log));
-    tokenList[FUN_INT]   = TokenDefinition("INT",    new Token(TOKEN_TYPE_FUNCTION, Function::xint));
+Functions:
+    ABS(<numeric-expression>)
+        returns the absolute value of the expression
 
-    tokenList[CMD_PRINT] = TokenDefinition("PRINT", new Token(TOKEN_TYPE_COMMAND, Command::print));
-    tokenList[CMD_LIST]  = TokenDefinition("LIST",  new Token(TOKEN_TYPE_COMMAND, Command::list));
-    tokenList[CMD_GOTO]  = TokenDefinition("GOTO",  new Token(TOKEN_TYPE_COMMAND, Command::_goto));
-    tokenList[CMD_RUN]   = TokenDefinition("RUN",   new Token(TOKEN_TYPE_COMMAND, Command::run));
-    tokenList[CMD_IF]    = TokenDefinition("IF",    new Token(TOKEN_TYPE_COMMAND, Command::_if));
-    tokenList[CMD_THEN]  = TokenDefinition("THEN",  new Token(TOKEN_TYPE_COMMAND, Command::illegal));
-    tokenList[CMD_LOAD]  = TokenDefinition("LOAD",  new Token(TOKEN_TYPE_COMMAND, Command::load));
-    tokenList[CMD_SAVE]  = TokenDefinition("SAVE",  new Token(TOKEN_TYPE_COMMAND, Command::save));
-    tokenList[CMD_STOP]  = TokenDefinition("STOP",  new Token(TOKEN_TYPE_COMMAND, Command::stop));
-    tokenList[CMD_CONT]  = TokenDefinition("CONT",  new Token(TOKEN_TYPE_COMMAND, Command::cont));
-    tokenList[CMD_INPUT] = TokenDefinition("INPUT", new Token(TOKEN_TYPE_COMMAND, Command::input));
-    tokenList[CMD_ON]    = TokenDefinition("ON",    new Token(TOKEN_TYPE_COMMAND, Command::on));
+    ASC(<string-expression>)
+        returns the ASCII-Code value of the first character in the string
 
+    ATN(<numeric-expression>)
+        returns the arcustangens-value of the expression
 
+    CHR$(<numeric-expression>)
+        returns the character with the given ASCII-Code value
+
+    COS(<numeric-expression>)
+        returns the cossinus-value of the expression
+
+    EXP(<numeric-expression>)
+       returns the value of e^expression
+
+    INT(<numeric-expression>)
+       returns the integer-value of the expression. For example 5.8 will be converted to 5.
+
+    LEFT$(<string-expression>,<numeric-expression>)
+        returns the first numeric-expression characters from the left side of the string
+
+    LEN(<string-expression>)
+       returns the length of the string
+
+    LOG(<numeric-expression>)
+        returns the natural logarithm of the expression.
+
+    MID$(<string-expression>,<numeric-expression1>[,<numeric-expression2>])
+        returns the string from position numeric-expression1. If a 3rd value is given, the result is limited to this
+        number of characters
+
+    RIGHT$(<string-expression>,<numeric-expression>)
+        returns the first numeric-expression characters from the right side of the string
+
+    RND()
+        returns a random value that is >=0 and >1
+
+    SGN(<numeric-expression>)
+        returns the sign of the expression. Possible results are 1, 0 and -1
+
+    SIN(<numeric-expression>)
+        returns the sinus-value of the expression
+
+    SQR(<numeric-expression>)
+        returns the squareroot-value of the expression
+
+    STR$(<numeric-expression>)
+        returns the expression as a string
+
+    TAN(<numeric-expression>)
+        returns the tangens-value of the expression
+
+    VAL(<string-expression>)
+        converts the string to number. If that is not possible, 0 is returned
+
+Commands:
     CHDIR <path>
         Change the current disc directory
 
@@ -108,6 +132,9 @@ Operators:
 
     COLOR <index>, <color>
         Set a system text-color (0-15) to index 0 (background) or 1 (foreground)
+
+    CONT
+        Continues a program after STOP or an user-interrupt by Ctrl-C
 
     DATA <value-1>[,value-2[,...]]
         Provides data for the READ statement. Only literal values are allowed
@@ -145,11 +172,28 @@ Operators:
     GOTO <line-number>
         Jump to the given line. Line-number has to be an integer literal
 
+    IF <expression> [THEN <statement>|GOTO <line-number>]
+        If the expression evaluates to not 0 or empty string the statement is executed or the
+        program jumps to the given line-number
+
+    INPUT [<text>,] <variable1>[,<variable2>[,...]]]
+        If a text is given as a string literal it will be printed. Every variable will be asked from the
+        user to put in from the keyboard.
+
+    INPUT #<file-number>, <variable1>[,<variable2>[,...]]]
+        Evere variable will be filled with the content of the next line in the given file
+
     KILL <file>
         Remove a file on disc
 
     LET <variable> = <value>
         Assign value to the variable. The word LET is optional
+
+    LIST [<line-number>]|[[<start-line>] - [<target-line>]]
+        List the whole program, one given line or a range of lines, where start and target are optional
+
+    LOAD <filename>
+        Loads the content of the file to the program memory. The current program will be deleted
 
     MKDIR <path>
         Create a directory on disc
@@ -157,9 +201,22 @@ Operators:
     NEW
         Clear program
 
+    ON <expression> [GOTO|GOSUB] <line-number1>[,<line-number2>[,...]]
+        Jumps to or calls a subroutine at the line-number corresponding to the evaluated value.
+        1 is corresponding to the first line. If there is no match, no jump is executed
+
     OPEN #<file-number>,<file-name>[,<file-mode>]
         Opens the given file and assigns a file number. Valid modes are
         R (default) for read, W for write and A for append
+
+    PRINT <expressionlist> [,|;]
+        Prints a list of expressions to the screen. Expressions are seperated by , (space) or ; (no space)
+        At the end is printed a linefeed, if the is no , or ;
+        As a special expression @<x>,<y> will move the cursor to line y and column x, starting with 1
+
+    PRINT #<file-number>, <expressionlist>
+        Prints the list of expression to the given file. Expressions are seperated by , (space) or ; (no space)
+        At the end is printed a linefeed, if the is no , or ;
 
     QUIT
         Quits JuniorBASIC interpreter
@@ -182,8 +239,18 @@ Operators:
     RMDIR <path>
         Remove a directory on disc
 
+    RUN [<line-number> | <filename>]
+        Starts a program. The line, where to start may be given. A filename may be given, then the
+        corresponding program is loaded and executed immediately
+
+    SAVE <filename>
+        Saves the current program to the given file
+
     SLEEP <seconds>
         Wait for the given time
 
     SOUND <frequency>, <seconds>
         Play a sound for the given time
+
+    STOP
+        Stops the program execution. The execution may be continued with CONT
